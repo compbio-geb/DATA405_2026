@@ -383,5 +383,12 @@
     "title": "Lecture 11 · Probability and Statistics for Genomic Data",
     "section": "6 · The toolbox, in one table",
     "text": "6 · The toolbox, in one table\n\n\n\n\n\n\n\n\nYou have…\nAsk…\nTool\n\n\n\n\nk of n reads carry an allele\nis θ = 0.5? what is P(θ &gt; 0.5)?\nbinomial test; Beta posterior\n\n\nreads in a window vs background\nis this more than chance?\nPoisson tail test (MACS)\n\n\ncounts × replicates × conditions\nwhich genes change?\nNB GLM + shrinkage + BH (DESeq2/edgeR)\n\n\nreads compatible with several isoforms\nhow much of each?\nEM (RSEM, kallisto, salmon)\n\n\nthousands of p-values\nhow many are false?\nBenjamini–Hochberg FDR\n\n\na peak in IP\nis it in mock too?\njoint Beta posterior (Xu et al. 2021)\n\n\n\nReferences. Love MI, Huber W, Anders S. Genome Biol 2014 (DESeq2) · Li B, Dewey CN. BMC Bioinformatics 2011 (RSEM) · Zhang Y et al. Genome Biol 2008 (MACS) · Xu J et al. Nucleic Acids Res 2021;49(3):e17 (mock IP vs input) · Himes BE et al. PLoS ONE 2014 (airway data) · Benjamini Y, Hochberg Y. JRSS-B 1995."
+  },
+  {
+    "objectID": "lab1.html#lab-report-submit-by-sunday-oct-18-1159-pm",
+    "href": "lab1.html#lab-report-submit-by-sunday-oct-18-1159-pm",
+    "title": "Lab 1 · Python and R on real chr22 data",
+    "section": "Lab report (submit by Sunday, Oct 18, 11:59 pm)",
+    "text": "Lab report (submit by Sunday, Oct 18, 11:59 pm)\nAnswers to Q1–Q7, the fixed reverse_complement in both languages, and one figure from Exercise 3 or 5 (use the local setup on the Setup page, or right-click → save the image from this page). One page is enough."
   }
 ]
