@@ -67,6 +67,8 @@ list.files("data")
 
 **Q1.** In the R cell, what happens if you write `n_aa = 271` instead of `n_aa <- 271`? And in Python, `n_aa <- 271`? Try both and write one sentence.
 
+*Tip:* variables stay in memory until you reload the page, so an old `n_aa` can hide what a wrong line does. Test with a **new name** instead, e.g. `count <- 271` followed by `print(count)` in Python. (Python reads `count <- 271` as `count < -271`, a comparison, not an assignment.)
+
 ---
 
 ## Exercise 2 · DNA as a string: COMT and rs4680 (20 min)
