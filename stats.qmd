@@ -1,0 +1,440 @@
+---
+title: "Lecture 11 · Probability and Statistics for Genomic Data"
+subtitle: "Sequencing is sampling: the ideas behind DESeq2, EM/RSEM and ChIP-seq peak calling — with runnable demos"
+resources:
+  - data
+---
+
+::: {.callout-tip appearance="simple"}
+These notes follow the Lecture 11 slides. Each demo runs in your browser; R cells use base R only.
+:::
+
+
+## 0 · The coin, the p-value, and the burden of many tests
+
+Before any genomics: three ideas, each with an experiment you can run here.
+
+### A coin flipped 10 times
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import numpy as np
+rng = np.random.default_rng(1)
+heads = rng.binomial(10, 0.5, size=10000)     # 10,000 experiments of 10 flips
+for k in range(11):
+    print(k, "heads:", (heads == k).mean())
+print("9 or more heads:", (heads >= 9).mean())
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+set.seed(1)
+heads <- rbinom(10000, 10, 0.5)      # 10,000 experiments of 10 flips
+table(heads) / 10000
+mean(heads >= 9)                     # 9 or more heads
+```
+:::
+:::
+
+Nothing about the coin changes between experiments; the spread is what randomness looks like. A read covering a heterozygous site is the same coin: each read comes from one of the two chromosomes.
+
+### Is this coin fair? — the p-value
+
+I flip a coin 10 times and get 9 heads. **Null hypothesis:** the coin is fair. **p-value:** how often a fair coin gives a result at least this extreme (9 or 10 heads, or by symmetry 0 or 1).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+from scipy import stats
+print(stats.binomtest(9, 10, 0.5).pvalue)      # ≈ 0.021
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+binom.test(9, 10, 0.5)$p.value                  # ≈ 0.021
+```
+:::
+:::
+
+p ≈ 0.02: chance alone does this about twice in a hundred. It is a statement about the *data given the null*, not the probability that the coin is fair.
+
+### Twenty candy colours, 19,271 genes — the burden
+
+Test 20 candy colours for a link to acne when none exists: each test has a 1-in-20 chance of a false alarm, so the chance that *at least one* colour "wins" is 1 − 0.95²⁰ = 64 %. Now do it for every gene:
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+# 19,271 genes, 4 vs 4 samples, NO real difference anywhere
+a = rng.normal(size=(19271, 4)); b = rng.normal(size=(19271, 4))
+p0 = stats.ttest_ind(a, b, axis=1).pvalue
+print("genes with p < 0.05 by chance:", (p0 < 0.05).sum())
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(3.4, 2.6))
+ax.hist(p0, bins=20, color="grey"); ax.axvline(0.05, color="#C00000")
+ax.set_xlabel("p-value under the null"); ax.set_ylabel("genes")
+plt.tight_layout(); plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.4
+#| fig-height: 2.6
+# 19,271 genes, 4 vs 4 samples, NO real difference anywhere
+p0 <- replicate(19271, t.test(rnorm(4), rnorm(4))$p.value)
+cat("genes with p < 0.05 by chance:", sum(p0 < 0.05), "\n")
+par(mar = c(4, 4, 1, 1))
+hist(p0, breaks = 20, col = "grey85", main = "", xlab = "", ylab = "", axes = FALSE)
+axis(1); axis(2); abline(v = 0.05, col = "#C00000", lwd = 2)
+title(xlab = "p-value under the null", line = 2); title(ylab = "genes", line = 2)
+```
+:::
+:::
+
+Under the null, p-values are spread evenly: about 5 % fall below 0.05 — **800–960 false "discoveries"** with nothing going on. Two ways to pay:
+
+- **Bonferroni** — control the chance of *any* false alarm: threshold 0.05 / 19,271 ≈ 2.6 × 10⁻⁶. Right for 20 candy colours; throws away almost everything in a genome.
+- **False discovery rate (Benjamini–Hochberg, 1995)** — control the *fraction* of false alarms in your list. Sort the p-values; the *k*-th smallest is kept if p₍ₖ₎ ≤ q·k/n. "Of the genes I call, about 5 % are expected to be false" — a promise about the list, not about one gene. `p.adjust(p, "BH")` returns the smallest FDR at which each gene would be kept (DESeq2's `padj`).
+
+## 1 · Sequencing is sampling
+
+A sequencer does not measure a gene's expression; it **draws reads at random** from a pool of molecules. Every number in genomics is therefore a *count from a random sample*, and every claim needs a probability model.
+
+Three distributions cover most of genomics:
+
+| Question | Model | Where |
+|---|---|---|
+| Of *n* reads at a site, how many carry allele A? | **Binomial**(n, θ) | genotyping, allele-specific expression, RNA editing |
+| How many reads land in a window / on a gene? | **Poisson**(λ) | coverage (Lander–Waterman), ChIP-seq peaks (MACS) |
+| Same, but across *biological replicates*? | **Negative binomial**(μ, α) | RNA-seq differential expression (DESeq2, edgeR) |
+
+### Binomial: is this mismatch a heterozygous SNP?
+
+In Lab 1 you found a site with 54 alt reads out of 138. If the sample were heterozygous (θ = 0.5), how surprising is 54/138?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+from scipy import stats
+print(stats.binomtest(54, 138, 0.5))
+# an all-alt site: 9 of 9 → not heterozygous, more likely a reference difference or mis-mapping
+print(stats.binomtest(9, 9, 0.5).pvalue)
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+binom.test(54, 138, 0.5)
+binom.test(9, 9, 0.5)$p.value
+```
+:::
+:::
+
+### Poisson: why 25 reads in one window is a peak
+
+If reads fell uniformly, a 500-bp window that receives λ = 5 reads on average would receive 25 reads with probability:
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+print(stats.poisson.sf(24, 5))       # P(X >= 25 | lambda = 5)
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+ppois(24, 5, lower.tail = FALSE)      # P(X >= 25 | lambda = 5)
+```
+:::
+:::
+
+This is the core of a peak caller: MACS computes a **local λ** from the control (input or mock) and asks the Poisson question at every window. The whole difficulty is choosing the right λ — that is Section 6.
+
+### Negative binomial: replicates are noisier than Poisson
+
+For a Poisson variable, variance = mean. Look at the four **control** samples of the airway experiment.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import pandas as pd, numpy as np
+import matplotlib.pyplot as plt
+cts  = pd.read_csv("data/airway_counts.tsv", sep="\t", index_col=0)
+meta = pd.read_csv("data/airway_metadata.tsv", sep="\t")
+ctrl = list(meta["id"][meta["dex"] == "control"])
+mu = cts[ctrl].mean(axis=1); var = cts[ctrl].var(axis=1)
+sel = mu > 10
+print("fraction of genes with variance > mean:", round((var[sel] > mu[sel]).mean(), 3))
+fig, ax = plt.subplots(figsize=(3.4, 3.2))
+ax.scatter(mu[sel], var[sel], s=3, color="grey")
+x = np.logspace(1, 5, 50)
+ax.plot(x, x, color="#0070C0", label="Poisson: var = mean")
+ax.plot(x, x + 0.05 * x**2, color="#C00000", label="NB, α = 0.05")
+ax.set_xscale("log"); ax.set_yscale("log")
+ax.set_xlabel("mean count"); ax.set_ylabel("variance"); ax.legend(fontsize=7)
+plt.tight_layout(); plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.4
+#| fig-height: 3.2
+cts  <- read.delim("data/airway_counts.tsv", row.names = 1)
+meta <- read.delim("data/airway_metadata.tsv")
+ctrl <- meta$id[meta$dex == "control"]
+mu <- rowMeans(cts[, ctrl]); v <- apply(cts[, ctrl], 1, var)
+sel <- mu > 10
+cat("fraction of genes with variance > mean:", round(mean(v[sel] > mu[sel]), 3), "\n")
+par(mar = c(4, 4, 1, 1))
+plot(mu[sel], v[sel], log = "xy", pch = 16, cex = 0.3, col = "grey60",
+     xlab = "", ylab = "", axes = FALSE)
+axis(1); axis(2)
+title(xlab = "mean count", line = 2); title(ylab = "variance", line = 2)
+x <- 10^seq(1, 5, length.out = 50)
+lines(x, x, col = "#0070C0", lwd = 2)                 # Poisson
+lines(x, x + 0.05 * x^2, col = "#C00000", lwd = 2)    # NB, alpha = 0.05
+legend("topleft", c("Poisson: var = mean", "NB, alpha = 0.05"),
+       col = c("#0070C0", "#C00000"), lwd = 2, bty = "n", cex = 0.7)
+```
+:::
+:::
+
+**95 % of genes have variance above the Poisson line.** The extra variance is *biological* (four different people). The negative binomial adds one parameter, the **dispersion α**: variance = μ + α μ². DESeq2's job is to estimate α for every gene from only a handful of replicates.
+
+## 2 · Estimation: likelihood and the EM idea
+
+**Maximum likelihood.** Given data, choose the parameter that makes the data most probable. For a binomial with 54 of 138, the MLE is θ̂ = 54/138 = 0.39 — the obvious answer, now justified.
+
+**Bayes.** Multiply the likelihood by a prior and normalize: with a flat prior, θ | data ~ **Beta**(54 + 1, 84 + 1). Now we can ask *P(θ > 0.5)*, which a p-value cannot answer. Section 6 uses exactly this.
+
+**EM.** When some data are *hidden* (which transcript did a shared read come from?), alternate: **E-step** — assign hidden labels in expectation using the current parameters; **M-step** — re-estimate parameters from the assigned data. Repeat until nothing changes.
+
+### EM in ten lines (the RSEM idea)
+
+Two transcripts, A and B. 6 reads map only to A, 2 only to B, 4 map to both. What are the abundances?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+nA, nB, nShared = 6, 2, 4
+theta = [0.5, 0.5]                      # initiation: equal abundances
+for it in range(8):
+    # E-step: split each shared read in proportion to current abundances
+    eA = nA + nShared * theta[0] / (theta[0] + theta[1])
+    eB = nB + nShared * theta[1] / (theta[0] + theta[1])
+    # M-step: abundances = fraction of (expected) reads
+    theta = [eA / (eA + eB), eB / (eA + eB)]
+    print(it + 1, [round(t, 3) for t in theta])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+nA <- 6; nB <- 2; nShared <- 4
+theta <- c(0.5, 0.5)                    # initiation: equal abundances
+for (it in 1:8) {
+  # E-step: split each shared read in proportion to current abundances
+  eA <- nA + nShared * theta[1] / sum(theta)
+  eB <- nB + nShared * theta[2] / sum(theta)
+  # M-step: abundances = fraction of (expected) reads
+  theta <- c(eA, eB) / (eA + eB)
+  cat(it, round(theta, 3), "\n")
+}
+```
+:::
+:::
+
+Naive "split 50/50" gives A = 8/12 = 0.667. EM converges to **0.75 / 0.25**: because A is more abundant, the shared reads more likely came from A, which makes A more abundant still — until the answer is self-consistent. This is what RSEM does across all isoforms of all genes with all multi-mapping reads; its `expected_count` column is the E-step's final assignment (which is why `chr22_expression.tsv` has counts like 317.84).
+
+## 3 · Normalization: size factors
+
+Sample libraries differ in depth (airway: 15.7 M to 31.8 M reads). DESeq2 does **not** use total counts (a few very highly expressed genes would dominate); it uses the **median of ratios** to a per-gene reference.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+lg = np.log(cts.replace(0, np.nan))       # log counts, zeros ignored
+ref = lg.mean(axis=1)                     # per-gene geometric mean (log scale)
+size_factors = np.exp((lg.sub(ref, axis=0)).median())
+print(size_factors.round(3))
+print((cts.sum() / cts.sum().mean()).round(3))   # compare: total-count ratio
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+lg <- log(as.matrix(cts)); lg[!is.finite(lg)] <- NA
+ref <- rowMeans(lg, na.rm = TRUE)
+size_factors <- exp(apply(lg - ref, 2, median, na.rm = TRUE))
+round(size_factors, 3)
+round(colSums(cts) / mean(colSums(cts)), 3)     # compare: total-count ratio
+```
+:::
+:::
+
+## 4 · Testing: from one t-test to DESeq2
+
+**What a t-test assumes** that counts violate: normal errors with equal variance, independence between the 8 samples (but samples come in 4 donor pairs), and one test at a time.
+
+**What DESeq2 does** (Love, Huber & Anders, *Genome Biology* 2014):
+
+1. Model each gene's count as **NB**(μ, α) with log μ = log(size factor) + β·design. The design `~ cell + dex` handles the pairing.
+2. Estimate each gene's dispersion α, then **shrink** it toward the trend of α vs mean across all genes — borrowing strength, because 4 vs 4 is not enough to estimate a variance well.
+3. Fit the GLM; test β_dex = 0 with a **Wald test** (or a likelihood-ratio test).
+4. Adjust p-values with **Benjamini–Hochberg** (FDR).
+5. Optionally shrink log2 fold changes (`lfcShrink`) so that low-count genes do not top the list.
+
+### Multiple testing: BH by hand
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+logc = np.log2(cts + 1)
+trt = list(meta["id"][meta["dex"] == "treated"])
+p = stats.ttest_ind(logc[trt], logc[ctrl], axis=1).pvalue
+
+def bh(p):
+    p = np.asarray(p); n = len(p); order = np.argsort(p)
+    ranked = p[order] * n / np.arange(1, n + 1)
+    adj = np.minimum.accumulate(ranked[::-1])[::-1]
+    q = np.empty(n); q[order] = np.minimum(adj, 1); return q
+
+q = bh(p)
+print("raw p < 0.05:", (p < 0.05).sum())
+print("BH q < 0.05 :", (q < 0.05).sum())
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+logc <- log2(cts + 1)
+trt <- meta$id[meta$dex == "treated"]
+tt <- function(a, b) tryCatch(t.test(a, b, var.equal = TRUE)$p.value, error = function(e) NA)
+p <- apply(logc, 1, function(x) tt(x[trt], x[ctrl]))
+q <- p.adjust(p, method = "BH")
+cat("raw p < 0.05:", sum(p < 0.05, na.rm = TRUE), "\n")
+cat("BH q < 0.05 :", sum(q < 0.05, na.rm = TRUE), "\n")
+```
+:::
+:::
+
+The t-test keeps **~40 genes** after correction. DESeq2 on the same data (with `~ cell + dex`) reports **several thousand** at FDR 0.1 — not because it is lenient, but because the NB model with shrunken dispersion and the paired design have far more power. That gap is the whole reason to learn the model.
+
+::: {.callout-note appearance="simple"}
+DESeq2 itself does not run in the browser (it is a Bioconductor package). On your laptop: `BiocManager::install("DESeq2")`, then `dds <- DESeqDataSetFromMatrix(cts, meta, ~ cell + dex); dds <- DESeq(dds); res <- results(dds)`. The [Setup](setup.qmd) page has the full script.
+:::
+
+### An MA plot in base R
+
+Every DE result should be looked at as **log fold change vs mean**: is the change concentrated in low-count genes (suspicious) or spread across expression levels?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+A = logc.mean(axis=1)
+M = logc[trt].mean(axis=1) - logc[ctrl].mean(axis=1)
+fig, ax = plt.subplots(figsize=(3.4, 3.2))
+ax.scatter(A, M, s=2, color="grey")
+ax.scatter(A[q < 0.05], M[q < 0.05], s=6, color="#C00000")
+ax.axhline(0, color="black", lw=0.5)
+ax.set_xlabel("mean log2(count+1)"); ax.set_ylabel("log2 fold change (dex/ctrl)")
+plt.tight_layout(); plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.4
+#| fig-height: 3.2
+A <- rowMeans(logc)
+M <- rowMeans(logc[, trt]) - rowMeans(logc[, ctrl])
+par(mar = c(4, 4, 1, 1))
+plot(A, M, pch = 16, cex = 0.3, col = "grey60", xlab = "", ylab = "", axes = FALSE)
+sig <- !is.na(q) & q < 0.05
+points(A[sig], M[sig], pch = 16, cex = 0.6, col = "#C00000")
+abline(h = 0, lwd = 0.5)
+axis(1); axis(2)
+title(xlab = "mean log2(count+1)", line = 2)
+title(ylab = "log2 fold change (dex/ctrl)", line = 2)
+```
+:::
+:::
+
+## 5 · ChIP-seq: designing the null
+
+A ChIP-seq signal = **specific binding** (antibody × target TF) + **non-specific binding** (antibody × other proteins, open chromatin) + **sonication bias** (open chromatin shears more easily). A peak caller compares IP to a **control** and asks the Poisson question. Which control?
+
+- **DNA input** (sonicated chromatin, no antibody): corrects sonication bias only. Lots of DNA → deep, low-noise library.
+- **Mock IP** (IgG or no-target antibody, full IP protocol): corrects sonication bias *and* non-specific binding. Very little DNA → shallow, noisy library.
+
+### What "To mock or not" found (Xu *et al.*, *NAR* 2021)
+
+Using modERN datasets with **matched IP, input and mock IP** — 113 human (6 cell lines), 317 worm and 182 fly experiments:
+
+- Mock IP removes far more **spurious sites** than input: about 10 % of input-called peaks in human cell lines, but **~60 % in worm and ~88 % in fly** (whole animals, many cell types).
+- Peaks that survive mock IP are more often real: **motif enrichment rises 18–37 %** in the top peaks.
+- But mock IP libraries are shallow and noisy, so used *alone* they lose sensitivity.
+- **Recommendation: use both.** Call peaks against input (sensitivity), then score each peak by how much stronger IP is than mock — a Bayesian posterior that uses all four libraries.
+
+### The posterior probability, in code
+
+For a region with n_i reads in IP and n_d in input, θ₁ = IP fraction ~ Beta(n_i + 1, n_d + 1). For the mock experiment (n_m in mock IP, n_d' in its input), θ₂ ~ Beta(n_m + 1, n_d' + 1). A genuine peak needs **θ₁ > 0.5** (enriched over input) **and θ₁ > θ₂** (more enriched than mock). The paper computes P(θ₁ > 0.5 & θ₁ > θ₂) by integration; here we do it by simulation.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+rng = np.random.default_rng(0)
+def posterior(n_i, n_d, n_m, n_dm, draws=100000):
+    t1 = rng.beta(n_i + 1, n_d + 1, draws)
+    t2 = rng.beta(n_m + 1, n_dm + 1, draws)
+    return ((t1 > 0.5) & (t1 > t2)).mean()
+
+print("IP 40 vs input 10; mock 30 vs its input 10:", round(posterior(40, 10, 30, 10), 3))
+print("IP 40 vs input 10; mock  5 vs its input 10:", round(posterior(40, 10, 5, 10), 3))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+set.seed(0)
+posterior <- function(n_i, n_d, n_m, n_dm, draws = 100000) {
+  t1 <- rbeta(draws, n_i + 1, n_d + 1)
+  t2 <- rbeta(draws, n_m + 1, n_dm + 1)
+  mean(t1 > 0.5 & t1 > t2)
+}
+cat("IP 40 vs input 10; mock 30 vs its input 10:", round(posterior(40, 10, 30, 10), 3), "\n")
+cat("IP 40 vs input 10; mock  5 vs its input 10:", round(posterior(40, 10, 5, 10), 3), "\n")
+```
+:::
+:::
+
+Same IP enrichment (40 vs 10) in both cases. When the **mock IP is also enriched** (30 vs 10), the posterior drops to ~0.7 — a "hyper-ChIPable" region where any antibody pulls down DNA. When the mock is flat (5 vs 10), the posterior is ~1: a real peak.
+
+## 6 · The toolbox, in one table
+
+| You have… | Ask… | Tool |
+|---|---|---|
+| k of n reads carry an allele | is θ = 0.5? what is P(θ > 0.5)? | binomial test; Beta posterior |
+| reads in a window vs background | is this more than chance? | Poisson tail test (MACS) |
+| counts × replicates × conditions | which genes change? | NB GLM + shrinkage + BH (DESeq2/edgeR) |
+| reads compatible with several isoforms | how much of each? | EM (RSEM, kallisto, salmon) |
+| thousands of p-values | how many are false? | Benjamini–Hochberg FDR |
+| a peak in IP | is it in mock too? | joint Beta posterior (Xu *et al.* 2021) |
+
+**References.** Love MI, Huber W, Anders S. *Genome Biol* 2014 (DESeq2) · Li B, Dewey CN. *BMC Bioinformatics* 2011 (RSEM) · Zhang Y *et al.* *Genome Biol* 2008 (MACS) · Xu J *et al.* *Nucleic Acids Res* 2021;49(3):e17 (mock IP vs input) · Himes BE *et al.* *PLoS ONE* 2014 (airway data) · Benjamini Y, Hochberg Y. *JRSS-B* 1995.

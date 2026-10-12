@@ -1,0 +1,87 @@
+---
+title: "Setup"
+subtitle: "Nothing to install for the lab. This page is for running the same code on your own laptop."
+toc: true
+---
+
+## Option A — the browser (default for Lab 1)
+
+Open any page of this site in Chrome, Edge, Firefox or Safari. Python (via **Pyodide**) and R (via **webR**) download once (~30 MB) and then run entirely on your machine; nothing is uploaded. Works the same on Windows, macOS, Linux, Chromebook and iPad.
+
+- First cell on a page: 10–30 s. Later cells: instant.
+- Reloading the page resets all variables; re-run the setup cells.
+- To keep code, copy it into a text file. To keep a figure, right-click → *Save image*.
+- If a cell hangs, reload the page. If the runtime fails to start, try another browser or a network without a strict firewall (webR needs `webr.r-wasm.org`, Pyodide needs `cdn.jsdelivr.net`).
+
+## Option B — Python locally (Miniconda + Jupyter)
+
+Same steps on Windows and macOS; only the terminal differs (*Anaconda Prompt* on Windows, *Terminal* on macOS).
+
+1. Install **Miniconda** from <https://www.anaconda.com/download/success> (choose your OS; on Apple Silicon choose the *arm64* installer).
+2. Open the terminal and create an environment:
+   ```bash
+   conda create -n data405 -c conda-forge python=3.12 pandas numpy scipy matplotlib jupyterlab biopython -y
+   conda activate data405
+   ```
+3. Download the [data folder](downloads/DATA405_Lab1_data.zip), unzip it, and start Jupyter **inside that folder**:
+   ```bash
+   cd path/to/DATA405_Lab1_data
+   jupyter lab
+   ```
+4. Paste any Python cell from this site into a notebook. Paths like `data/COMT_cds.fa` work unchanged.
+
+## Option C — R locally (R + RStudio)
+
+1. Install **R** from <https://cloud.r-project.org/> (Windows: *base* installer; macOS: the `.pkg` for your chip).
+2. Install **RStudio Desktop** from <https://posit.co/download/rstudio-desktop/>.
+3. In RStudio: *File → New Project → Existing Directory* → choose the unzipped data folder. Paths like `data/chr22_genes.tsv` then work unchanged.
+4. Base R is all the lab needs. For Lecture 11's DESeq2 example, run once:
+   ```r
+   install.packages("BiocManager")
+   BiocManager::install("DESeq2")
+   ```
+
+### DESeq2 on the airway data (Lecture 11)
+
+```r
+library(DESeq2)
+cts  <- as.matrix(read.delim("data/airway_counts.tsv", row.names = 1))
+meta <- read.delim("data/airway_metadata.tsv", row.names = 1)
+meta$dex <- relevel(factor(meta$dex), "control")
+meta$celltype <- factor(meta$celltype)
+dds <- DESeqDataSetFromMatrix(cts, meta, design = ~ celltype + dex)
+dds <- DESeq(dds)
+res <- results(dds, alpha = 0.1)
+summary(res)
+plotMA(res, ylim = c(-5, 5))
+head(res[order(res$padj), ])
+```
+
+## Option D — one installer for both (optional)
+
+`conda` can install R as well: `conda install -c conda-forge r-base r-essentials`. Convenient, but RStudio (Option C) is the more common way biologists run R, so we recommend B + C.
+
+## Publication-ready figures in base R (from the CADSA workshop)
+
+The rule: decide the **final size in inches first**, then make everything fit it.
+
+```r
+pdf("figure1.pdf", width = 3.2, height = 3.2)        # single-column width
+par(mar = c(4, 4, 2, 1))                             # bottom, left, top, right
+plot(x, y, xlim = c(1.5, 5.5), ylim = c(10, 35),
+     axes = FALSE, xlab = "", ylab = "", cex = 0.7)  # draw nothing extra
+axis(1, cex.axis = 0.8, line = 0.1)
+axis(2, cex.axis = 0.8, line = 0.1)
+mtext("x label", side = 1, line = 2.2, cex = 0.9)
+mtext("y label", side = 2, line = 2.2, cex = 0.9)
+dev.off()
+```
+
+Multi-panel figures: `layout(matrix(c(1, 2), nrow = 1), widths = c(3, 5))`, then draw each panel with the same recipe.
+
+## Downloads
+
+- [Lab 1 handout (PDF)](downloads/DATA405_Lab1_Handout.pdf) · [Word version](downloads/DATA405_Lab1_Handout.docx)
+- [Lab 1 data folder (zip)](downloads/DATA405_Lab1_data.zip)
+- [Lecture 10 slides (PDF)](downloads/DATA405_Lecture10_Python_and_R.pdf)
+- [Lecture 11 slides (PDF)](downloads/DATA405_Lecture11_Probability_Statistics.pdf)

@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lab 2 · Statistics in personal and population genomics – DATA405 · Python &amp; R for Genomic Data Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c6fe8f099a88ecabc23f33ea3dbd3323.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="site_libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">DATA405 · Python &amp; R for Genomic Data Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./notes.html"> 
+<span class="menu-text">Lecture 10 notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./rosetta.html"> 
+<span class="menu-text">Rosetta stone</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./lab1.html"> 
+<span class="menu-text">Lab 1</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./lab2.html" aria-current="page"> 
+<span class="menu-text">Lab 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./stats.html"> 
+<span class="menu-text">Lecture 11 notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data.html"> 
+<span class="menu-text">Data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./setup.html"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#part-a-one-person-reads-from-two-copies" id="toc-part-a-one-person-reads-from-two-copies" class="nav-link active" data-scroll-target="#part-a-one-person-reads-from-two-copies">Part A · One person: reads from two copies</a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-is-16-of-20-evidence-of-imbalance-10-min" id="toc-exercise-1-is-16-of-20-evidence-of-imbalance-10-min" class="nav-link" data-scroll-target="#exercise-1-is-16-of-20-evidence-of-imbalance-10-min">Exercise 1 · Is 16 of 20 evidence of imbalance? (10 min)</a></li>
+  <li><a href="#exercise-2-one-person-100000-tests-10-min" id="toc-exercise-2-one-person-100000-tests-10-min" class="nav-link" data-scroll-target="#exercise-2-one-person-100000-tests-10-min">Exercise 2 · One person, 100,000 tests (10 min)</a></li>
+  <li><a href="#exercise-3-a-balanced-site-that-looks-imbalanced-25-min" id="toc-exercise-3-a-balanced-site-that-looks-imbalanced-25-min" class="nav-link" data-scroll-target="#exercise-3-a-balanced-site-that-looks-imbalanced-25-min">Exercise 3 · A balanced site that looks imbalanced (25 min)</a>
+  <ul class="collapse">
+  <li><a href="#a-how-ordinary-is-16-of-20-from-a-75-pool" id="toc-a-how-ordinary-is-16-of-20-from-a-75-pool" class="nav-link" data-scroll-target="#a-how-ordinary-is-16-of-20-from-a-75-pool">3a · How ordinary is 16 of 20 from a 75 % pool?</a></li>
+  <li><a href="#b-add-a-layer-let-p-stray-by-an-amount-we-do-not-know" id="toc-b-add-a-layer-let-p-stray-by-an-amount-we-do-not-know" class="nav-link" data-scroll-target="#b-add-a-layer-let-p-stray-by-an-amount-we-do-not-know">3b · Add a layer: let p stray, by an amount we do not know</a></li>
+  <li><a href="#c-test-16-of-20-again-now-allowing-p-to-stray" id="toc-c-test-16-of-20-again-now-allowing-p-to-stray" class="nav-link" data-scroll-target="#c-test-16-of-20-again-now-allowing-p-to-stray">3c · Test 16 of 20 again, now allowing p to stray</a></li>
+  <li><a href="#d-from-one-site-to-many" id="toc-d-from-one-site-to-many" class="nav-link" data-scroll-target="#d-from-one-site-to-many">3d · From one site to many</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#part-b-many-people-the-1000-genomes-project" id="toc-part-b-many-people-the-1000-genomes-project" class="nav-link" data-scroll-target="#part-b-many-people-the-1000-genomes-project">Part B · Many people: the 1000 Genomes Project</a>
+  <ul class="collapse">
+  <li><a href="#exercise-4-hardyweinberg-at-rs2814778-15-min" id="toc-exercise-4-hardyweinberg-at-rs2814778-15-min" class="nav-link" data-scroll-target="#exercise-4-hardyweinberg-at-rs2814778-15-min">Exercise 4 · Hardy–Weinberg at rs2814778 (15 min)</a></li>
+  <li><a href="#exercise-5-a-gwas-of-one-region-15-min" id="toc-exercise-5-a-gwas-of-one-region-15-min" class="nav-link" data-scroll-target="#exercise-5-a-gwas-of-one-region-15-min">Exercise 5 · A GWAS of one region (15 min)</a></li>
+  <li><a href="#exercise-6-group-differences-create-a-false-hit-10-min" id="toc-exercise-6-group-differences-create-a-false-hit-10-min" class="nav-link" data-scroll-target="#exercise-6-group-differences-create-a-false-hit-10-min">Exercise 6 · Group differences create a false hit (10 min)</a></li>
+  <li><a href="#lab-report-submit-by-tuesday-oct-20" id="toc-lab-report-submit-by-tuesday-oct-20" class="nav-link" data-scroll-target="#lab-report-submit-by-tuesday-oct-20">Lab report (submit by Tuesday, Oct 20)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 2 · Statistics in personal and population genomics</h1>
+<p class="subtitle lead">Wednesday Oct 14 · 1.5 hours · six exercises, in Python or R</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-simple callout-important">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Rules of the lab.</strong> <strong>Choose one language</strong>, Python or R, and use it for the whole lab: every exercise has both, side by side, so just follow your column. (Doing the other language too is welcome but not required.) Predict the output before you run. Use the Hint before the Solution. Write your answers to the numbered questions in your lab report — the <a href="downloads/DATA405_Lab2_Handout.pdf">handout</a> has the same exercises with blanks.</p>
+</div>
+</div>
+</div>
+<p><strong>Part A</strong> follows Lecture 12 (one person, two copies, allele-specific reads). <strong>Part B</strong> follows Lecture 13 (many people: Hardy–Weinberg and GWAS).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>What</th>
+<th>Real or simulated</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>—</td>
+<td>read counts at heterozygous sites, generated in the cells</td>
+<td>simulated</td>
+<td>Ex 1–3</td>
+</tr>
+<tr class="even">
+<td><code>lab2/rs2814778_by_population.tsv</code></td>
+<td>genotype counts at rs2814778 (<em>ACKR1</em>, Duffy) in the five 1000 Genomes groups</td>
+<td><strong>real</strong> (1000 Genomes phase 3)</td>
+<td>Ex 4</td>
+</tr>
+<tr class="odd">
+<td><code>lab2/gwas_region.tsv</code>, <code>lab2/gwas_snps.tsv</code></td>
+<td>2,000 people × 15 SNPs in one region, plus a trait</td>
+<td>simulated</td>
+<td>Ex 5</td>
+</tr>
+<tr class="even">
+<td><code>lab2/stratification.tsv</code></td>
+<td>1,000 people from two groups, one SNP, a trait</td>
+<td>simulated</td>
+<td>Ex 6</td>
+</tr>
+</tbody>
+</table>
+<p>Run both setup cells first. They load the libraries and define <code>two_sided()</code>, which turns any count distribution into a two-sided p-value: the probability of a count <strong>at least as far from the middle</strong> as the one observed.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG51bXB5IGFzIG5wXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0XG5mcm9tIHNjaXB5IGltcG9ydCBzdGF0c1xucm5nID0gbnAucmFuZG9tLmRlZmF1bHRfcm5nKDEpXG5cbmRlZiB0d29fc2lkZWQoaywgbiwgcG1mKTpcbiAgICBcIlwiXCJQKGNvdW50IGF0IGxlYXN0IGFzIGZhciBmcm9tIG4vMiBhcyBrKSwgZ2l2ZW4gdGhlIHBtZiBmb3IgMC4ublwiXCJcIlxuICAgIGRpc3QgPSBucC5hYnMobnAuYXJhbmdlKG4gKyAxKSAtIG4gLyAyKVxuICAgIHJldHVybiBwbWZbZGlzdCA+PSBhYnMoayAtIG4gLyAyKSAtIDFlLTldLnN1bSgpXG5cbnByaW50KFwicmVhZHlcIikifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-2" class="exercise-cell">
+
+</div>
+<script type="webr-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2V0LnNlZWQoMSlcblxudHdvX3NpZGVkIDwtIGZ1bmN0aW9uKGssIG4sIHBtZikge1xuICAjIFAoY291bnQgYXQgbGVhc3QgYXMgZmFyIGZyb20gbi8yIGFzIGspLCBnaXZlbiB0aGUgcG1mIGZvciAwLi5uXG4gIGQgPC0gYWJzKDA6biAtIG4gLyAyKVxuICBzdW0ocG1mW2QgPj0gYWJzKGsgLSBuIC8gMikgLSAxZS05XSlcbn1cblxuIyBiYXNlIFIgaGFzIG5vIGJldGEtYmlub21pYWwsIHNvIHdlIHdyaXRlIGl0IGZyb20gaXRzIGZvcm11bGFcbmRiZXRhYmlub20gPC0gZnVuY3Rpb24oaywgbiwgYSwgYikgY2hvb3NlKG4sIGspICogYmV0YShrICsgYSwgbiAtIGsgKyBiKSAvIGJldGEoYSwgYilcblxuY2F0KFwicmVhZHlcXG5cIikifQ==
+</script>
+</div>
+</div>
+</div>
+<hr>
+<section id="part-a-one-person-reads-from-two-copies" class="level1">
+<h1>Part A · One person: reads from two copies</h1>
+<section id="exercise-1-is-16-of-20-evidence-of-imbalance-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1-is-16-of-20-evidence-of-imbalance-10-min">Exercise 1 · Is 16 of 20 evidence of imbalance? (10 min)</h2>
+<p>A transcription factor’s ChIP-seq reads cover a heterozygous site: <strong>16 reads from copy 1, 4 from copy 2</strong>. If the site is balanced, each read comes from copy 1 with probability 0.5. Test it, then compare three sites that all show 80 % copy 1 at different depths.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDFfcHkifSwiY29kZSI6ImZvciBrLCBuIGluIFsoOCwgMTApLCAoMTYsIDIwKSwgKDE2MCwgMjAwKV06XG4gICAgciA9IHN0YXRzLmJpbm9tdGVzdChrLCBuLCBfX19fX18pXG4gICAgY2kgPSByLnByb3BvcnRpb25fY2koKVxuICAgIHByaW50KGZcIntrOj4zfSBvZiB7bjo8M30gIHAgPSB7ci5wdmFsdWU6LjJnfSAgIDk1JSBDSSB7Y2kubG93Oi4yZn0gLSB7Y2kuaGlnaDouMmZ9XCIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex1_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The null hypothesis is a balanced site: <code>0.5</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex1_py">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, n <span class="kw">in</span> [(<span class="dv">8</span>, <span class="dv">10</span>), (<span class="dv">16</span>, <span class="dv">20</span>), (<span class="dv">160</span>, <span class="dv">200</span>)]:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> stats.binomtest(k, n, <span class="fl">0.5</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    ci <span class="op">=</span> r.proportion_ci()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>k<span class="sc">:&gt;3}</span><span class="ss"> of </span><span class="sc">{</span>n<span class="sc">:&lt;3}</span><span class="ss">  p = </span><span class="sc">{</span>r<span class="sc">.</span>pvalue<span class="sc">:.2g}</span><span class="ss">   95% CI </span><span class="sc">{</span>ci<span class="sc">.</span>low<span class="sc">:.2f}</span><span class="ss"> - </span><span class="sc">{</span>ci<span class="sc">.</span>high<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   8 of 10   p = 0.11      95% CI 0.44 - 0.97</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  16 of 20   p = 0.012     95% CI 0.56 - 0.94</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 160 of 200  p = 3.4e-18   95% CI 0.74 - 0.85</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-4" class="exercise-cell">
+
+</div>
+<script type="webr-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDFfciJ9LCJjb2RlIjoiZm9yICh4IGluIGxpc3QoYyg4LCAxMCksIGMoMTYsIDIwKSwgYygxNjAsIDIwMCkpKSB7XG4gIHIgPC0gYmlub20udGVzdCh4WzFdLCB4WzJdLCBwID0gX19fX19fKVxuICBjYXQoeFsxXSwgXCJvZlwiLCB4WzJdLCBcIiBwID1cIiwgc2lnbmlmKHIkcC52YWx1ZSwgMiksXG4gICAgICBcIiAgOTUlIENJXCIsIHJvdW5kKHIkY29uZi5pbnQsIDIpLCBcIlxcblwiKVxufSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex1_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The null hypothesis is a balanced site: <code>p = 0.5</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex1_r">
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (x <span class="cf">in</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">10</span>), <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">20</span>), <span class="fu">c</span>(<span class="dv">160</span>, <span class="dv">200</span>))) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(x[<span class="dv">1</span>], x[<span class="dv">2</span>], <span class="at">p =</span> <span class="fl">0.5</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(x[<span class="dv">1</span>], <span class="st">"of"</span>, x[<span class="dv">2</span>], <span class="st">" p ="</span>, <span class="fu">signif</span>(r<span class="sc">$</span>p.value, <span class="dv">2</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"  95% CI"</span>, <span class="fu">round</span>(r<span class="sc">$</span>conf.int, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 8 of 10    p = 0.11     95% CI 0.44 0.97</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 16 of 20   p = 0.012    95% CI 0.56 0.94</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 160 of 200 p = 3.4e-18  95% CI 0.74 0.85</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>Same ratio, different evidence. Only 8 of 10 has an interval that still contains 0.5.</p>
+</div>
+<p><strong>Q1.</strong> Why does 8 of 10 fail the test while 160 of 200, with the same 80 %, gives p = 3.4 × 10⁻¹⁸? Answer with the width of the 95 % interval.</p>
+</section>
+<section id="exercise-2-one-person-100000-tests-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2-one-person-100000-tests-10-min">Exercise 2 · One person, 100,000 tests (10 min)</h2>
+<p>A person has about 100,000 well-covered heterozygous sites. Suppose <strong>every one is balanced</strong> and each has 30 reads. How many still pass p &lt; 0.05?</p>
+<p>All sites have the same depth, so there are only 31 possible counts (0 to 30) and 31 possible p-values. We compute them once in a table and look each site up.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDJfcHkifSwiY29kZSI6Im4sIG0gPSAzMCwgMTAwXzAwMFxuayA9IHJuZy5iaW5vbWlhbChuLCAwLjUsIHNpemU9bSkgICAgICAgICAgICAjIGNvcHktMSByZWFkcyBhdCBldmVyeSBzaXRlXG5wbWYgPSBzdGF0cy5iaW5vbS5wbWYobnAuYXJhbmdlKG4gKyAxKSwgbiwgMC41KVxucF90YWJsZSA9IG5wLmFycmF5KFt0d29fc2lkZWQoeCwgbiwgcG1mKSBmb3IgeCBpbiByYW5nZShuICsgMSldKVxucCA9IHBfdGFibGVba10gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIGxvb2sgdXAgZWFjaCBzaXRlJ3MgcC12YWx1ZVxucHJpbnQoXCJwIDwgMC4wNTogICAgICAgIFwiLCAocCA8IF9fX19fXykuc3VtKCkpXG5wcmludChcIkJvbmZlcnJvbmkgbGluZTogXCIsIDAuMDUgLyBtLCBcIi0+XCIsIChwIDwgMC4wNSAvIG0pLnN1bSgpLCBcInNpdGVzXCIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex2_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>0.05</code>. Bonferroni divides 0.05 by the number of tests.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex2_py">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n, m <span class="op">=</span> <span class="dv">30</span>, <span class="dv">100_000</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> rng.binomial(n, <span class="fl">0.5</span>, size<span class="op">=</span>m)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pmf <span class="op">=</span> stats.binom.pmf(np.arange(n <span class="op">+</span> <span class="dv">1</span>), n, <span class="fl">0.5</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>p_table <span class="op">=</span> np.array([two_sided(x, n, pmf) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(n <span class="op">+</span> <span class="dv">1</span>)])</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p_table[k]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"p &lt; 0.05:        "</span>, (p <span class="op">&lt;</span> <span class="fl">0.05</span>).<span class="bu">sum</span>())          <span class="co"># about 4,300-4,400</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bonferroni line: "</span>, <span class="fl">0.05</span> <span class="op">/</span> m, <span class="st">"-&gt;"</span>, (p <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">/</span> m).<span class="bu">sum</span>(), <span class="st">"sites"</span>)   <span class="co"># 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-6" class="exercise-cell">
+
+</div>
+<script type="webr-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDJfciJ9LCJjb2RlIjoibiA8LSAzMDsgbSA8LSAxMDAwMDBcbmsgPC0gcmJpbm9tKG0sIG4sIDAuNSkgICAgICAgICAgICAgICAgICAgICAgIyBjb3B5LTEgcmVhZHMgYXQgZXZlcnkgc2l0ZVxucG1mIDwtIGRiaW5vbSgwOm4sIG4sIDAuNSlcbnBfdGFibGUgPC0gc2FwcGx5KDA6biwgZnVuY3Rpb24oeCkgdHdvX3NpZGVkKHgsIG4sIHBtZikpXG5wIDwtIHBfdGFibGVbayArIDFdICAgICAgICAgICAgICAgICAgICAgICAgICMgUiBjb3VudHMgZnJvbSAxLCBzbyBjb3VudCAwIGlzIGVudHJ5IDFcbmNhdChcInAgPCAwLjA1OiAgICAgICAgXCIsIHN1bShwIDwgX19fX19fKSwgXCJcXG5cIilcbmNhdChcIkJvbmZlcnJvbmkgbGluZTogXCIsIDAuMDUgLyBtLCBcIi0+XCIsIHN1bShwIDwgMC4wNSAvIG0pLCBcInNpdGVzXFxuXCIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex2_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>0.05</code>. Note <code>p_table[k + 1]</code>: R vectors start at position 1.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex2_r">
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">30</span>; m <span class="ot">&lt;-</span> <span class="dv">100000</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(m, n, <span class="fl">0.5</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>pmf <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span>n, n, <span class="fl">0.5</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>p_table <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">0</span><span class="sc">:</span>n, <span class="cf">function</span>(x) <span class="fu">two_sided</span>(x, n, pmf))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p_table[k <span class="sc">+</span> <span class="dv">1</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"p &lt; 0.05:        "</span>, <span class="fu">sum</span>(p <span class="sc">&lt;</span> <span class="fl">0.05</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)             <span class="co"># about 4,300-4,400</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Bonferroni line: "</span>, <span class="fl">0.05</span> <span class="sc">/</span> m, <span class="st">"-&gt;"</span>, <span class="fu">sum</span>(p <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">/</span> m), <span class="st">"sites</span><span class="sc">\n</span><span class="st">"</span>)   <span class="co"># 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>About <strong>4,300–4,400</strong> balanced sites pass p &lt; 0.05, all false. None passes the Bonferroni line of 5 × 10⁻⁷. (The exact count changes from run to run, and Python and R draw different random numbers.)</p>
+</div>
+<p><strong>Q2.</strong> Why is the count a little <em>below</em> 5 % of 100,000? (Look at <code>p_table</code>: can a count of 30 reads give a p-value of exactly 0.05?)</p>
+</section>
+<section id="exercise-3-a-balanced-site-that-looks-imbalanced-25-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3-a-balanced-site-that-looks-imbalanced-25-min">Exercise 3 · A balanced site that looks imbalanced (25 min)</h2>
+<p>The story, one site at a time:</p>
+<ol type="1">
+<li><strong>The truth.</strong> The factor binds both copies equally: 50 / 50.</li>
+<li><strong>A technical factor tips the balance.</strong> During library preparation, PCR happens to copy fragments from copy 1 more often. The 20 reads now come from a pool that is <strong>75 %</strong> copy 1.</li>
+<li><strong>The data.</strong> We see 16 reads from copy 1 and 4 from copy 2.</li>
+<li><strong>The binomial test</strong> (Exercise 1) says p = 0.012: “significant”. The conclusion is wrong: the imbalance came from the experiment, not the biology.</li>
+</ol>
+<section id="a-how-ordinary-is-16-of-20-from-a-75-pool" class="level3">
+<h3 class="anchored" data-anchor-id="a-how-ordinary-is-16-of-20-from-a-75-pool">3a · How ordinary is 16 of 20 from a 75 % pool?</h3>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicHJpbnQoXCJQKDE2IG9yIG1vcmUgfCBwb29sIDc1JSkgPVwiLCByb3VuZChzdGF0cy5iaW5vbS5zZigxNSwgMjAsIDAuNzUpLCAzKSlcbnByaW50KFwiYmlub21pYWwgdGVzdCwgcCA9IDAuNTogIFwiLCByb3VuZChzdGF0cy5iaW5vbXRlc3QoMTYsIDIwLCAwLjUpLnB2YWx1ZSwgNCkpIn0=
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-8" class="exercise-cell">
+
+</div>
+<script type="webr-8-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiY2F0KFwiUCgxNiBvciBtb3JlIHwgcG9vbCA3NSUpID1cIiwgcm91bmQoMSAtIHBiaW5vbSgxNSwgMjAsIDAuNzUpLCAzKSwgXCJcXG5cIilcbmNhdChcImJpbm9taWFsIHRlc3QsIHAgPSAwLjU6ICBcIiwgcm91bmQoYmlub20udGVzdCgxNiwgMjAsIDAuNSkkcC52YWx1ZSwgNCksIFwiXFxuXCIpIn0=
+</script>
+</div>
+</div>
+</div>
+<p>Under the pool the experiment actually made, 16 or more happens <strong>41 %</strong> of the time. The binomial test is fooled because it assumes p is <em>exactly</em> 0.5 in every experiment.</p>
+</section>
+<section id="b-add-a-layer-let-p-stray-by-an-amount-we-do-not-know" class="level3">
+<h3 class="anchored" data-anchor-id="b-add-a-layer-let-p-stray-by-an-amount-we-do-not-know">3b · Add a layer: let p stray, by an amount we do not know</h3>
+<p>We keep the coin flips, but we stop fixing p.&nbsp;Each experiment draws its own p from a <strong>Beta(α, β)</strong> distribution, and then the reads are drawn as before. This two-layer model is the <strong>beta-binomial</strong>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/lab2_beta_binomial_model.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The binomial (top) and the beta-binomial (second row) differ only in the first box. Bottom left: three beliefs about how far p may stray. Bottom right: the read counts each belief expects at a balanced site.</figcaption>
+</figure>
+</div>
+<p><strong>What α and β mean.</strong> Think of them as <em>imaginary reads</em> we hold in mind before seeing any data: α from copy 1 and β from copy 2.</p>
+<ul>
+<li><strong>Their ratio sets the centre.</strong> The average p is α / (α + β). Setting α = β keeps the centre at 0.5: the biology is balanced.</li>
+<li><strong>Their sum sets how sure we are.</strong> A large α + β gives a narrow Beta, so p stays near 0.5. A small sum gives a wide Beta, so p can stray far.</li>
+</ul>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Choice</th>
+<th>What it says</th>
+<th>Typical spread of p (SD)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>p exactly 0.5 (binomial)</td>
+<td>no technical noise</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Beta(50, 50)</td>
+<td>very little noise</td>
+<td>0.05</td>
+</tr>
+<tr class="odd">
+<td>Beta(9.5, 9.5)</td>
+<td>some technical noise</td>
+<td>0.11</td>
+</tr>
+<tr class="even">
+<td>Beta(1, 1)</td>
+<td>no idea: any p equally likely</td>
+<td>0.29</td>
+</tr>
+</tbody>
+</table>
+<p>Draw the Beta curves yourself. Change α and β, then run again.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNiX3B5In0sImNvZGUiOiJ4ID0gbnAubGluc3BhY2UoMC4wMDEsIDAuOTk5LCA0MDApXG5maWcsIGF4ID0gcGx0LnN1YnBsb3RzKGZpZ3NpemU9KDQsIDIuOCkpXG5mb3IgYSBpbiBbNTAsIDkuNSwgX19fX19fXTpcbiAgICBheC5wbG90KHgsIHN0YXRzLmJldGEucGRmKHgsIGEsIGEpLCBsYWJlbD1mXCJCZXRhKHthfSwge2F9KVwiKVxuYXguc2V0X3hsYWJlbChcInAsIHRoaXMgZXhwZXJpbWVudCdzIGZyYWN0aW9uIGZyb20gY29weSAxXCIpOyBheC5zZXRfeWxhYmVsKFwiZGVuc2l0eVwiKVxuYXgubGVnZW5kKGZyYW1lb249RmFsc2UsIGZvbnRzaXplPTgpOyBwbHQudGlnaHRfbGF5b3V0KCk7IHBsdC5zaG93KClcbmZvciBhIGluIFs1MCwgOS41LCAxXTpcbiAgICBwcmludChmXCJCZXRhKHthfSwge2F9KTogU0Qgb2YgcCA9IHtzdGF0cy5iZXRhLnN0ZChhLCBhKTouM2Z9XCIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3b_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The flat Beta is <code>1</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3b_py">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="fl">0.001</span>, <span class="fl">0.999</span>, <span class="dv">400</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="fl">2.8</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a <span class="kw">in</span> [<span class="dv">50</span>, <span class="fl">9.5</span>, <span class="dv">1</span>]:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, stats.beta.pdf(x, a, a), label<span class="op">=</span><span class="ss">f"Beta(</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"p, this experiment's fraction from copy 1"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"density"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>, fontsize<span class="op">=</span><span class="dv">8</span>)<span class="op">;</span> plt.tight_layout()<span class="op">;</span> plt.show()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a <span class="kw">in</span> [<span class="dv">50</span>, <span class="fl">9.5</span>, <span class="dv">1</span>]:</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Beta(</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">): SD of p = </span><span class="sc">{</span>stats<span class="sc">.</span>beta<span class="sc">.</span>std(a, a)<span class="sc">:.3f}</span><span class="ss">"</span>)   <span class="co"># 0.050, 0.112, 0.289</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-10" class="exercise-cell">
+
+</div>
+<script type="webr-10-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNiX3IiLCJmaWctaGVpZ2h0IjoyLjgsImZpZy13aWR0aCI6NH0sImNvZGUiOiJ4IDwtIHNlcSgwLjAwMSwgMC45OTksIGxlbmd0aC5vdXQgPSA0MDApXG5wYXIobWFyID0gYyg0LCA0LCAxLCAxKSlcbnBsb3QoeCwgZGJldGEoeCwgNTAsIDUwKSwgdHlwZSA9IFwibFwiLCB5bGltID0gYygwLCA4KSxcbiAgICAgeGxhYiA9IFwicCwgdGhpcyBleHBlcmltZW50J3MgZnJhY3Rpb24gZnJvbSBjb3B5IDFcIiwgeWxhYiA9IFwiZGVuc2l0eVwiKVxubGluZXMoeCwgZGJldGEoeCwgOS41LCA5LjUpLCBjb2wgPSBcImJsdWVcIilcbmxpbmVzKHgsIGRiZXRhKHgsIF9fX19fXywgX19fX19fKSwgY29sID0gXCJvcmFuZ2VcIilcbnNkX2JldGEgPC0gZnVuY3Rpb24oYSkgc3FydChhICogYSAvICgoMiAqIGEpXjIgKiAoMiAqIGEgKyAxKSkpXG5jYXQoXCJTRCBvZiBwOlwiLCByb3VuZChzYXBwbHkoYyg1MCwgOS41LCAxKSwgc2RfYmV0YSksIDMpLCBcIlxcblwiKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3b_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The flat Beta is <code>dbeta(x, 1, 1)</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3b_r">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.001</span>, <span class="fl">0.999</span>, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="fu">dbeta</span>(x, <span class="dv">50</span>, <span class="dv">50</span>), <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">8</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"p, this experiment's fraction from copy 1"</span>, <span class="at">ylab =</span> <span class="st">"density"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dbeta</span>(x, <span class="fl">9.5</span>, <span class="fl">9.5</span>), <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dbeta</span>(x, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">col =</span> <span class="st">"orange"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>sd_beta <span class="ot">&lt;-</span> <span class="cf">function</span>(a) <span class="fu">sqrt</span>(a <span class="sc">*</span> a <span class="sc">/</span> ((<span class="dv">2</span> <span class="sc">*</span> a)<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> (<span class="dv">2</span> <span class="sc">*</span> a <span class="sc">+</span> <span class="dv">1</span>)))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"SD of p:"</span>, <span class="fu">round</span>(<span class="fu">sapply</span>(<span class="fu">c</span>(<span class="dv">50</span>, <span class="fl">9.5</span>, <span class="dv">1</span>), sd_beta), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)   <span class="co"># 0.050 0.112 0.289</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="c-test-16-of-20-again-now-allowing-p-to-stray" class="level3">
+<h3 class="anchored" data-anchor-id="c-test-16-of-20-again-now-allowing-p-to-stray">3c · Test 16 of 20 again, now allowing p to stray</h3>
+<p>Use the beta-binomial distribution of counts in place of the binomial, and compute the same two-sided p-value.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNjX3B5In0sImNvZGUiOiJuLCBrID0gMjAsIDE2XG5jb3VudHMgPSBucC5hcmFuZ2UobiArIDEpXG5wcmludChcImJpbm9taWFsICAgICAgICBwID1cIiwgcm91bmQodHdvX3NpZGVkKGssIG4sIHN0YXRzLmJpbm9tLnBtZihjb3VudHMsIG4sIDAuNSkpLCAzKSlcbmZvciBhIGluIFs1MCwgOS41LCAxXTpcbiAgICBwbWYgPSBzdGF0cy5iZXRhYmlub20ucG1mKGNvdW50cywgbiwgYSwgX19fX19fKVxuICAgIHByaW50KGZcIkJldGEoe2F9LCB7YX0pXCIubGp1c3QoMTUpLCBcInAgPVwiLCByb3VuZCh0d29fc2lkZWQoaywgbiwgcG1mKSwgMykpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3c_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>α = β, so the fourth argument is <code>a</code> again.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3c_py">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n, k <span class="op">=</span> <span class="dv">20</span>, <span class="dv">16</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"binomial        p ="</span>, <span class="bu">round</span>(two_sided(k, n, stats.binom.pmf(counts, n, <span class="fl">0.5</span>)), <span class="dv">3</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a <span class="kw">in</span> [<span class="dv">50</span>, <span class="fl">9.5</span>, <span class="dv">1</span>]:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    pmf <span class="op">=</span> stats.betabinom.pmf(counts, n, a, a)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Beta(</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">)"</span>.ljust(<span class="dv">15</span>), <span class="st">"p ="</span>, <span class="bu">round</span>(two_sided(k, n, pmf), <span class="dv">3</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># binomial 0.012 · Beta(50, 50) 0.021 · Beta(9.5, 9.5) 0.076 · Beta(1, 1) 0.476</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-12" class="exercise-cell">
+
+</div>
+<script type="webr-12-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNjX3IifSwiY29kZSI6Im4gPC0gMjA7IGsgPC0gMTZcbmNhdChcImJpbm9taWFsICAgICAgICBwID1cIiwgcm91bmQodHdvX3NpZGVkKGssIG4sIGRiaW5vbSgwOm4sIG4sIDAuNSkpLCAzKSwgXCJcXG5cIilcbmZvciAoYSBpbiBjKDUwLCA5LjUsIDEpKSB7XG4gIHBtZiA8LSBkYmV0YWJpbm9tKDA6biwgbiwgYSwgX19fX19fKVxuICBjYXQoXCJCZXRhKFwiLCBhLCBcIixcIiwgYSwgXCIpICBwID1cIiwgcm91bmQodHdvX3NpZGVkKGssIG4sIHBtZiksIDMpLCBcIlxcblwiKVxufSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3c_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>α = β, so the last argument is <code>a</code> again.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3c_r">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span>; k <span class="ot">&lt;-</span> <span class="dv">16</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"binomial        p ="</span>, <span class="fu">round</span>(<span class="fu">two_sided</span>(k, n, <span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span>n, n, <span class="fl">0.5</span>)), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (a <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="fl">9.5</span>, <span class="dv">1</span>)) {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  pmf <span class="ot">&lt;-</span> <span class="fu">dbetabinom</span>(<span class="dv">0</span><span class="sc">:</span>n, n, a, a)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Beta("</span>, a, <span class="st">","</span>, a, <span class="st">")  p ="</span>, <span class="fu">round</span>(<span class="fu">two_sided</span>(k, n, pmf), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># binomial 0.012 · Beta(50, 50) 0.021 · Beta(9.5, 9.5) 0.076 · Beta(1, 1) 0.476</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>With some technical noise allowed for (Beta(9.5, 9.5)), 16 of 20 is <strong>not</strong> significant (p = 0.076). Allow too much (Beta(1, 1)) and nothing can ever be called (p = 0.48).</p>
+</div>
+</section>
+<section id="d-from-one-site-to-many" class="level3">
+<h3 class="anchored" data-anchor-id="d-from-one-site-to-many">3d · From one site to many</h3>
+<p>Every heterozygous site in a dataset goes through the same library preparation, so each one gets its own random push. Simulate 10,000 balanced sites this way: draw each site’s p from Beta(9.5, 9.5), then draw 20 reads. Test every site with both models.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-13" class="exercise-cell">
+
+</div>
+<script type="pyodide-13-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNkX3B5In0sImNvZGUiOiJuLCBtLCBhID0gMjAsIDEwXzAwMCwgOS41XG5wX3NpdGUgPSBybmcuYmV0YShhLCBhLCBzaXplPW0pICAgICAgICAgICAgICAjIGxheWVyIDE6IHRoZSBleHBlcmltZW50IHNldHMgZWFjaCBzaXRlJ3MgcFxuayA9IHJuZy5iaW5vbWlhbChuLCBfX19fX18pICAgICAgICAgICAgICAgICAgIyBsYXllciAyOiB0aGUgcmVhZHNcbmNvdW50cyA9IG5wLmFyYW5nZShuICsgMSlcbnBfYmlub20gPSBucC5hcnJheShbdHdvX3NpZGVkKHgsIG4sIHN0YXRzLmJpbm9tLnBtZihjb3VudHMsIG4sIDAuNSkpIGZvciB4IGluIGNvdW50c10pW2tdXG5wX2JiICAgID0gbnAuYXJyYXkoW3R3b19zaWRlZCh4LCBuLCBzdGF0cy5iZXRhYmlub20ucG1mKGNvdW50cywgbiwgYSwgYSkpIGZvciB4IGluIGNvdW50c10pW2tdXG5wcmludChcImJhbGFuY2VkIHNpdGVzIGNhbGxlZCBzaWduaWZpY2FudCAocCA8IDAuMDUpXCIpXG5wcmludChcIiAgYmlub21pYWw6ICAgICBcIiwgcm91bmQoKHBfYmlub20gPCAwLjA1KS5tZWFuKCkgKiAxMDAsIDEpLCBcIiVcIilcbnByaW50KFwiICBiZXRhLWJpbm9taWFsOlwiLCByb3VuZCgocF9iYiA8IDAuMDUpLm1lYW4oKSAqIDEwMCwgMSksIFwiJVwiKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3d_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Each site uses its own p: <code>p_site</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3d_py">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>n, m, a <span class="op">=</span> <span class="dv">20</span>, <span class="dv">10_000</span>, <span class="fl">9.5</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>p_site <span class="op">=</span> rng.beta(a, a, size<span class="op">=</span>m)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> rng.binomial(n, p_site)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> np.arange(n <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>p_binom <span class="op">=</span> np.array([two_sided(x, n, stats.binom.pmf(counts, n, <span class="fl">0.5</span>)) <span class="cf">for</span> x <span class="kw">in</span> counts])[k]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>p_bb    <span class="op">=</span> np.array([two_sided(x, n, stats.betabinom.pmf(counts, n, a, a)) <span class="cf">for</span> x <span class="kw">in</span> counts])[k]</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"balanced sites called significant (p &lt; 0.05)"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  binomial:     "</span>, <span class="bu">round</span>((p_binom <span class="op">&lt;</span> <span class="fl">0.05</span>).mean() <span class="op">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>)   <span class="co"># about 15 %</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  beta-binomial:"</span>, <span class="bu">round</span>((p_bb <span class="op">&lt;</span> <span class="fl">0.05</span>).mean() <span class="op">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>)      <span class="co"># about 3 %</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-14" class="exercise-cell">
+
+</div>
+<script type="webr-14-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNkX3IifSwiY29kZSI6Im4gPC0gMjA7IG0gPC0gMTAwMDA7IGEgPC0gOS41XG5wX3NpdGUgPC0gcmJldGEobSwgYSwgYSkgICAgICAgICAgICAgICAgICAgICAjIGxheWVyIDE6IHRoZSBleHBlcmltZW50IHNldHMgZWFjaCBzaXRlJ3MgcFxuayA8LSByYmlub20obSwgbiwgX19fX19fKSAgICAgICAgICAgICAgICAgICAgIyBsYXllciAyOiB0aGUgcmVhZHNcbnRhYl9iaW5vbSA8LSBzYXBwbHkoMDpuLCBmdW5jdGlvbih4KSB0d29fc2lkZWQoeCwgbiwgZGJpbm9tKDA6biwgbiwgMC41KSkpXG50YWJfYmIgICAgPC0gc2FwcGx5KDA6biwgZnVuY3Rpb24oeCkgdHdvX3NpZGVkKHgsIG4sIGRiZXRhYmlub20oMDpuLCBuLCBhLCBhKSkpXG5jYXQoXCJiYWxhbmNlZCBzaXRlcyBjYWxsZWQgc2lnbmlmaWNhbnQgKHAgPCAwLjA1KVxcblwiKVxuY2F0KFwiICBiaW5vbWlhbDogICAgIFwiLCByb3VuZChtZWFuKHRhYl9iaW5vbVtrICsgMV0gPCAwLjA1KSAqIDEwMCwgMSksIFwiJVxcblwiKVxuY2F0KFwiICBiZXRhLWJpbm9taWFsOlwiLCByb3VuZChtZWFuKHRhYl9iYltrICsgMV0gPCAwLjA1KSAqIDEwMCwgMSksIFwiJVxcblwiKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3d_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Each site uses its own p: <code>p_site</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3d_r">
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span>; m <span class="ot">&lt;-</span> <span class="dv">10000</span>; a <span class="ot">&lt;-</span> <span class="fl">9.5</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>p_site <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(m, a, a)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(m, n, p_site)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>tab_binom <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">0</span><span class="sc">:</span>n, <span class="cf">function</span>(x) <span class="fu">two_sided</span>(x, n, <span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span>n, n, <span class="fl">0.5</span>)))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>tab_bb    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">0</span><span class="sc">:</span>n, <span class="cf">function</span>(x) <span class="fu">two_sided</span>(x, n, <span class="fu">dbetabinom</span>(<span class="dv">0</span><span class="sc">:</span>n, n, a, a)))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"balanced sites called significant (p &lt; 0.05)</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"  binomial:     "</span>, <span class="fu">round</span>(<span class="fu">mean</span>(tab_binom[k <span class="sc">+</span> <span class="dv">1</span>] <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>)   <span class="co"># about 15 %</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"  beta-binomial:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(tab_bb[k <span class="sc">+</span> <span class="dv">1</span>] <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>)      <span class="co"># about 3 %</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>All 10,000 sites are balanced. The binomial calls about <strong>15 %</strong> of them significant; the beta-binomial about <strong>3 %</strong>, below the 5 % a correct test promises.</p>
+</div>
+<p><strong>Q3.</strong> In 3c you had to <em>choose</em> α and β. In real data we cannot repeat one site’s experiment many times, so one site gives a single count. Explain in two sentences why α and β are estimated from <strong>all</strong> heterozygous sites of a dataset together, and why that works (think of 3d).</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="part-b-many-people-the-1000-genomes-project" class="level1">
+<h1>Part B · Many people: the 1000 Genomes Project</h1>
+<section id="exercise-4-hardyweinberg-at-rs2814778-15-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4-hardyweinberg-at-rs2814778-15-min">Exercise 4 · Hardy–Weinberg at rs2814778 (15 min)</h2>
+<p>rs2814778 (<em>ACKR1</em>, the Duffy blood group) has alleles T (frequency p) and C (frequency q = 1 − p). These are the <strong>real</strong> genotype counts in the 2,504 people of 1000 Genomes, by continental group. Lecture 13 showed that the whole cohort fails Hardy–Weinberg badly. Test each group on its own.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-15" class="exercise-cell">
+
+</div>
+<script type="pyodide-15-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDRfcHkifSwiY29kZSI6InBvcHMgPSBwZC5yZWFkX2NzdihcImRhdGEvbGFiMi9yczI4MTQ3NzhfYnlfcG9wdWxhdGlvbi50c3ZcIiwgc2VwPVwiXFx0XCIpXG5cbmRlZiBod2UoVFQsIENULCBDQyk6XG4gICAgbiA9IFRUICsgQ1QgKyBDQ1xuICAgIHAgPSAoMiAqIFRUICsgQ1QpIC8gKDIgKiBuKSAgICAgICAgICAgICAgIyBmcmVxdWVuY3kgb2YgVFxuICAgIHEgPSAxIC0gcFxuICAgIGV4cGVjdGVkID0gbiAqIG5wLmFycmF5KFtwKioyLCBfX19fX18sIHEqKjJdKVxuICAgIG9ic2VydmVkID0gbnAuYXJyYXkoW1RULCBDVCwgQ0NdKVxuICAgIGtlZXAgPSBleHBlY3RlZCA+IDAgICAgICAgICAgICAgICAgICAgICAgIyBhIG1pc3NpbmcgYWxsZWxlIGdpdmVzIG5vdGhpbmcgdG8gdGVzdFxuICAgIGNoaTIgPSAoKChvYnNlcnZlZCAtIGV4cGVjdGVkKSAqKiAyIC8gbnAud2hlcmUoa2VlcCwgZXhwZWN0ZWQsIDEpKVtrZWVwXSkuc3VtKClcbiAgICByZXR1cm4gcm91bmQocCwgMyksIG5wLnJvdW5kKGV4cGVjdGVkLCAxKSwgcm91bmQoY2hpMiwgMSksIHN0YXRzLmNoaTIuc2YoY2hpMiwgZGY9MSlcblxucHJpbnQoXCJBTExcIiwgaHdlKCpwb3BzW1tcIlRUXCIsIFwiQ1RcIiwgXCJDQ1wiXV0uc3VtKCkpKVxuZm9yIF8sIHIgaW4gcG9wcy5pdGVycm93cygpOlxuICAgIHByaW50KHJbXCJwb3B1bGF0aW9uXCJdLCBod2UocltcIlRUXCJdLCByW1wiQ1RcIl0sIHJbXCJDQ1wiXSkpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex4_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Heterozygotes are expected at frequency <code>2 * p * q</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex4_py">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pops <span class="op">=</span> pd.read_csv(<span class="st">"data/lab2/rs2814778_by_population.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hwe(TT, CT, CC):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> TT <span class="op">+</span> CT <span class="op">+</span> CC</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> (<span class="dv">2</span> <span class="op">*</span> TT <span class="op">+</span> CT) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> n)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> p</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> n <span class="op">*</span> np.array([p<span class="op">**</span><span class="dv">2</span>, <span class="dv">2</span> <span class="op">*</span> p <span class="op">*</span> q, q<span class="op">**</span><span class="dv">2</span>])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    observed <span class="op">=</span> np.array([TT, CT, CC])</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> expected <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    chi2 <span class="op">=</span> (((observed <span class="op">-</span> expected) <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> np.where(keep, expected, <span class="dv">1</span>))[keep]).<span class="bu">sum</span>()</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">round</span>(p, <span class="dv">3</span>), np.<span class="bu">round</span>(expected, <span class="dv">1</span>), <span class="bu">round</span>(chi2, <span class="dv">1</span>), stats.chi2.sf(chi2, df<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ALL"</span>, hwe(<span class="op">*</span>pops[[<span class="st">"TT"</span>, <span class="st">"CT"</span>, <span class="st">"CC"</span>]].<span class="bu">sum</span>()))</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, r <span class="kw">in</span> pops.iterrows():</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(r[<span class="st">"population"</span>], hwe(r[<span class="st">"TT"</span>], r[<span class="st">"CT"</span>], r[<span class="st">"CC"</span>]))</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ALL chi2 2073.9 · AFR 12.1 (p = 5e-4) · AMR 8.5 · EAS 0 · EUR 0.0 · SAS 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-16" class="exercise-cell">
+
+</div>
+<script type="webr-16-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDRfciJ9LCJjb2RlIjoicG9wcyA8LSByZWFkLmRlbGltKFwiZGF0YS9sYWIyL3JzMjgxNDc3OF9ieV9wb3B1bGF0aW9uLnRzdlwiKVxuXG5od2UgPC0gZnVuY3Rpb24oVFQsIENULCBDQykge1xuICBuIDwtIFRUICsgQ1QgKyBDQ1xuICBwIDwtICgyICogVFQgKyBDVCkgLyAoMiAqIG4pICAgICAgICAgICAgICAgIyBmcmVxdWVuY3kgb2YgVFxuICBxIDwtIDEgLSBwXG4gIGV4cGVjdGVkIDwtIG4gKiBjKHBeMiwgX19fX19fLCBxXjIpXG4gIG9ic2VydmVkIDwtIGMoVFQsIENULCBDQylcbiAga2VlcCA8LSBleHBlY3RlZCA+IDAgICAgICAgICAgICAgICAgICAgICAgICMgYSBtaXNzaW5nIGFsbGVsZSBnaXZlcyBub3RoaW5nIHRvIHRlc3RcbiAgY2hpMiA8LSBzdW0oKChvYnNlcnZlZCAtIGV4cGVjdGVkKV4yIC8gZXhwZWN0ZWQpW2tlZXBdKVxuICBjKHAgPSByb3VuZChwLCAzKSwgcm91bmQoZXhwZWN0ZWQsIDEpLCBjaGkyID0gcm91bmQoY2hpMiwgMSksXG4gICAgcHZhbHVlID0gc2lnbmlmKHBjaGlzcShjaGkyLCBkZiA9IDEsIGxvd2VyLnRhaWwgPSBGQUxTRSksIDIpKVxufVxuXG5od2Uoc3VtKHBvcHMkVFQpLCBzdW0ocG9wcyRDVCksIHN1bShwb3BzJENDKSlcbmJ5X2dyb3VwIDwtIHQoc2FwcGx5KDE6bnJvdyhwb3BzKSwgZnVuY3Rpb24oaSkgaHdlKHBvcHMkVFRbaV0sIHBvcHMkQ1RbaV0sIHBvcHMkQ0NbaV0pKSlcbnJvd25hbWVzKGJ5X2dyb3VwKSA8LSBwb3BzJHBvcHVsYXRpb25cbmJ5X2dyb3VwIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex4_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Heterozygotes are expected at frequency <code>2 * p * q</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex4_r">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pops <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">"data/lab2/rs2814778_by_population.tsv"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>hwe <span class="ot">&lt;-</span> <span class="cf">function</span>(TT, CT, CC) {</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> TT <span class="sc">+</span> CT <span class="sc">+</span> CC</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> (<span class="dv">2</span> <span class="sc">*</span> TT <span class="sc">+</span> CT) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> n)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  q <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> p</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  expected <span class="ot">&lt;-</span> n <span class="sc">*</span> <span class="fu">c</span>(p<span class="sc">^</span><span class="dv">2</span>, <span class="dv">2</span> <span class="sc">*</span> p <span class="sc">*</span> q, q<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  observed <span class="ot">&lt;-</span> <span class="fu">c</span>(TT, CT, CC)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  keep <span class="ot">&lt;-</span> expected <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  chi2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(((observed <span class="sc">-</span> expected)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> expected)[keep])</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">p =</span> <span class="fu">round</span>(p, <span class="dv">3</span>), <span class="fu">round</span>(expected, <span class="dv">1</span>), <span class="at">chi2 =</span> <span class="fu">round</span>(chi2, <span class="dv">1</span>),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">pvalue =</span> <span class="fu">signif</span>(<span class="fu">pchisq</span>(chi2, <span class="at">df =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>), <span class="dv">2</span>))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">hwe</span>(<span class="fu">sum</span>(pops<span class="sc">$</span>TT), <span class="fu">sum</span>(pops<span class="sc">$</span>CT), <span class="fu">sum</span>(pops<span class="sc">$</span>CC))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>by_group <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(pops), <span class="cf">function</span>(i) <span class="fu">hwe</span>(pops<span class="sc">$</span>TT[i], pops<span class="sc">$</span>CT[i], pops<span class="sc">$</span>CC[i])))</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(by_group) <span class="ot">&lt;-</span> pops<span class="sc">$</span>population</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>by_group</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># rows: AFR, AMR, EAS, EUR, SAS · chi2 12.1, 8.5, 0, 0.0, 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>Pooled: χ² = <strong>2,074</strong>. Within groups the failure shrinks to χ² = 12.1 (AFR) and 8.5 (AMR); EUR fits (χ² ≈ 0). In EAS and SAS everyone is TT, so there is nothing to test.</p>
+</div>
+<p><strong>Q4.</strong> Splitting by group removed almost all of the failure. Why do AFR and AMR still fail a little? (Hint: each of these continental groups combines several populations, some of them of recently mixed ancestry, such as African Americans in the southwest US (ASW) and Puerto Ricans (PUR).)</p>
+</section>
+<section id="exercise-5-a-gwas-of-one-region-15-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5-a-gwas-of-one-region-15-min">Exercise 5 · A GWAS of one region (15 min)</h2>
+<p><code>gwas_region.tsv</code> has 2,000 people, 15 SNPs spread over 190 kb, and a trait. Run the GWAS regression at every SNP: trait = a + β × genotype. Compute z = β / SE, the p-value, and draw the region with the genome-wide line at 5 × 10⁻⁸.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-17" class="exercise-cell">
+
+</div>
+<script type="pyodide-17-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDVfcHkifSwiY29kZSI6Imd3ICAgPSBwZC5yZWFkX2NzdihcImRhdGEvbGFiMi9nd2FzX3JlZ2lvbi50c3ZcIiwgc2VwPVwiXFx0XCIpXG5zbnBzID0gcGQucmVhZF9jc3YoXCJkYXRhL2xhYjIvZ3dhc19zbnBzLnRzdlwiLCBzZXA9XCJcXHRcIilcbnJvd3MgPSBbXVxuZm9yIHMgaW4gc25wc1tcInNucFwiXTpcbiAgICBmaXQgPSBzdGF0cy5saW5yZWdyZXNzKGd3W3NdLCBnd1tcInRyYWl0XCJdKVxuICAgIHogPSBmaXQuc2xvcGUgLyBfX19fX19cbiAgICByb3dzLmFwcGVuZChbcywgcm91bmQoZml0LnNsb3BlLCAzKSwgcm91bmQoZml0LnN0ZGVyciwgNCksIHJvdW5kKHosIDIpLCBmaXQucHZhbHVlXSlcbnJlcyA9IHBkLkRhdGFGcmFtZShyb3dzLCBjb2x1bW5zPVtcInNucFwiLCBcImJldGFcIiwgXCJzZVwiLCBcInpcIiwgXCJwXCJdKVxucmVzW1wicG9zaXRpb25cIl0gPSBzbnBzW1wicG9zaXRpb25cIl1cbnByaW50KHJlcy50b19zdHJpbmcoaW5kZXg9RmFsc2UpKVxuXG5maWcsIGF4ID0gcGx0LnN1YnBsb3RzKGZpZ3NpemU9KDQuNSwgMi44KSlcbmF4LnNjYXR0ZXIocmVzW1wicG9zaXRpb25cIl0gLyAxZTYsIC1ucC5sb2cxMChyZXNbXCJwXCJdKSlcbmF4LmF4aGxpbmUoLW5wLmxvZzEwKDVlLTgpLCBjb2xvcj1cInJlZFwiLCBscz1cIi0tXCIpXG5heC5zZXRfeGxhYmVsKFwicG9zaXRpb24gKE1iKVwiKTsgYXguc2V0X3lsYWJlbChcIi1sb2cxMCBwXCIpXG5wbHQudGlnaHRfbGF5b3V0KCk7IHBsdC5zaG93KCkifQ==
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex5_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>z is the slope divided by its standard error: <code>fit.stderr</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex5_py">
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gw   <span class="op">=</span> pd.read_csv(<span class="st">"data/lab2/gwas_region.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>snps <span class="op">=</span> pd.read_csv(<span class="st">"data/lab2/gwas_snps.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> s <span class="kw">in</span> snps[<span class="st">"snp"</span>]:</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    fit <span class="op">=</span> stats.linregress(gw[s], gw[<span class="st">"trait"</span>])</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> fit.slope <span class="op">/</span> fit.stderr</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    rows.append([s, <span class="bu">round</span>(fit.slope, <span class="dv">3</span>), <span class="bu">round</span>(fit.stderr, <span class="dv">4</span>), <span class="bu">round</span>(z, <span class="dv">2</span>), fit.pvalue])</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> pd.DataFrame(rows, columns<span class="op">=</span>[<span class="st">"snp"</span>, <span class="st">"beta"</span>, <span class="st">"se"</span>, <span class="st">"z"</span>, <span class="st">"p"</span>])</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>res[<span class="st">"position"</span>] <span class="op">=</span> snps[<span class="st">"position"</span>]</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res.to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># lead: snp8, beta 0.261, SE 0.0338, z 7.72, p 1.8e-14</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co"># snp6, snp7, snp9, snp10 also pass 5e-8; snp12 and snp14 have p = 0.04</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">4.5</span>, <span class="fl">2.8</span>))</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>ax.scatter(res[<span class="st">"position"</span>] <span class="op">/</span> <span class="fl">1e6</span>, <span class="op">-</span>np.log10(res[<span class="st">"p"</span>]))</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="op">-</span>np.log10(<span class="fl">5e-8</span>), color<span class="op">=</span><span class="st">"red"</span>, ls<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"position (Mb)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"-log10 p"</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-18" class="exercise-cell">
+
+</div>
+<script type="webr-18-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDVfciIsImZpZy1oZWlnaHQiOjIuOCwiZmlnLXdpZHRoIjo0LjV9LCJjb2RlIjoiZ3cgICA8LSByZWFkLmRlbGltKFwiZGF0YS9sYWIyL2d3YXNfcmVnaW9uLnRzdlwiKVxuc25wcyA8LSByZWFkLmRlbGltKFwiZGF0YS9sYWIyL2d3YXNfc25wcy50c3ZcIilcbnJlcyA8LSB0KHNhcHBseShzbnBzJHNucCwgZnVuY3Rpb24ocykge1xuICBjbyA8LSBzdW1tYXJ5KGxtKGd3JHRyYWl0IH4gZ3dbW3NdXSkpJGNvZWZmaWNpZW50c1syLCBdXG4gIGMoYmV0YSA9IGNvW1tcIkVzdGltYXRlXCJdXSwgc2UgPSBjb1tbXCJTdGQuIEVycm9yXCJdXSxcbiAgICB6ID0gY29bW1wiRXN0aW1hdGVcIl1dIC8gX19fX19fLCBwID0gY29bW1wiUHIoPnx0fClcIl1dKVxufSkpXG5yZXMgPC0gZGF0YS5mcmFtZShyZXMsIHBvc2l0aW9uID0gc25wcyRwb3NpdGlvbilcbnByaW50KGNiaW5kKHNpZ25pZihyZXNbLCAxOjRdLCAzKSwgcG9zaXRpb24gPSByZXMkcG9zaXRpb24pKVxuXG5wYXIobWFyID0gYyg0LCA0LCAxLCAxKSlcbnBsb3QocmVzJHBvc2l0aW9uIC8gMWU2LCAtbG9nMTAocmVzJHApLCBwY2ggPSAxOSxcbiAgICAgeGxhYiA9IFwicG9zaXRpb24gKE1iKVwiLCB5bGFiID0gXCItbG9nMTAgcFwiKVxuYWJsaW5lKGggPSAtbG9nMTAoNWUtOCksIGNvbCA9IFwicmVkXCIsIGx0eSA9IDIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex5_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>z is the slope divided by its standard error: <code>co[["Std. Error"]]</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex5_r">
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gw   <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">"data/lab2/gwas_region.tsv"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>snps <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">"data/lab2/gwas_snps.tsv"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(snps<span class="sc">$</span>snp, <span class="cf">function</span>(s) {</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  co <span class="ot">&lt;-</span> <span class="fu">summary</span>(<span class="fu">lm</span>(gw<span class="sc">$</span>trait <span class="sc">~</span> gw[[s]]))<span class="sc">$</span>coefficients[<span class="dv">2</span>, ]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">beta =</span> co[[<span class="st">"Estimate"</span>]], <span class="at">se =</span> co[[<span class="st">"Std. Error"</span>]],</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">z =</span> co[[<span class="st">"Estimate"</span>]] <span class="sc">/</span> co[[<span class="st">"Std. Error"</span>]], <span class="at">p =</span> co[[<span class="st">"Pr(&gt;|t|)"</span>]])</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(res, <span class="at">position =</span> snps<span class="sc">$</span>position)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">cbind</span>(<span class="fu">signif</span>(res[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">3</span>), <span class="at">position =</span> res<span class="sc">$</span>position))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># lead: snp8, beta 0.261, SE 0.0338, z 7.72, p 1.8e-14</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res<span class="sc">$</span>position <span class="sc">/</span> <span class="fl">1e6</span>, <span class="sc">-</span><span class="fu">log10</span>(res<span class="sc">$</span>p), <span class="at">pch =</span> <span class="dv">19</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"position (Mb)"</span>, <span class="at">ylab =</span> <span class="st">"-log10 p"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fl">5e-8</span>), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>Now measure linkage: r² between the lead SNP and every other SNP is the squared correlation of their genotype columns.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-19" class="exercise-cell">
+
+</div>
+<script type="pyodide-19-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibGVhZCA9IHJlcy5sb2NbcmVzW1wicFwiXS5pZHhtaW4oKSwgXCJzbnBcIl1cbnJlc1tcInIyX3dpdGhfbGVhZFwiXSA9IFtyb3VuZChucC5jb3JyY29lZihnd1tzXSwgZ3dbbGVhZF0pWzAsIDFdICoqIDIsIDIpIGZvciBzIGluIHJlc1tcInNucFwiXV1cbnByaW50KFwibGVhZCBTTlA6XCIsIGxlYWQpXG5wcmludChyZXNbW1wic25wXCIsIFwicFwiLCBcInIyX3dpdGhfbGVhZFwiXV0udG9fc3RyaW5nKGluZGV4PUZhbHNlKSkifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-20" class="exercise-cell">
+
+</div>
+<script type="webr-20-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibGVhZCA8LSByb3duYW1lcyhyZXMpW3doaWNoLm1pbihyZXMkcCldXG5yZXMkcjJfd2l0aF9sZWFkIDwtIHJvdW5kKHNhcHBseShzbnBzJHNucCwgZnVuY3Rpb24ocykgY29yKGd3W1tzXV0sIGd3W1tsZWFkXV0pXjIpLCAyKVxuY2F0KFwibGVhZCBTTlA6XCIsIGxlYWQsIFwiXFxuXCIpXG5yZXNbLCBjKFwicFwiLCBcInIyX3dpdGhfbGVhZFwiKV0ifQ==
+</script>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>Five neighbouring SNPs (snp6–snp10) pass 5 × 10⁻⁸; their r² with snp8 is 0.57–0.93. In this simulation only <strong>snp8</strong> affects the trait. Two SNPs in another block have p ≈ 0.04: below 0.05, far above the genome-wide line.</p>
+</div>
+<p><strong>Q5.</strong> (a) From the results alone, could you tell which of snp6–snp10 is the causal one? Why or why not? (b) Why is p = 0.04 at snp12 not a finding in a GWAS?</p>
+</section>
+<section id="exercise-6-group-differences-create-a-false-hit-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6-group-differences-create-a-false-hit-10-min">Exercise 6 · Group differences create a false hit (10 min)</h2>
+<p><code>stratification.tsv</code>: 1,000 people from two groups. The allele frequency is about 0.2 in group 1 and 0.7 in group 2, and the trait is higher in group 2 for a non-genetic reason. <strong>The SNP has no effect on the trait.</strong> Run the GWAS regression without, then with, the group in the model.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-21" class="exercise-cell">
+
+</div>
+<script type="pyodide-21-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDZfcHkifSwiY29kZSI6InN0ID0gcGQucmVhZF9jc3YoXCJkYXRhL2xhYjIvc3RyYXRpZmljYXRpb24udHN2XCIsIHNlcD1cIlxcdFwiKVxucHJpbnQoc3QuZ3JvdXBieShcImdyb3VwXCIpLmFnZyhmcmVxPShcImdlbm90eXBlXCIsIGxhbWJkYSBnOiBnLm1lYW4oKSAvIDIpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVhbl90cmFpdD0oXCJ0cmFpdFwiLCBcIm1lYW5cIikpKVxuXG5kZWYgb2xzKGNvbHVtbnMsIHkpOlxuICAgIFwiXCJcImxlYXN0IHNxdWFyZXM7IHJldHVybnMgYmV0YSwgU0UgYW5kIHAgZm9yIGV2ZXJ5IGNvbHVtbiBhZnRlciB0aGUgaW50ZXJjZXB0XCJcIlwiXG4gICAgWCA9IG5wLmNvbHVtbl9zdGFjayhbbnAub25lcyhsZW4oeSkpXSArIGNvbHVtbnMpXG4gICAgYmV0YSwgKl8gPSBucC5saW5hbGcubHN0c3EoWCwgeSwgcmNvbmQ9Tm9uZSlcbiAgICByZXNpZCA9IHkgLSBYIEAgYmV0YVxuICAgIGRmID0gbGVuKHkpIC0gWC5zaGFwZVsxXVxuICAgIHNlID0gbnAuc3FydChucC5kaWFnKHJlc2lkIEAgcmVzaWQgLyBkZiAqIG5wLmxpbmFsZy5pbnYoWC5UIEAgWCkpKVxuICAgIHAgPSAyICogc3RhdHMudC5zZihucC5hYnMoYmV0YSAvIHNlKSwgZGYpXG4gICAgcmV0dXJuIG5wLnJvdW5kKGJldGFbMTpdLCAzKSwgbnAucm91bmQoc2VbMTpdLCA0KSwgcFsxOl1cblxuZyA9IHN0W1wiZ2Vub3R5cGVcIl0udG9fbnVtcHkoZmxvYXQpXG55ID0gc3RbXCJ0cmFpdFwiXS50b19udW1weSgpXG5pbl9ncm91cDIgPSAoc3RbXCJncm91cFwiXSA9PSAyKS50b19udW1weShmbG9hdClcbnByaW50KFwidHJhaXQgfiBnZW5vdHlwZTogICAgICAgICBcIiwgb2xzKFtnXSwgeSkpXG5wcmludChcInRyYWl0IH4gZ2Vub3R5cGUgKyBncm91cDogXCIsIG9scyhbZywgX19fX19fXSwgeSkpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex6_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Add the group indicator <code>in_group2</code> as a second column.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex6_py">
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>st <span class="op">=</span> pd.read_csv(<span class="st">"data/lab2/stratification.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(st.groupby(<span class="st">"group"</span>).agg(freq<span class="op">=</span>(<span class="st">"genotype"</span>, <span class="kw">lambda</span> g: g.mean() <span class="op">/</span> <span class="dv">2</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                              mean_trait<span class="op">=</span>(<span class="st">"trait"</span>, <span class="st">"mean"</span>)))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ols(columns, y):</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""least squares; returns beta, SE and p for every column after the intercept"""</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> np.column_stack([np.ones(<span class="bu">len</span>(y))] <span class="op">+</span> columns)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    beta, <span class="op">*</span>_ <span class="op">=</span> np.linalg.lstsq(X, y, rcond<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    resid <span class="op">=</span> y <span class="op">-</span> X <span class="op">@</span> beta</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> <span class="bu">len</span>(y) <span class="op">-</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    se <span class="op">=</span> np.sqrt(np.diag(resid <span class="op">@</span> resid <span class="op">/</span> df <span class="op">*</span> np.linalg.inv(X.T <span class="op">@</span> X)))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> stats.t.sf(np.<span class="bu">abs</span>(beta <span class="op">/</span> se), df)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">round</span>(beta[<span class="dv">1</span>:], <span class="dv">3</span>), np.<span class="bu">round</span>(se[<span class="dv">1</span>:], <span class="dv">4</span>), p[<span class="dv">1</span>:]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> st[<span class="st">"genotype"</span>].to_numpy(<span class="bu">float</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> st[<span class="st">"trait"</span>].to_numpy()</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>in_group2 <span class="op">=</span> (st[<span class="st">"group"</span>] <span class="op">==</span> <span class="dv">2</span>).to_numpy(<span class="bu">float</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"trait ~ genotype:         "</span>, ols([g], y))</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"trait ~ genotype + group: "</span>, ols([g, in_group2], y))</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co"># genotype only: beta 0.373, p 3e-18</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co"># with group:    beta 0.061, p 0.25   (group effect 0.768)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-22" class="exercise-cell">
+
+</div>
+<script type="webr-22-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDZfciJ9LCJjb2RlIjoic3QgPC0gcmVhZC5kZWxpbShcImRhdGEvbGFiMi9zdHJhdGlmaWNhdGlvbi50c3ZcIilcbnByaW50KGFnZ3JlZ2F0ZShjYmluZChmcmVxID0gZ2Vub3R5cGUgLyAyLCB0cmFpdCkgfiBncm91cCwgZGF0YSA9IHN0LCBGVU4gPSBtZWFuKSlcblxubTEgPC0gbG0odHJhaXQgfiBnZW5vdHlwZSwgZGF0YSA9IHN0KVxubTIgPC0gbG0odHJhaXQgfiBnZW5vdHlwZSArIF9fX19fXywgZGF0YSA9IHN0KVxuc3VtbWFyeShtMSkkY29lZmZpY2llbnRzW1wiZ2Vub3R5cGVcIiwgXVxuc3VtbWFyeShtMikkY29lZmZpY2llbnRzW1wiZ2Vub3R5cGVcIiwgXSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex6_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>factor(group)</code> tells R the group is a category, not a number.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex6_r">
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">"data/lab2/stratification.tsv"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">aggregate</span>(<span class="fu">cbind</span>(<span class="at">freq =</span> genotype <span class="sc">/</span> <span class="dv">2</span>, trait) <span class="sc">~</span> group, <span class="at">data =</span> st, <span class="at">FUN =</span> mean))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(trait <span class="sc">~</span> genotype, <span class="at">data =</span> st)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(trait <span class="sc">~</span> genotype <span class="sc">+</span> <span class="fu">factor</span>(group), <span class="at">data =</span> st)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)<span class="sc">$</span>coefficients[<span class="st">"genotype"</span>, ]   <span class="co"># beta 0.373, p 3e-18</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)<span class="sc">$</span>coefficients[<span class="st">"genotype"</span>, ]   <span class="co"># beta 0.061, p 0.25</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="checkpoint">
+<p>Without the group: β = <strong>0.373</strong>, p = 3 × 10⁻¹⁸, a “genome-wide hit” for a SNP that does nothing. With the group in the model: β = <strong>0.061</strong>, p = 0.25.</p>
+</div>
+<p><strong>Q6.</strong> Explain in your own words why the SNP looked associated with the trait. In a real GWAS, people do not come labelled with a group: what do studies put in the model instead? (Lecture 13.)</p>
+<p><strong>Q7.</strong> Exercise 3 and Exercise 6 have the same shape: a hidden factor makes an ordinary test too confident, and the fix adds that factor to the model. Name the hidden factor and the fix in each.</p>
+<hr>
+</section>
+<section id="lab-report-submit-by-tuesday-oct-20" class="level2">
+<h2 class="anchored" data-anchor-id="lab-report-submit-by-tuesday-oct-20">Lab report (submit by Tuesday, Oct 20)</h2>
+<p>Answers to <strong>Q1–Q7</strong>, plus two figures: the Beta curves from 3b with one choice of your own added, and the regional plot from Exercise 5. One to two pages.</p>
+
+
+<script type="webr-data">
+eyJvcHRpb25zIjp7ImJhc2VVcmwiOiJodHRwczovL3dlYnIuci13YXNtLm9yZy92MC42LjAvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsiZXZhbHVhdGUiLCJrbml0ciIsImh0bWx0b29scyIsInJtYXJrZG93biJdLCJyZXBvcyI6W119LCJyZW5kZXJfZGYiOiJwYWdlZC10YWJsZSJ9
+</script>
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lweSIsIm1hdHBsb3RsaWIiXX19
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMjI7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0yMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzIyID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMjItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici0yMi1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzIyID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8yMiwge30pO1xuX3dlYnJfZmVlZGJhY2tfMjIgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzIyLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTIxIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMjEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTIxLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMjEtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8yMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMjEsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzIxID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8yMS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMjAiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzIwO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMjAiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8yMCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTIwLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItMjAtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3dlYnJfdmFsdWVfMjAgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzIwLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xOSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzE5ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xOS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTE5LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMTkgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzE5LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMTgiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzE4O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMTgiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8xOCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTE4LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItMTgtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfd2Vicl92YWx1ZV8xOCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTgsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzE4ID0ge1xuICBjb25zdCB7IFdlYlJHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgV2ViUkdyYWRlcihfd2Vicl92YWx1ZV8xOC5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzE3ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTE3LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTcgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzE3LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTcuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTE2IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV8xNjtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTE2IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfMTYgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici0xNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJ3ZWJyLTE2LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3dlYnJfdmFsdWVfMTYgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzE2LCB7fSk7XG5fd2Vicl9mZWVkYmFja18xNiA9IHtcbiAgY29uc3QgeyBXZWJSR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFdlYlJHcmFkZXIoX3dlYnJfdmFsdWVfMTYuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMTUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8xNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMTUtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0xNS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzE1ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xNSwge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMTUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzE1LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTQ7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE0ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici0xNC1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzE0ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8xNCwge30pO1xuX3dlYnJfZmVlZGJhY2tfMTQgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzE0LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTEzIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEzLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTMtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xMyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTMsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzEzID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xMy5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMTIiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzEyO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMTIiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8xMiA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTEyLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItMTItY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfd2Vicl92YWx1ZV8xMiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTIsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzEyID0ge1xuICBjb25zdCB7IFdlYlJHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgV2ViUkdyYWRlcihfd2Vicl92YWx1ZV8xMi5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzExID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0xMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTExLWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMTEgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzExLCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18xMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMTEuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTEwIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV8xMDtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTEwIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfMTAgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici0xMC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJ3ZWJyLTEwLWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3dlYnJfdmFsdWVfMTAgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzEwLCB7fSk7XG5fd2Vicl9mZWVkYmFja18xMCA9IHtcbiAgY29uc3QgeyBXZWJSR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFdlYlJHcmFkZXIoX3dlYnJfdmFsdWVfMTAuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtOSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzkgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTktY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS05LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfOSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfOSwge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfOSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfOS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfODtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTgiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl84ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItOC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGB3ZWJyLTgtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3dlYnJfdmFsdWVfOCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfOCwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzcgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTctY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS03LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNywge30pO1xuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTYiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzY7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici02IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfNiA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTYtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici02LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3dlYnJfdmFsdWVfNiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfNiwge30pO1xuX3dlYnJfZmVlZGJhY2tfNiA9IHtcbiAgY29uc3QgeyBXZWJSR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFdlYlJHcmFkZXIoX3dlYnJfdmFsdWVfNi5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS01IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTUtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV81ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl81LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja181ID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV81LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV80O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzQgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici00LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItNC1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzQgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzQsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzQgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzQuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTMtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS0zLWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfMyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMywge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfMy5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMjtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTIiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8yID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGB3ZWJyLTItY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3dlYnJfdmFsdWVfMiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMiwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS0xLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMSwge30pO1xuIn0seyJjZWxsTmFtZSI6IndlYnItcHJlbHVkZSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IndlYlJPanMgPSB7XG4gIGNvbnN0IHsgV2ViUiwgQ2hhbm5lbFR5cGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWUuV2ViUjtcbiAgY29uc3Qge1xuICAgIFdlYlJFdmFsdWF0b3IsXG4gICAgV2ViUkVudmlyb25tZW50TWFuYWdlcixcbiAgICBzZXR1cFIsXG4gICAgYjY0RGVjb2RlLFxuICAgIGNvbGxhcHNlUGF0aFxuICB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzdGF0dXNDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctc3RhdHVzXCIpO1xuICBjb25zdCBpbmRpY2F0b3JDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpbmRpY2F0b3JDb250YWluZXIuY2xhc3NMaXN0LnJlbW92ZShcImQtbm9uZVwiKTtcblxuICBsZXQgc3RhdHVzVGV4dCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoXCJkaXZcIilcbiAgc3RhdHVzVGV4dC5jbGFzc0xpc3QgPSBcImV4ZXJjaXNlLWxvYWRpbmctZGV0YWlsc1wiO1xuICBzdGF0dXNUZXh0ID0gc3RhdHVzQ29udGFpbmVyLmFwcGVuZENoaWxkKHN0YXR1c1RleHQpO1xuICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYEluaXRpYWxpc2VgO1xuXG4gIC8vIEhvaXN0IGluZGljYXRvciBvdXQgZnJvbSBmaW5hbCBzbGlkZSB3aGVuIHJ1bm5pbmcgdW5kZXIgcmV2ZWFsXG4gIGNvbnN0IHJldmVhbFN0YXR1cyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsIC5leGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaWYgKHJldmVhbFN0YXR1cykge1xuICAgIHJldmVhbFN0YXR1cy5yZW1vdmUoKTtcbiAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCA+IC5zbGlkZXNcIikuYXBwZW5kQ2hpbGQocmV2ZWFsU3RhdHVzKTtcbiAgfVxuXG4gIC8vIE1ha2UgYW55IHJldmVhbCBzbGlkZXMgd2l0aCBsaXZlIGNlbGxzIHNjcm9sbGFibGVcbiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbChcIi5yZXZlYWwgLmV4ZXJjaXNlLWNlbGxcIikuZm9yRWFjaCgoZWwpID0+IHtcbiAgICBlbC5jbG9zZXN0KCdzZWN0aW9uLnNsaWRlJykuY2xhc3NMaXN0LmFkZChcInNjcm9sbGFibGVcIik7XG4gIH0pXG5cbiAgLy8gd2ViUiBzdXBwbGVtZW50YWwgZGF0YSBhbmQgb3B0aW9uc1xuICBjb25zdCBkYXRhQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLWRhdGFcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBkYXRhID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZGF0YUNvbnRlbnQpKTtcblxuICAvLyBHcmFiIGxpc3Qgb2YgcmVzb3VyY2VzIHRvIGJlIGRvd25sb2FkZWRcbiAgY29uc3QgZmlsZXNDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInZmcy1maWxlXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZmlsZXMgPSBKU09OLnBhcnNlKGI2NERlY29kZShmaWxlc0NvbnRlbnQpKTtcblxuICAvLyBJbml0aWFsaXNlIHdlYlIgYW5kIHNldHVwIGZvciBSIGNvZGUgZXZhbHVhdGlvblxuICBsZXQgd2ViUlByb21pc2UgPSAoYXN5bmMgKHdlYlIpID0+IHtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHdlYlJgO1xuICAgIGF3YWl0IHdlYlIuaW5pdCgpO1xuXG4gICAgLy8gSW5zdGFsbCBwcm92aWRlZCBsaXN0IG9mIHBhY2thZ2VzXG4gICAgLy8gRW5zdXJlIHdlYlIgZGVmYXVsdCByZXBvIGlzIGluY2x1ZGVkXG4gICAgZGF0YS5wYWNrYWdlcy5yZXBvcy5wdXNoKFwiaHR0cHM6Ly9yZXBvLnItd2FzbS5vcmdcIilcbiAgICBhd2FpdCBkYXRhLnBhY2thZ2VzLnBrZ3MubWFwKChwa2cpID0+ICgpID0+IHtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogJHtwa2d9YDtcbiAgICAgIHJldHVybiB3ZWJSLmV2YWxSVm9pZChgXG4gICAgICAgIHdlYnI6Omluc3RhbGwocGtnLCByZXBvcyA9IHJlcG9zKVxuICAgICAgICBsaWJyYXJ5KHBrZywgY2hhcmFjdGVyLm9ubHkgPSBUUlVFKVxuICAgICAgYCwgeyBlbnY6IHtcbiAgICAgICAgcGtnOiBwa2csXG4gICAgICAgIHJlcG9zOiBkYXRhLnBhY2thZ2VzLnJlcG9zLFxuICAgICAgfX0pO1xuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgLy8gRG93bmxvYWQgYW5kIGluc3RhbGwgcmVzb3VyY2VzXG4gICAgYXdhaXQgZmlsZXMubWFwKChmaWxlKSA9PiBhc3luYyAoKSA9PiB7XG4gICAgICBjb25zdCBuYW1lID0gZmlsZS5zdWJzdHJpbmcoZmlsZS5sYXN0SW5kZXhPZignLycpICsgMSk7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHJlc291cmNlOiAke25hbWV9YDtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goZmlsZSk7XG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgQ2FuJ3QgZG93bmxvYWQgXFxgJHtmaWxlfVxcYC4gRXJyb3IgJHtyZXNwb25zZS5zdGF0dXN9OiBcIiR7cmVzcG9uc2Uuc3RhdHVzVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5hcnJheUJ1ZmZlcigpO1xuXG4gICAgICAvLyBTdG9yZSBVUkxzIGluIHRoZSBjd2Qgd2l0aG91dCBhbnkgc3ViZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgaWYgKGZpbGUuaW5jbHVkZXMoXCI6Ly9cIikpIHtcbiAgICAgICAgZmlsZSA9IG5hbWU7XG4gICAgICB9XG5cbiAgICAgIC8vIENvbGxhcHNlIGhpZ2hlciBkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBmaWxlID0gY29sbGFwc2VQYXRoKGZpbGUpO1xuXG4gICAgICAvLyBDcmVhdGUgZGlyZWN0b3J5IHRyZWUsIGlnbm9yaW5nIFwiZGlyZWN0b3J5IGV4aXN0c1wiIFZGUyBlcnJvcnNcbiAgICAgIGNvbnN0IHBhcnRzID0gZmlsZS5zcGxpdCgnLycpLnNsaWNlKDAsIC0xKTtcbiAgICAgIGxldCBwYXRoID0gJyc7XG4gICAgICB3aGlsZSAocGFydHMubGVuZ3RoID4gMCkge1xuICAgICAgICBwYXRoICs9IHBhcnRzLnNoaWZ0KCkgKyAnLyc7XG4gICAgICAgIGNvbnN0IGFuYWx5c2lzID0gYXdhaXQgd2ViUi5GUy5hbmFseXplUGF0aChwYXRoKTtcbiAgICAgICAgaWYgKCFhbmFseXNpcy5leGlzdHMpIHtcbiAgICAgICAgICB0cnkge1xuICAgICAgICAgICAgYXdhaXQgd2ViUi5GUy5ta2RpcihwYXRoKTtcbiAgICAgICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3I6IFwiJHtlLm1lc3NhZ2V9XCIuYCk7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8vIFdyaXRlIHRoaXMgZmlsZSB0byB0aGUgVkZTXG4gICAgICByZXR1cm4gYXdhaXQgd2ViUi5GUy53cml0ZUZpbGUoZmlsZSwgbmV3IFVpbnQ4QXJyYXkoZGF0YSkpO1xuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbnN0YWxsaW5nIHdlYlIgc2hpbXNgO1xuICAgIGF3YWl0IHdlYlIuZXZhbFJWb2lkKGB3ZWJyOjpzaGltX2luc3RhbGwoKWApO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBXZWJSIGVudmlyb25tZW50IHNldHVwYDtcbiAgICBhd2FpdCBzZXR1cFIod2ViUiwgZGF0YSk7XG5cbiAgICBzdGF0dXNUZXh0LnJlbW92ZSgpO1xuICAgIGlmIChzdGF0dXNDb250YWluZXIuY2hpbGRyZW4ubGVuZ3RoID09IDApIHtcbiAgICAgIHN0YXR1c0NvbnRhaW5lci5wYXJlbnROb2RlLnJlbW92ZSgpO1xuICAgIH1cbiAgICByZXR1cm4gd2ViUjtcbiAgfSkobmV3IFdlYlIoZGF0YS5vcHRpb25zKSk7XG5cbiAgLy8gS2VlcCB0cmFjayBvZiBpbml0aWFsIE9KUyBibG9jayByZW5kZXJcbiAgY29uc3QgcmVuZGVyZWRPanMgPSB7fTtcblxuICBjb25zdCBwcm9jZXNzID0gYXN5bmMgKGNvbnRleHQsIGlucHV0cykgPT4ge1xuICAgIGNvbnN0IHdlYlIgPSBhd2FpdCB3ZWJSUHJvbWlzZTtcbiAgICBjb25zdCBldmFsdWF0b3IgPSBuZXcgV2ViUkV2YWx1YXRvcih3ZWJSLCBjb250ZXh0KVxuICAgIGF3YWl0IGV2YWx1YXRvci5wcm9jZXNzKGlucHV0cyk7XG4gICAgcmV0dXJuIGV2YWx1YXRvci5jb250YWluZXI7XG4gIH1cblxuICByZXR1cm4ge1xuICAgIHByb2Nlc3MsXG4gICAgd2ViUlByb21pc2UsXG4gICAgcmVuZGVyZWRPanMsXG4gIH07XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoicHlvZGlkZU9qcyA9IHtcbiAgY29uc3Qge1xuICAgIFB5b2RpZGVFdmFsdWF0b3IsXG4gICAgUHlvZGlkZUVudmlyb25tZW50TWFuYWdlcixcbiAgICBzZXR1cFB5dGhvbixcbiAgICBzdGFydFB5b2RpZGVXb3JrZXIsXG4gICAgYjY0RGVjb2RlLFxuICAgIGNvbGxhcHNlUGF0aCxcbiAgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc3RhdHVzQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLXN0YXR1c1wiKTtcbiAgY29uc3QgaW5kaWNhdG9yQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaW5kaWNhdG9yQ29udGFpbmVyLmNsYXNzTGlzdC5yZW1vdmUoXCJkLW5vbmVcIik7XG5cbiAgbGV0IHN0YXR1c1RleHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHN0YXR1c1RleHQuY2xhc3NMaXN0ID0gXCJleGVyY2lzZS1sb2FkaW5nLWRldGFpbHNcIjtcbiAgc3RhdHVzVGV4dCA9IHN0YXR1c0NvbnRhaW5lci5hcHBlbmRDaGlsZChzdGF0dXNUZXh0KTtcbiAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbml0aWFsaXNlYDtcblxuICAvLyBIb2lzdCBpbmRpY2F0b3Igb3V0IGZyb20gZmluYWwgc2xpZGUgd2hlbiBydW5uaW5nIHVuZGVyIHJldmVhbFxuICBjb25zdCByZXZlYWxTdGF0dXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCAuZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGlmIChyZXZlYWxTdGF0dXMpIHtcbiAgICByZXZlYWxTdGF0dXMucmVtb3ZlKCk7XG4gICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgPiAuc2xpZGVzXCIpLmFwcGVuZENoaWxkKHJldmVhbFN0YXR1cyk7XG4gIH1cblxuICAvLyBNYWtlIGFueSByZXZlYWwgc2xpZGVzIHdpdGggbGl2ZSBjZWxscyBzY3JvbGxhYmxlXG4gIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoXCIucmV2ZWFsIC5leGVyY2lzZS1jZWxsXCIpLmZvckVhY2goKGVsKSA9PiB7XG4gICAgZWwuY2xvc2VzdCgnc2VjdGlvbi5zbGlkZScpLmNsYXNzTGlzdC5hZGQoXCJzY3JvbGxhYmxlXCIpO1xuICB9KVxuXG4gIC8vIFB5b2RpZGUgc3VwcGxlbWVudGFsIGRhdGEgYW5kIG9wdGlvbnNcbiAgY29uc3QgZGF0YUNvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS1kYXRhXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZGF0YSA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGRhdGFDb250ZW50KSk7XG5cbiAgLy8gR3JhYiBsaXN0IG9mIHJlc291cmNlcyB0byBiZSBkb3dubG9hZGVkXG4gIGNvbnN0IGZpbGVzQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ2ZnMtZmlsZVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGZpbGVzID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZmlsZXNDb250ZW50KSk7XG5cbiAgbGV0IHB5b2RpZGVQcm9taXNlID0gKGFzeW5jICgpID0+IHtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIFB5b2RpZGVgO1xuICAgIGNvbnN0IHB5b2RpZGUgPSBhd2FpdCBzdGFydFB5b2RpZGVXb3JrZXIoZGF0YS5vcHRpb25zKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogbWljcm9waXBgO1xuICAgIGF3YWl0IHB5b2RpZGUubG9hZFBhY2thZ2UoXCJtaWNyb3BpcFwiKTtcbiAgICBjb25zdCBtaWNyb3BpcCA9IGF3YWl0IHB5b2RpZGUucHlpbXBvcnQoXCJtaWNyb3BpcFwiKTtcbiAgICBhd2FpdCBkYXRhLnBhY2thZ2VzLnBrZ3MubWFwKChwa2cpID0+ICgpID0+IHtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcGFja2FnZTogJHtwa2d9YDtcbiAgICAgIHJldHVybiBtaWNyb3BpcC5pbnN0YWxsKHBrZyk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG4gICAgYXdhaXQgbWljcm9waXAuZGVzdHJveSgpO1xuXG4gICAgLy8gRG93bmxvYWQgYW5kIGluc3RhbGwgcmVzb3VyY2VzXG4gICAgYXdhaXQgZmlsZXMubWFwKChmaWxlKSA9PiBhc3luYyAoKSA9PiB7XG4gICAgICBjb25zdCBuYW1lID0gZmlsZS5zdWJzdHJpbmcoZmlsZS5sYXN0SW5kZXhPZignLycpICsgMSk7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHJlc291cmNlOiAke25hbWV9YDtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goZmlsZSk7XG4gICAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgQ2FuJ3QgZG93bmxvYWQgXFxgJHtmaWxlfVxcYC4gRXJyb3IgJHtyZXNwb25zZS5zdGF0dXN9OiBcIiR7cmVzcG9uc2Uuc3RhdHVzVGV4dH1cIi5gKTtcbiAgICAgIH1cbiAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXNwb25zZS5hcnJheUJ1ZmZlcigpO1xuXG4gICAgICAvLyBTdG9yZSBVUkxzIGluIHRoZSBjd2Qgd2l0aG91dCBhbnkgc3ViZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgaWYgKGZpbGUuaW5jbHVkZXMoXCI6Ly9cIikpIHtcbiAgICAgICAgZmlsZSA9IG5hbWU7XG4gICAgICB9XG5cbiAgICAgIC8vIENvbGxhcHNlIGhpZ2hlciBkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBmaWxlID0gY29sbGFwc2VQYXRoKGZpbGUpO1xuXG4gICAgICAvLyBDcmVhdGUgZGlyZWN0b3J5IHRyZWUsIGlnbm9yaW5nIFwiZGlyZWN0b3J5IGV4aXN0c1wiIFZGUyBlcnJvcnNcbiAgICAgIGNvbnN0IHBhcnRzID0gZmlsZS5zcGxpdCgnLycpLnNsaWNlKDAsIC0xKTtcbiAgICAgIGxldCBwYXRoID0gJyc7XG4gICAgICB3aGlsZSAocGFydHMubGVuZ3RoID4gMCkge1xuICAgICAgICBwYXRoICs9IHBhcnRzLnNoaWZ0KCkgKyAnLyc7XG4gICAgICAgIHRyeSB7XG4gICAgICAgICAgYXdhaXQgcHlvZGlkZS5GUy5ta2RpcihwYXRoKTtcbiAgICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICAgIGlmIChlLmVycm5vICE9PSAyMCkge1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgICAgIGNvbnN0IGVycm9yVGV4dCA9IGF3YWl0IHB5b2RpZGUuX21vZHVsZS5VVEY4VG9TdHJpbmcoZXJyb3JUZXh0UHRyKTtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8vIFdyaXRlIHRoaXMgZmlsZSB0byB0aGUgVkZTXG4gICAgICB0cnkge1xuICAgICAgICByZXR1cm4gYXdhaXQgcHlvZGlkZS5GUy53cml0ZUZpbGUoZmlsZSwgbmV3IFVpbnQ4QXJyYXkoZGF0YSkpO1xuICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICBpZiAoZS5uYW1lICE9PSBcIkVycm5vRXJyb3JcIikgdGhyb3cgZTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0UHRyID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLl9zdHJlcnJvcihlLmVycm5vKTtcbiAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYEZpbGVzeXN0ZW0gRXJyb3IgJHtlLmVycm5vfSBcIiR7ZXJyb3JUZXh0fVwiLmApO1xuICAgICAgfVxuICAgIH0pLnJlZHVjZSgoY3VyLCBuZXh0KSA9PiBjdXIudGhlbihuZXh0KSwgUHJvbWlzZS5yZXNvbHZlKCkpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBQeW9kaWRlIGVudmlyb25tZW50IHNldHVwYDtcbiAgICBhd2FpdCBzZXR1cFB5dGhvbihweW9kaWRlKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiBweW9kaWRlO1xuICB9KSgpLmNhdGNoKChlcnIpID0+IHtcbiAgICBzdGF0dXNUZXh0LnN0eWxlLmNvbG9yID0gXCJ2YXIoLS1leGVyY2lzZS1lZGl0b3ItaGwtZXIsICNBRDAwMDApXCI7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGVyci5tZXNzYWdlO1xuICAgIC8vaW5kaWNhdG9yQ29udGFpbmVyLnF1ZXJ5U2VsZWN0b3IoXCIuc3Bpbm5lci1ncm93XCIpLmNsYXNzTGlzdC5hZGQoXCJkLW5vbmVcIik7XG4gICAgdGhyb3cgZXJyO1xuICB9KTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHB5b2RpZGVQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBQeW9kaWRlRXZhbHVhdG9yKHB5b2RpZGUsIGNvbnRleHQpO1xuICAgIGF3YWl0IGV2YWx1YXRvci5wcm9jZXNzKGlucHV0cyk7XG4gICAgcmV0dXJuIGV2YWx1YXRvci5jb250YWluZXI7XG4gIH1cblxuICByZXR1cm4ge1xuICAgIHB5b2RpZGVQcm9taXNlLFxuICAgIHJlbmRlcmVkT2pzLFxuICAgIHByb2Nlc3MsXG4gIH07XG59XG4ifV19
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJkYXRhL0NPTVRfZXhvbnMudHN2IiwiZGF0YS9DT01UX2dlbmUuZmEiLCJkYXRhL0NPTVRfcHJvdGVpbi5mYSIsImRhdGEvcmVhZHNfNWsuZmFzdHEiLCJkYXRhL2NocjIyX2V4cHJlc3Npb24udHN2IiwiZGF0YS9haXJ3YXlfbWV0YWRhdGEudHN2IiwiZGF0YS9haXJ3YXlfY291bnRzLnRzdiIsImRhdGEvQ09NVF9jZHMuZmEiLCJkYXRhL2NocjIyX21pc21hdGNoZXMudHN2IiwiZGF0YS9jaHIyMl9nZW5lcy50c3YiLCJkYXRhL2xhYjIvZ3dhc19yZWdpb24udHN2IiwiZGF0YS9sYWIyL3JzMjgxNDc3OF9ieV9wb3B1bGF0aW9uLnRzdiIsImRhdGEvbGFiMi9zdHJhdGlmaWNhdGlvbi50c3YiLCJkYXRhL2xhYjIvZ3dhc19zbnBzLnRzdiIsImltYWdlcy9sYWIyX2JldGFfYmlub21pYWxfbW9kZWwucG5nIl0=
+</script>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>DATA405 Genomic Data Science · Jinrui Xu · Howard University · Fall 2026</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Code runs in your browser (Pyodide + webR). Nothing is uploaded.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

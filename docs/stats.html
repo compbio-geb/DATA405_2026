@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lecture 11 · Probability and Statistics for Genomic Data – DATA405 · Python &amp; R for Genomic Data Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c6fe8f099a88ecabc23f33ea3dbd3323.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="site_libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">DATA405 · Python &amp; R for Genomic Data Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./notes.html"> 
+<span class="menu-text">Lecture 10 notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./rosetta.html"> 
+<span class="menu-text">Rosetta stone</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./lab1.html"> 
+<span class="menu-text">Lab 1</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./lab2.html"> 
+<span class="menu-text">Lab 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./stats.html" aria-current="page"> 
+<span class="menu-text">Lecture 11 notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data.html"> 
+<span class="menu-text">Data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./setup.html"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-coin-the-p-value-and-the-burden-of-many-tests" id="toc-the-coin-the-p-value-and-the-burden-of-many-tests" class="nav-link active" data-scroll-target="#the-coin-the-p-value-and-the-burden-of-many-tests">0 · The coin, the p-value, and the burden of many tests</a>
+  <ul class="collapse">
+  <li><a href="#a-coin-flipped-10-times" id="toc-a-coin-flipped-10-times" class="nav-link" data-scroll-target="#a-coin-flipped-10-times">A coin flipped 10 times</a></li>
+  <li><a href="#is-this-coin-fair-the-p-value" id="toc-is-this-coin-fair-the-p-value" class="nav-link" data-scroll-target="#is-this-coin-fair-the-p-value">Is this coin fair? — the p-value</a></li>
+  <li><a href="#twenty-candy-colours-19271-genes-the-burden" id="toc-twenty-candy-colours-19271-genes-the-burden" class="nav-link" data-scroll-target="#twenty-candy-colours-19271-genes-the-burden">Twenty candy colours, 19,271 genes — the burden</a></li>
+  </ul></li>
+  <li><a href="#sequencing-is-sampling" id="toc-sequencing-is-sampling" class="nav-link" data-scroll-target="#sequencing-is-sampling">1 · Sequencing is sampling</a>
+  <ul class="collapse">
+  <li><a href="#binomial-is-this-mismatch-a-heterozygous-snp" id="toc-binomial-is-this-mismatch-a-heterozygous-snp" class="nav-link" data-scroll-target="#binomial-is-this-mismatch-a-heterozygous-snp">Binomial: is this mismatch a heterozygous SNP?</a></li>
+  <li><a href="#poisson-why-25-reads-in-one-window-is-a-peak" id="toc-poisson-why-25-reads-in-one-window-is-a-peak" class="nav-link" data-scroll-target="#poisson-why-25-reads-in-one-window-is-a-peak">Poisson: why 25 reads in one window is a peak</a></li>
+  <li><a href="#negative-binomial-replicates-are-noisier-than-poisson" id="toc-negative-binomial-replicates-are-noisier-than-poisson" class="nav-link" data-scroll-target="#negative-binomial-replicates-are-noisier-than-poisson">Negative binomial: replicates are noisier than Poisson</a></li>
+  </ul></li>
+  <li><a href="#estimation-likelihood-and-the-em-idea" id="toc-estimation-likelihood-and-the-em-idea" class="nav-link" data-scroll-target="#estimation-likelihood-and-the-em-idea">2 · Estimation: likelihood and the EM idea</a>
+  <ul class="collapse">
+  <li><a href="#em-in-ten-lines-the-rsem-idea" id="toc-em-in-ten-lines-the-rsem-idea" class="nav-link" data-scroll-target="#em-in-ten-lines-the-rsem-idea">EM in ten lines (the RSEM idea)</a></li>
+  </ul></li>
+  <li><a href="#normalization-size-factors" id="toc-normalization-size-factors" class="nav-link" data-scroll-target="#normalization-size-factors">3 · Normalization: size factors</a></li>
+  <li><a href="#testing-from-one-t-test-to-deseq2" id="toc-testing-from-one-t-test-to-deseq2" class="nav-link" data-scroll-target="#testing-from-one-t-test-to-deseq2">4 · Testing: from one t-test to DESeq2</a>
+  <ul class="collapse">
+  <li><a href="#multiple-testing-bh-by-hand" id="toc-multiple-testing-bh-by-hand" class="nav-link" data-scroll-target="#multiple-testing-bh-by-hand">Multiple testing: BH by hand</a></li>
+  <li><a href="#an-ma-plot-in-base-r" id="toc-an-ma-plot-in-base-r" class="nav-link" data-scroll-target="#an-ma-plot-in-base-r">An MA plot in base R</a></li>
+  </ul></li>
+  <li><a href="#chip-seq-designing-the-null" id="toc-chip-seq-designing-the-null" class="nav-link" data-scroll-target="#chip-seq-designing-the-null">5 · ChIP-seq: designing the null</a>
+  <ul class="collapse">
+  <li><a href="#what-to-mock-or-not-found-xu-et-al.-nar-2021" id="toc-what-to-mock-or-not-found-xu-et-al.-nar-2021" class="nav-link" data-scroll-target="#what-to-mock-or-not-found-xu-et-al.-nar-2021">What “To mock or not” found (Xu <em>et al.</em>, <em>NAR</em> 2021)</a></li>
+  <li><a href="#the-posterior-probability-in-code" id="toc-the-posterior-probability-in-code" class="nav-link" data-scroll-target="#the-posterior-probability-in-code">The posterior probability, in code</a></li>
+  </ul></li>
+  <li><a href="#the-toolbox-in-one-table" id="toc-the-toolbox-in-one-table" class="nav-link" data-scroll-target="#the-toolbox-in-one-table">6 · The toolbox, in one table</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lecture 11 · Probability and Statistics for Genomic Data</h1>
+<p class="subtitle lead">Sequencing is sampling: the ideas behind DESeq2, EM/RSEM and ChIP-seq peak calling — with runnable demos</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>These notes follow the Lecture 11 slides. Each demo runs in your browser; R cells use base R only.</p>
+</div>
+</div>
+</div>
+<section id="the-coin-the-p-value-and-the-burden-of-many-tests" class="level2">
+<h2 class="anchored" data-anchor-id="the-coin-the-p-value-and-the-burden-of-many-tests">0 · The coin, the p-value, and the burden of many tests</h2>
+<p>Before any genomics: three ideas, each with an experiment you can run here.</p>
+<section id="a-coin-flipped-10-times" class="level3">
+<h3 class="anchored" data-anchor-id="a-coin-flipped-10-times">A coin flipped 10 times</h3>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG51bXB5IGFzIG5wXG5ybmcgPSBucC5yYW5kb20uZGVmYXVsdF9ybmcoMSlcbmhlYWRzID0gcm5nLmJpbm9taWFsKDEwLCAwLjUsIHNpemU9MTAwMDApICAgICAjIDEwLDAwMCBleHBlcmltZW50cyBvZiAxMCBmbGlwc1xuZm9yIGsgaW4gcmFuZ2UoMTEpOlxuICAgIHByaW50KGssIFwiaGVhZHM6XCIsIChoZWFkcyA9PSBrKS5tZWFuKCkpXG5wcmludChcIjkgb3IgbW9yZSBoZWFkczpcIiwgKGhlYWRzID49IDkpLm1lYW4oKSkifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-2" class="exercise-cell">
+
+</div>
+<script type="webr-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2V0LnNlZWQoMSlcbmhlYWRzIDwtIHJiaW5vbSgxMDAwMCwgMTAsIDAuNSkgICAgICAjIDEwLDAwMCBleHBlcmltZW50cyBvZiAxMCBmbGlwc1xudGFibGUoaGVhZHMpIC8gMTAwMDBcbm1lYW4oaGVhZHMgPj0gOSkgICAgICAgICAgICAgICAgICAgICAjIDkgb3IgbW9yZSBoZWFkcyJ9
+</script>
+</div>
+</div>
+</div>
+<p>Nothing about the coin changes between experiments; the spread is what randomness looks like. A read covering a heterozygous site is the same coin: each read comes from one of the two chromosomes.</p>
+</section>
+<section id="is-this-coin-fair-the-p-value" class="level3">
+<h3 class="anchored" data-anchor-id="is-this-coin-fair-the-p-value">Is this coin fair? — the p-value</h3>
+<p>I flip a coin 10 times and get 9 heads. <strong>Null hypothesis:</strong> the coin is fair. <strong>p-value:</strong> how often a fair coin gives a result at least this extreme (9 or 10 heads, or by symmetry 0 or 1).</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBzY2lweSBpbXBvcnQgc3RhdHNcbnByaW50KHN0YXRzLmJpbm9tdGVzdCg5LCAxMCwgMC41KS5wdmFsdWUpICAgICAgIyDiiYggMC4wMjEifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-4" class="exercise-cell">
+
+</div>
+<script type="webr-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiYmlub20udGVzdCg5LCAxMCwgMC41KSRwLnZhbHVlICAgICAgICAgICAgICAgICAgIyDiiYggMC4wMjEifQ==
+</script>
+</div>
+</div>
+</div>
+<p>p ≈ 0.02: chance alone does this about twice in a hundred. It is a statement about the <em>data given the null</em>, not the probability that the coin is fair.</p>
+</section>
+<section id="twenty-candy-colours-19271-genes-the-burden" class="level3">
+<h3 class="anchored" data-anchor-id="twenty-candy-colours-19271-genes-the-burden">Twenty candy colours, 19,271 genes — the burden</h3>
+<p>Test 20 candy colours for a link to acne when none exists: each test has a 1-in-20 chance of a false alarm, so the chance that <em>at least one</em> colour “wins” is 1 − 0.95²⁰ = 64 %. Now do it for every gene:</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiIyAxOSwyNzEgZ2VuZXMsIDQgdnMgNCBzYW1wbGVzLCBOTyByZWFsIGRpZmZlcmVuY2UgYW55d2hlcmVcbmEgPSBybmcubm9ybWFsKHNpemU9KDE5MjcxLCA0KSk7IGIgPSBybmcubm9ybWFsKHNpemU9KDE5MjcxLCA0KSlcbnAwID0gc3RhdHMudHRlc3RfaW5kKGEsIGIsIGF4aXM9MSkucHZhbHVlXG5wcmludChcImdlbmVzIHdpdGggcCA8IDAuMDUgYnkgY2hhbmNlOlwiLCAocDAgPCAwLjA1KS5zdW0oKSlcbmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHRcbmZpZywgYXggPSBwbHQuc3VicGxvdHMoZmlnc2l6ZT0oMy40LCAyLjYpKVxuYXguaGlzdChwMCwgYmlucz0yMCwgY29sb3I9XCJncmV5XCIpOyBheC5heHZsaW5lKDAuMDUsIGNvbG9yPVwiI0MwMDAwMFwiKVxuYXguc2V0X3hsYWJlbChcInAtdmFsdWUgdW5kZXIgdGhlIG51bGxcIik7IGF4LnNldF95bGFiZWwoXCJnZW5lc1wiKVxucGx0LnRpZ2h0X2xheW91dCgpOyBwbHQuc2hvdygpIn0=
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-6" class="exercise-cell">
+
+</div>
+<script type="webr-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOjIuNiwiZmlnLXdpZHRoIjozLjR9LCJjb2RlIjoiIyAxOSwyNzEgZ2VuZXMsIDQgdnMgNCBzYW1wbGVzLCBOTyByZWFsIGRpZmZlcmVuY2UgYW55d2hlcmVcbnAwIDwtIHJlcGxpY2F0ZSgxOTI3MSwgdC50ZXN0KHJub3JtKDQpLCBybm9ybSg0KSkkcC52YWx1ZSlcbmNhdChcImdlbmVzIHdpdGggcCA8IDAuMDUgYnkgY2hhbmNlOlwiLCBzdW0ocDAgPCAwLjA1KSwgXCJcXG5cIilcbnBhcihtYXIgPSBjKDQsIDQsIDEsIDEpKVxuaGlzdChwMCwgYnJlYWtzID0gMjAsIGNvbCA9IFwiZ3JleTg1XCIsIG1haW4gPSBcIlwiLCB4bGFiID0gXCJcIiwgeWxhYiA9IFwiXCIsIGF4ZXMgPSBGQUxTRSlcbmF4aXMoMSk7IGF4aXMoMik7IGFibGluZSh2ID0gMC4wNSwgY29sID0gXCIjQzAwMDAwXCIsIGx3ZCA9IDIpXG50aXRsZSh4bGFiID0gXCJwLXZhbHVlIHVuZGVyIHRoZSBudWxsXCIsIGxpbmUgPSAyKTsgdGl0bGUoeWxhYiA9IFwiZ2VuZXNcIiwgbGluZSA9IDIpIn0=
+</script>
+</div>
+</div>
+</div>
+<p>Under the null, p-values are spread evenly: about 5 % fall below 0.05 — <strong>800–960 false “discoveries”</strong> with nothing going on. Two ways to pay:</p>
+<ul>
+<li><strong>Bonferroni</strong> — control the chance of <em>any</em> false alarm: threshold 0.05 / 19,271 ≈ 2.6 × 10⁻⁶. Right for 20 candy colours; throws away almost everything in a genome.</li>
+<li><strong>False discovery rate (Benjamini–Hochberg, 1995)</strong> — control the <em>fraction</em> of false alarms in your list. Sort the p-values; the <em>k</em>-th smallest is kept if p₍ₖ₎ ≤ q·k/n.&nbsp;“Of the genes I call, about 5 % are expected to be false” — a promise about the list, not about one gene. <code>p.adjust(p, "BH")</code> returns the smallest FDR at which each gene would be kept (DESeq2’s <code>padj</code>).</li>
+</ul>
+</section>
+</section>
+<section id="sequencing-is-sampling" class="level2">
+<h2 class="anchored" data-anchor-id="sequencing-is-sampling">1 · Sequencing is sampling</h2>
+<p>A sequencer does not measure a gene’s expression; it <strong>draws reads at random</strong> from a pool of molecules. Every number in genomics is therefore a <em>count from a random sample</em>, and every claim needs a probability model.</p>
+<p>Three distributions cover most of genomics:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Model</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Of <em>n</em> reads at a site, how many carry allele A?</td>
+<td><strong>Binomial</strong>(n, θ)</td>
+<td>genotyping, allele-specific expression, RNA editing</td>
+</tr>
+<tr class="even">
+<td>How many reads land in a window / on a gene?</td>
+<td><strong>Poisson</strong>(λ)</td>
+<td>coverage (Lander–Waterman), ChIP-seq peaks (MACS)</td>
+</tr>
+<tr class="odd">
+<td>Same, but across <em>biological replicates</em>?</td>
+<td><strong>Negative binomial</strong>(μ, α)</td>
+<td>RNA-seq differential expression (DESeq2, edgeR)</td>
+</tr>
+</tbody>
+</table>
+<section id="binomial-is-this-mismatch-a-heterozygous-snp" class="level3">
+<h3 class="anchored" data-anchor-id="binomial-is-this-mismatch-a-heterozygous-snp">Binomial: is this mismatch a heterozygous SNP?</h3>
+<p>In Lab 1 you found a site with 54 alt reads out of 138. If the sample were heterozygous (θ = 0.5), how surprising is 54/138?</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiZnJvbSBzY2lweSBpbXBvcnQgc3RhdHNcbnByaW50KHN0YXRzLmJpbm9tdGVzdCg1NCwgMTM4LCAwLjUpKVxuIyBhbiBhbGwtYWx0IHNpdGU6IDkgb2YgOSDihpIgbm90IGhldGVyb3p5Z291cywgbW9yZSBsaWtlbHkgYSByZWZlcmVuY2UgZGlmZmVyZW5jZSBvciBtaXMtbWFwcGluZ1xucHJpbnQoc3RhdHMuYmlub210ZXN0KDksIDksIDAuNSkucHZhbHVlKSJ9
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-8" class="exercise-cell">
+
+</div>
+<script type="webr-8-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiYmlub20udGVzdCg1NCwgMTM4LCAwLjUpXG5iaW5vbS50ZXN0KDksIDksIDAuNSkkcC52YWx1ZSJ9
+</script>
+</div>
+</div>
+</div>
+</section>
+<section id="poisson-why-25-reads-in-one-window-is-a-peak" class="level3">
+<h3 class="anchored" data-anchor-id="poisson-why-25-reads-in-one-window-is-a-peak">Poisson: why 25 reads in one window is a peak</h3>
+<p>If reads fell uniformly, a 500-bp window that receives λ = 5 reads on average would receive 25 reads with probability:</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicHJpbnQoc3RhdHMucG9pc3Nvbi5zZigyNCwgNSkpICAgICAgICMgUChYID49IDI1IHwgbGFtYmRhID0gNSkifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-10" class="exercise-cell">
+
+</div>
+<script type="webr-10-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicHBvaXMoMjQsIDUsIGxvd2VyLnRhaWwgPSBGQUxTRSkgICAgICAjIFAoWCA+PSAyNSB8IGxhbWJkYSA9IDUpIn0=
+</script>
+</div>
+</div>
+</div>
+<p>This is the core of a peak caller: MACS computes a <strong>local λ</strong> from the control (input or mock) and asks the Poisson question at every window. The whole difficulty is choosing the right λ — that is Section 6.</p>
+</section>
+<section id="negative-binomial-replicates-are-noisier-than-poisson" class="level3">
+<h3 class="anchored" data-anchor-id="negative-binomial-replicates-are-noisier-than-poisson">Negative binomial: replicates are noisier than Poisson</h3>
+<p>For a Poisson variable, variance = mean. Look at the four <strong>control</strong> samples of the airway experiment.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IHBhbmRhcyBhcyBwZCwgbnVtcHkgYXMgbnBcbmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHRcbmN0cyAgPSBwZC5yZWFkX2NzdihcImRhdGEvYWlyd2F5X2NvdW50cy50c3ZcIiwgc2VwPVwiXFx0XCIsIGluZGV4X2NvbD0wKVxubWV0YSA9IHBkLnJlYWRfY3N2KFwiZGF0YS9haXJ3YXlfbWV0YWRhdGEudHN2XCIsIHNlcD1cIlxcdFwiKVxuY3RybCA9IGxpc3QobWV0YVtcImlkXCJdW21ldGFbXCJkZXhcIl0gPT0gXCJjb250cm9sXCJdKVxubXUgPSBjdHNbY3RybF0ubWVhbihheGlzPTEpOyB2YXIgPSBjdHNbY3RybF0udmFyKGF4aXM9MSlcbnNlbCA9IG11ID4gMTBcbnByaW50KFwiZnJhY3Rpb24gb2YgZ2VuZXMgd2l0aCB2YXJpYW5jZSA+IG1lYW46XCIsIHJvdW5kKCh2YXJbc2VsXSA+IG11W3NlbF0pLm1lYW4oKSwgMykpXG5maWcsIGF4ID0gcGx0LnN1YnBsb3RzKGZpZ3NpemU9KDMuNCwgMy4yKSlcbmF4LnNjYXR0ZXIobXVbc2VsXSwgdmFyW3NlbF0sIHM9MywgY29sb3I9XCJncmV5XCIpXG54ID0gbnAubG9nc3BhY2UoMSwgNSwgNTApXG5heC5wbG90KHgsIHgsIGNvbG9yPVwiIzAwNzBDMFwiLCBsYWJlbD1cIlBvaXNzb246IHZhciA9IG1lYW5cIilcbmF4LnBsb3QoeCwgeCArIDAuMDUgKiB4KioyLCBjb2xvcj1cIiNDMDAwMDBcIiwgbGFiZWw9XCJOQiwgzrEgPSAwLjA1XCIpXG5heC5zZXRfeHNjYWxlKFwibG9nXCIpOyBheC5zZXRfeXNjYWxlKFwibG9nXCIpXG5heC5zZXRfeGxhYmVsKFwibWVhbiBjb3VudFwiKTsgYXguc2V0X3lsYWJlbChcInZhcmlhbmNlXCIpOyBheC5sZWdlbmQoZm9udHNpemU9NylcbnBsdC50aWdodF9sYXlvdXQoKTsgcGx0LnNob3coKSJ9
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-12" class="exercise-cell">
+
+</div>
+<script type="webr-12-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOjMuMiwiZmlnLXdpZHRoIjozLjR9LCJjb2RlIjoiY3RzICA8LSByZWFkLmRlbGltKFwiZGF0YS9haXJ3YXlfY291bnRzLnRzdlwiLCByb3cubmFtZXMgPSAxKVxubWV0YSA8LSByZWFkLmRlbGltKFwiZGF0YS9haXJ3YXlfbWV0YWRhdGEudHN2XCIpXG5jdHJsIDwtIG1ldGEkaWRbbWV0YSRkZXggPT0gXCJjb250cm9sXCJdXG5tdSA8LSByb3dNZWFucyhjdHNbLCBjdHJsXSk7IHYgPC0gYXBwbHkoY3RzWywgY3RybF0sIDEsIHZhcilcbnNlbCA8LSBtdSA+IDEwXG5jYXQoXCJmcmFjdGlvbiBvZiBnZW5lcyB3aXRoIHZhcmlhbmNlID4gbWVhbjpcIiwgcm91bmQobWVhbih2W3NlbF0gPiBtdVtzZWxdKSwgMyksIFwiXFxuXCIpXG5wYXIobWFyID0gYyg0LCA0LCAxLCAxKSlcbnBsb3QobXVbc2VsXSwgdltzZWxdLCBsb2cgPSBcInh5XCIsIHBjaCA9IDE2LCBjZXggPSAwLjMsIGNvbCA9IFwiZ3JleTYwXCIsXG4gICAgIHhsYWIgPSBcIlwiLCB5bGFiID0gXCJcIiwgYXhlcyA9IEZBTFNFKVxuYXhpcygxKTsgYXhpcygyKVxudGl0bGUoeGxhYiA9IFwibWVhbiBjb3VudFwiLCBsaW5lID0gMik7IHRpdGxlKHlsYWIgPSBcInZhcmlhbmNlXCIsIGxpbmUgPSAyKVxueCA8LSAxMF5zZXEoMSwgNSwgbGVuZ3RoLm91dCA9IDUwKVxubGluZXMoeCwgeCwgY29sID0gXCIjMDA3MEMwXCIsIGx3ZCA9IDIpICAgICAgICAgICAgICAgICAjIFBvaXNzb25cbmxpbmVzKHgsIHggKyAwLjA1ICogeF4yLCBjb2wgPSBcIiNDMDAwMDBcIiwgbHdkID0gMikgICAgIyBOQiwgYWxwaGEgPSAwLjA1XG5sZWdlbmQoXCJ0b3BsZWZ0XCIsIGMoXCJQb2lzc29uOiB2YXIgPSBtZWFuXCIsIFwiTkIsIGFscGhhID0gMC4wNVwiKSxcbiAgICAgICBjb2wgPSBjKFwiIzAwNzBDMFwiLCBcIiNDMDAwMDBcIiksIGx3ZCA9IDIsIGJ0eSA9IFwiblwiLCBjZXggPSAwLjcpIn0=
+</script>
+</div>
+</div>
+</div>
+<p><strong>95 % of genes have variance above the Poisson line.</strong> The extra variance is <em>biological</em> (four different people). The negative binomial adds one parameter, the <strong>dispersion α</strong>: variance = μ + α μ². DESeq2’s job is to estimate α for every gene from only a handful of replicates.</p>
+</section>
+</section>
+<section id="estimation-likelihood-and-the-em-idea" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-likelihood-and-the-em-idea">2 · Estimation: likelihood and the EM idea</h2>
+<p><strong>Maximum likelihood.</strong> Given data, choose the parameter that makes the data most probable. For a binomial with 54 of 138, the MLE is θ̂ = 54/138 = 0.39 — the obvious answer, now justified.</p>
+<p><strong>Bayes.</strong> Multiply the likelihood by a prior and normalize: with a flat prior, θ | data ~ <strong>Beta</strong>(54 + 1, 84 + 1). Now we can ask <em>P(θ &gt; 0.5)</em>, which a p-value cannot answer. Section 6 uses exactly this.</p>
+<p><strong>EM.</strong> When some data are <em>hidden</em> (which transcript did a shared read come from?), alternate: <strong>E-step</strong> — assign hidden labels in expectation using the current parameters; <strong>M-step</strong> — re-estimate parameters from the assigned data. Repeat until nothing changes.</p>
+<section id="em-in-ten-lines-the-rsem-idea" class="level3">
+<h3 class="anchored" data-anchor-id="em-in-ten-lines-the-rsem-idea">EM in ten lines (the RSEM idea)</h3>
+<p>Two transcripts, A and B. 6 reads map only to A, 2 only to B, 4 map to both. What are the abundances?</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-13" class="exercise-cell">
+
+</div>
+<script type="pyodide-13-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibkEsIG5CLCBuU2hhcmVkID0gNiwgMiwgNFxudGhldGEgPSBbMC41LCAwLjVdICAgICAgICAgICAgICAgICAgICAgICMgaW5pdGlhdGlvbjogZXF1YWwgYWJ1bmRhbmNlc1xuZm9yIGl0IGluIHJhbmdlKDgpOlxuICAgICMgRS1zdGVwOiBzcGxpdCBlYWNoIHNoYXJlZCByZWFkIGluIHByb3BvcnRpb24gdG8gY3VycmVudCBhYnVuZGFuY2VzXG4gICAgZUEgPSBuQSArIG5TaGFyZWQgKiB0aGV0YVswXSAvICh0aGV0YVswXSArIHRoZXRhWzFdKVxuICAgIGVCID0gbkIgKyBuU2hhcmVkICogdGhldGFbMV0gLyAodGhldGFbMF0gKyB0aGV0YVsxXSlcbiAgICAjIE0tc3RlcDogYWJ1bmRhbmNlcyA9IGZyYWN0aW9uIG9mIChleHBlY3RlZCkgcmVhZHNcbiAgICB0aGV0YSA9IFtlQSAvIChlQSArIGVCKSwgZUIgLyAoZUEgKyBlQildXG4gICAgcHJpbnQoaXQgKyAxLCBbcm91bmQodCwgMykgZm9yIHQgaW4gdGhldGFdKSJ9
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-14" class="exercise-cell">
+
+</div>
+<script type="webr-14-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibkEgPC0gNjsgbkIgPC0gMjsgblNoYXJlZCA8LSA0XG50aGV0YSA8LSBjKDAuNSwgMC41KSAgICAgICAgICAgICAgICAgICAgIyBpbml0aWF0aW9uOiBlcXVhbCBhYnVuZGFuY2VzXG5mb3IgKGl0IGluIDE6OCkge1xuICAjIEUtc3RlcDogc3BsaXQgZWFjaCBzaGFyZWQgcmVhZCBpbiBwcm9wb3J0aW9uIHRvIGN1cnJlbnQgYWJ1bmRhbmNlc1xuICBlQSA8LSBuQSArIG5TaGFyZWQgKiB0aGV0YVsxXSAvIHN1bSh0aGV0YSlcbiAgZUIgPC0gbkIgKyBuU2hhcmVkICogdGhldGFbMl0gLyBzdW0odGhldGEpXG4gICMgTS1zdGVwOiBhYnVuZGFuY2VzID0gZnJhY3Rpb24gb2YgKGV4cGVjdGVkKSByZWFkc1xuICB0aGV0YSA8LSBjKGVBLCBlQikgLyAoZUEgKyBlQilcbiAgY2F0KGl0LCByb3VuZCh0aGV0YSwgMyksIFwiXFxuXCIpXG59In0=
+</script>
+</div>
+</div>
+</div>
+<p>Naive “split 50/50” gives A = 8/12 = 0.667. EM converges to <strong>0.75 / 0.25</strong>: because A is more abundant, the shared reads more likely came from A, which makes A more abundant still — until the answer is self-consistent. This is what RSEM does across all isoforms of all genes with all multi-mapping reads; its <code>expected_count</code> column is the E-step’s final assignment (which is why <code>chr22_expression.tsv</code> has counts like 317.84).</p>
+</section>
+</section>
+<section id="normalization-size-factors" class="level2">
+<h2 class="anchored" data-anchor-id="normalization-size-factors">3 · Normalization: size factors</h2>
+<p>Sample libraries differ in depth (airway: 15.7 M to 31.8 M reads). DESeq2 does <strong>not</strong> use total counts (a few very highly expressed genes would dominate); it uses the <strong>median of ratios</strong> to a per-gene reference.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-15" class="exercise-cell">
+
+</div>
+<script type="pyodide-15-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibGcgPSBucC5sb2coY3RzLnJlcGxhY2UoMCwgbnAubmFuKSkgICAgICAgIyBsb2cgY291bnRzLCB6ZXJvcyBpZ25vcmVkXG5yZWYgPSBsZy5tZWFuKGF4aXM9MSkgICAgICAgICAgICAgICAgICAgICAjIHBlci1nZW5lIGdlb21ldHJpYyBtZWFuIChsb2cgc2NhbGUpXG5zaXplX2ZhY3RvcnMgPSBucC5leHAoKGxnLnN1YihyZWYsIGF4aXM9MCkpLm1lZGlhbigpKVxucHJpbnQoc2l6ZV9mYWN0b3JzLnJvdW5kKDMpKVxucHJpbnQoKGN0cy5zdW0oKSAvIGN0cy5zdW0oKS5tZWFuKCkpLnJvdW5kKDMpKSAgICMgY29tcGFyZTogdG90YWwtY291bnQgcmF0aW8ifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-16" class="exercise-cell">
+
+</div>
+<script type="webr-16-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibGcgPC0gbG9nKGFzLm1hdHJpeChjdHMpKTsgbGdbIWlzLmZpbml0ZShsZyldIDwtIE5BXG5yZWYgPC0gcm93TWVhbnMobGcsIG5hLnJtID0gVFJVRSlcbnNpemVfZmFjdG9ycyA8LSBleHAoYXBwbHkobGcgLSByZWYsIDIsIG1lZGlhbiwgbmEucm0gPSBUUlVFKSlcbnJvdW5kKHNpemVfZmFjdG9ycywgMylcbnJvdW5kKGNvbFN1bXMoY3RzKSAvIG1lYW4oY29sU3VtcyhjdHMpKSwgMykgICAgICMgY29tcGFyZTogdG90YWwtY291bnQgcmF0aW8ifQ==
+</script>
+</div>
+</div>
+</div>
+</section>
+<section id="testing-from-one-t-test-to-deseq2" class="level2">
+<h2 class="anchored" data-anchor-id="testing-from-one-t-test-to-deseq2">4 · Testing: from one t-test to DESeq2</h2>
+<p><strong>What a t-test assumes</strong> that counts violate: normal errors with equal variance, independence between the 8 samples (but samples come in 4 donor pairs), and one test at a time.</p>
+<p><strong>What DESeq2 does</strong> (Love, Huber &amp; Anders, <em>Genome Biology</em> 2014):</p>
+<ol type="1">
+<li>Model each gene’s count as <strong>NB</strong>(μ, α) with log μ = log(size factor) + β·design. The design <code>~ cell + dex</code> handles the pairing.</li>
+<li>Estimate each gene’s dispersion α, then <strong>shrink</strong> it toward the trend of α vs mean across all genes — borrowing strength, because 4 vs 4 is not enough to estimate a variance well.</li>
+<li>Fit the GLM; test β_dex = 0 with a <strong>Wald test</strong> (or a likelihood-ratio test).</li>
+<li>Adjust p-values with <strong>Benjamini–Hochberg</strong> (FDR).</li>
+<li>Optionally shrink log2 fold changes (<code>lfcShrink</code>) so that low-count genes do not top the list.</li>
+</ol>
+<section id="multiple-testing-bh-by-hand" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-testing-bh-by-hand">Multiple testing: BH by hand</h3>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-17" class="exercise-cell">
+
+</div>
+<script type="pyodide-17-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibG9nYyA9IG5wLmxvZzIoY3RzICsgMSlcbnRydCA9IGxpc3QobWV0YVtcImlkXCJdW21ldGFbXCJkZXhcIl0gPT0gXCJ0cmVhdGVkXCJdKVxucCA9IHN0YXRzLnR0ZXN0X2luZChsb2djW3RydF0sIGxvZ2NbY3RybF0sIGF4aXM9MSkucHZhbHVlXG5cbmRlZiBiaChwKTpcbiAgICBwID0gbnAuYXNhcnJheShwKTsgbiA9IGxlbihwKTsgb3JkZXIgPSBucC5hcmdzb3J0KHApXG4gICAgcmFua2VkID0gcFtvcmRlcl0gKiBuIC8gbnAuYXJhbmdlKDEsIG4gKyAxKVxuICAgIGFkaiA9IG5wLm1pbmltdW0uYWNjdW11bGF0ZShyYW5rZWRbOjotMV0pWzo6LTFdXG4gICAgcSA9IG5wLmVtcHR5KG4pOyBxW29yZGVyXSA9IG5wLm1pbmltdW0oYWRqLCAxKTsgcmV0dXJuIHFcblxucSA9IGJoKHApXG5wcmludChcInJhdyBwIDwgMC4wNTpcIiwgKHAgPCAwLjA1KS5zdW0oKSlcbnByaW50KFwiQkggcSA8IDAuMDUgOlwiLCAocSA8IDAuMDUpLnN1bSgpKSJ9
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-18" class="exercise-cell">
+
+</div>
+<script type="webr-18-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoibG9nYyA8LSBsb2cyKGN0cyArIDEpXG50cnQgPC0gbWV0YSRpZFttZXRhJGRleCA9PSBcInRyZWF0ZWRcIl1cbnR0IDwtIGZ1bmN0aW9uKGEsIGIpIHRyeUNhdGNoKHQudGVzdChhLCBiLCB2YXIuZXF1YWwgPSBUUlVFKSRwLnZhbHVlLCBlcnJvciA9IGZ1bmN0aW9uKGUpIE5BKVxucCA8LSBhcHBseShsb2djLCAxLCBmdW5jdGlvbih4KSB0dCh4W3RydF0sIHhbY3RybF0pKVxucSA8LSBwLmFkanVzdChwLCBtZXRob2QgPSBcIkJIXCIpXG5jYXQoXCJyYXcgcCA8IDAuMDU6XCIsIHN1bShwIDwgMC4wNSwgbmEucm0gPSBUUlVFKSwgXCJcXG5cIilcbmNhdChcIkJIIHEgPCAwLjA1IDpcIiwgc3VtKHEgPCAwLjA1LCBuYS5ybSA9IFRSVUUpLCBcIlxcblwiKSJ9
+</script>
+</div>
+</div>
+</div>
+<p>The t-test keeps <strong>~40 genes</strong> after correction. DESeq2 on the same data (with <code>~ cell + dex</code>) reports <strong>several thousand</strong> at FDR 0.1 — not because it is lenient, but because the NB model with shrunken dispersion and the paired design have far more power. That gap is the whole reason to learn the model.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>DESeq2 itself does not run in the browser (it is a Bioconductor package). On your laptop: <code>BiocManager::install("DESeq2")</code>, then <code>dds &lt;- DESeqDataSetFromMatrix(cts, meta, ~ cell + dex); dds &lt;- DESeq(dds); res &lt;- results(dds)</code>. The <a href="./setup.html">Setup</a> page has the full script.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="an-ma-plot-in-base-r" class="level3">
+<h3 class="anchored" data-anchor-id="an-ma-plot-in-base-r">An MA plot in base R</h3>
+<p>Every DE result should be looked at as <strong>log fold change vs mean</strong>: is the change concentrated in low-count genes (suspicious) or spread across expression levels?</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-19" class="exercise-cell">
+
+</div>
+<script type="pyodide-19-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiQSA9IGxvZ2MubWVhbihheGlzPTEpXG5NID0gbG9nY1t0cnRdLm1lYW4oYXhpcz0xKSAtIGxvZ2NbY3RybF0ubWVhbihheGlzPTEpXG5maWcsIGF4ID0gcGx0LnN1YnBsb3RzKGZpZ3NpemU9KDMuNCwgMy4yKSlcbmF4LnNjYXR0ZXIoQSwgTSwgcz0yLCBjb2xvcj1cImdyZXlcIilcbmF4LnNjYXR0ZXIoQVtxIDwgMC4wNV0sIE1bcSA8IDAuMDVdLCBzPTYsIGNvbG9yPVwiI0MwMDAwMFwiKVxuYXguYXhobGluZSgwLCBjb2xvcj1cImJsYWNrXCIsIGx3PTAuNSlcbmF4LnNldF94bGFiZWwoXCJtZWFuIGxvZzIoY291bnQrMSlcIik7IGF4LnNldF95bGFiZWwoXCJsb2cyIGZvbGQgY2hhbmdlIChkZXgvY3RybClcIilcbnBsdC50aWdodF9sYXlvdXQoKTsgcGx0LnNob3coKSJ9
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-20" class="exercise-cell">
+
+</div>
+<script type="webr-20-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOjMuMiwiZmlnLXdpZHRoIjozLjR9LCJjb2RlIjoiQSA8LSByb3dNZWFucyhsb2djKVxuTSA8LSByb3dNZWFucyhsb2djWywgdHJ0XSkgLSByb3dNZWFucyhsb2djWywgY3RybF0pXG5wYXIobWFyID0gYyg0LCA0LCAxLCAxKSlcbnBsb3QoQSwgTSwgcGNoID0gMTYsIGNleCA9IDAuMywgY29sID0gXCJncmV5NjBcIiwgeGxhYiA9IFwiXCIsIHlsYWIgPSBcIlwiLCBheGVzID0gRkFMU0UpXG5zaWcgPC0gIWlzLm5hKHEpICYgcSA8IDAuMDVcbnBvaW50cyhBW3NpZ10sIE1bc2lnXSwgcGNoID0gMTYsIGNleCA9IDAuNiwgY29sID0gXCIjQzAwMDAwXCIpXG5hYmxpbmUoaCA9IDAsIGx3ZCA9IDAuNSlcbmF4aXMoMSk7IGF4aXMoMilcbnRpdGxlKHhsYWIgPSBcIm1lYW4gbG9nMihjb3VudCsxKVwiLCBsaW5lID0gMilcbnRpdGxlKHlsYWIgPSBcImxvZzIgZm9sZCBjaGFuZ2UgKGRleC9jdHJsKVwiLCBsaW5lID0gMikifQ==
+</script>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chip-seq-designing-the-null" class="level2">
+<h2 class="anchored" data-anchor-id="chip-seq-designing-the-null">5 · ChIP-seq: designing the null</h2>
+<p>A ChIP-seq signal = <strong>specific binding</strong> (antibody × target TF) + <strong>non-specific binding</strong> (antibody × other proteins, open chromatin) + <strong>sonication bias</strong> (open chromatin shears more easily). A peak caller compares IP to a <strong>control</strong> and asks the Poisson question. Which control?</p>
+<ul>
+<li><strong>DNA input</strong> (sonicated chromatin, no antibody): corrects sonication bias only. Lots of DNA → deep, low-noise library.</li>
+<li><strong>Mock IP</strong> (IgG or no-target antibody, full IP protocol): corrects sonication bias <em>and</em> non-specific binding. Very little DNA → shallow, noisy library.</li>
+</ul>
+<section id="what-to-mock-or-not-found-xu-et-al.-nar-2021" class="level3">
+<h3 class="anchored" data-anchor-id="what-to-mock-or-not-found-xu-et-al.-nar-2021">What “To mock or not” found (Xu <em>et al.</em>, <em>NAR</em> 2021)</h3>
+<p>Using modERN datasets with <strong>matched IP, input and mock IP</strong> — 113 human (6 cell lines), 317 worm and 182 fly experiments:</p>
+<ul>
+<li>Mock IP removes far more <strong>spurious sites</strong> than input: about 10 % of input-called peaks in human cell lines, but <strong>~60 % in worm and ~88 % in fly</strong> (whole animals, many cell types).</li>
+<li>Peaks that survive mock IP are more often real: <strong>motif enrichment rises 18–37 %</strong> in the top peaks.</li>
+<li>But mock IP libraries are shallow and noisy, so used <em>alone</em> they lose sensitivity.</li>
+<li><strong>Recommendation: use both.</strong> Call peaks against input (sensitivity), then score each peak by how much stronger IP is than mock — a Bayesian posterior that uses all four libraries.</li>
+</ul>
+</section>
+<section id="the-posterior-probability-in-code" class="level3">
+<h3 class="anchored" data-anchor-id="the-posterior-probability-in-code">The posterior probability, in code</h3>
+<p>For a region with n_i reads in IP and n_d in input, θ₁ = IP fraction ~ Beta(n_i + 1, n_d + 1). For the mock experiment (n_m in mock IP, n_d’ in its input), θ₂ ~ Beta(n_m + 1, n_d’ + 1). A genuine peak needs <strong>θ₁ &gt; 0.5</strong> (enriched over input) <strong>and θ₁ &gt; θ₂</strong> (more enriched than mock). The paper computes P(θ₁ &gt; 0.5 &amp; θ₁ &gt; θ₂) by integration; here we do it by simulation.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-21" class="exercise-cell">
+
+</div>
+<script type="pyodide-21-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoicm5nID0gbnAucmFuZG9tLmRlZmF1bHRfcm5nKDApXG5kZWYgcG9zdGVyaW9yKG5faSwgbl9kLCBuX20sIG5fZG0sIGRyYXdzPTEwMDAwMCk6XG4gICAgdDEgPSBybmcuYmV0YShuX2kgKyAxLCBuX2QgKyAxLCBkcmF3cylcbiAgICB0MiA9IHJuZy5iZXRhKG5fbSArIDEsIG5fZG0gKyAxLCBkcmF3cylcbiAgICByZXR1cm4gKCh0MSA+IDAuNSkgJiAodDEgPiB0MikpLm1lYW4oKVxuXG5wcmludChcIklQIDQwIHZzIGlucHV0IDEwOyBtb2NrIDMwIHZzIGl0cyBpbnB1dCAxMDpcIiwgcm91bmQocG9zdGVyaW9yKDQwLCAxMCwgMzAsIDEwKSwgMykpXG5wcmludChcIklQIDQwIHZzIGlucHV0IDEwOyBtb2NrICA1IHZzIGl0cyBpbnB1dCAxMDpcIiwgcm91bmQocG9zdGVyaW9yKDQwLCAxMCwgNSwgMTApLCAzKSkifQ==
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-22" class="exercise-cell">
+
+</div>
+<script type="webr-22-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoic2V0LnNlZWQoMClcbnBvc3RlcmlvciA8LSBmdW5jdGlvbihuX2ksIG5fZCwgbl9tLCBuX2RtLCBkcmF3cyA9IDEwMDAwMCkge1xuICB0MSA8LSByYmV0YShkcmF3cywgbl9pICsgMSwgbl9kICsgMSlcbiAgdDIgPC0gcmJldGEoZHJhd3MsIG5fbSArIDEsIG5fZG0gKyAxKVxuICBtZWFuKHQxID4gMC41ICYgdDEgPiB0Milcbn1cbmNhdChcIklQIDQwIHZzIGlucHV0IDEwOyBtb2NrIDMwIHZzIGl0cyBpbnB1dCAxMDpcIiwgcm91bmQocG9zdGVyaW9yKDQwLCAxMCwgMzAsIDEwKSwgMyksIFwiXFxuXCIpXG5jYXQoXCJJUCA0MCB2cyBpbnB1dCAxMDsgbW9jayAgNSB2cyBpdHMgaW5wdXQgMTA6XCIsIHJvdW5kKHBvc3Rlcmlvcig0MCwgMTAsIDUsIDEwKSwgMyksIFwiXFxuXCIpIn0=
+</script>
+</div>
+</div>
+</div>
+<p>Same IP enrichment (40 vs 10) in both cases. When the <strong>mock IP is also enriched</strong> (30 vs 10), the posterior drops to ~0.7 — a “hyper-ChIPable” region where any antibody pulls down DNA. When the mock is flat (5 vs 10), the posterior is ~1: a real peak.</p>
+</section>
+</section>
+<section id="the-toolbox-in-one-table" class="level2">
+<h2 class="anchored" data-anchor-id="the-toolbox-in-one-table">6 · The toolbox, in one table</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>You have…</th>
+<th>Ask…</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>k of n reads carry an allele</td>
+<td>is θ = 0.5? what is P(θ &gt; 0.5)?</td>
+<td>binomial test; Beta posterior</td>
+</tr>
+<tr class="even">
+<td>reads in a window vs background</td>
+<td>is this more than chance?</td>
+<td>Poisson tail test (MACS)</td>
+</tr>
+<tr class="odd">
+<td>counts × replicates × conditions</td>
+<td>which genes change?</td>
+<td>NB GLM + shrinkage + BH (DESeq2/edgeR)</td>
+</tr>
+<tr class="even">
+<td>reads compatible with several isoforms</td>
+<td>how much of each?</td>
+<td>EM (RSEM, kallisto, salmon)</td>
+</tr>
+<tr class="odd">
+<td>thousands of p-values</td>
+<td>how many are false?</td>
+<td>Benjamini–Hochberg FDR</td>
+</tr>
+<tr class="even">
+<td>a peak in IP</td>
+<td>is it in mock too?</td>
+<td>joint Beta posterior (Xu <em>et al.</em> 2021)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>References.</strong> Love MI, Huber W, Anders S. <em>Genome Biol</em> 2014 (DESeq2) · Li B, Dewey CN. <em>BMC Bioinformatics</em> 2011 (RSEM) · Zhang Y <em>et al.</em> <em>Genome Biol</em> 2008 (MACS) · Xu J <em>et al.</em> <em>Nucleic Acids Res</em> 2021;49(3):e17 (mock IP vs input) · Himes BE <em>et al.</em> <em>PLoS ONE</em> 2014 (airway data) · Benjamini Y, Hochberg Y. <em>JRSS-B</em> 1995.</p>
+
+
+<script type="webr-data">
+eyJvcHRpb25zIjp7ImJhc2VVcmwiOiJodHRwczovL3dlYnIuci13YXNtLm9yZy92MC42LjAvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsiZXZhbHVhdGUiLCJrbml0ciIsImh0bWx0b29scyIsInJtYXJrZG93biJdLCJyZXBvcyI6W119LCJyZW5kZXJfZGYiOiJwYWdlZC10YWJsZSJ9
+</script>
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lweSIsIm1hdHBsb3RsaWIiXX19
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMjI7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0yMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzIyID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMjItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0yMi1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8yMiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMjIsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTIxIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMjEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTIxLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMjEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8yMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMjEsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMjA7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0yMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzIwID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMjAtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0yMC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8yMCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMjAsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTE5IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTkgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE5LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMTktY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xOSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTksIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTg7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE4ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTgtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xOC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xOCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTgsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTE3IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTcgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE3LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMTctY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xNyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTcsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTY7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE2ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTYtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xNi1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xNiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTYsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTE1IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTE1LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMTUtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xNSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTUsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTQ7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE0ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xNC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xNCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTQsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTEzIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTMgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTEzLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMTMtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xMyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTMsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTI7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEyID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xMi1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xMiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTIsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTExIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTExLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTEsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTA7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEwID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTAtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xMC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xMCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTAsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTkiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl85ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS05LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtOS1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IoXG4gICAgcHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSxcbiAgICBibG9jay5jb2RlLFxuICAgIG9wdGlvbnNcbiAgKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl9weW9kaWRlX3ZhbHVlXzkgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzksIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV84O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzggPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici04LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItOC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV84ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl84LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS03IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtNy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTctY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV83ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl83LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfNjtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTYiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl82ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGB3ZWJyLTYtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3dlYnJfdmFsdWVfNiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfNiwge30pO1xuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTUtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgcHlvZGlkZS01LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihcbiAgICBweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLFxuICAgIGJsb2NrLmNvZGUsXG4gICAgb3B0aW9uc1xuICApO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3B5b2RpZGVfdmFsdWVfNSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNSwge30pO1xuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTQiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzQ7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfNCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici00LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl93ZWJyX3ZhbHVlXzQgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzQsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTMiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl8zID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS0zLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHB5b2RpZGUtMy1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IoXG4gICAgcHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSxcbiAgICBibG9jay5jb2RlLFxuICAgIG9wdGlvbnNcbiAgKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl9weW9kaWRlX3ZhbHVlXzMgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzMsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV8yO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzIgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici0yLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItMi1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8yID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8yLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoid2ViUk9qcyA9IHtcbiAgY29uc3QgeyBXZWJSLCBDaGFubmVsVHlwZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZS5XZWJSO1xuICBjb25zdCB7XG4gICAgV2ViUkV2YWx1YXRvcixcbiAgICBXZWJSRW52aXJvbm1lbnRNYW5hZ2VyLFxuICAgIHNldHVwUixcbiAgICBiNjREZWNvZGUsXG4gICAgY29sbGFwc2VQYXRoXG4gIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHN0YXR1c0NvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1zdGF0dXNcIik7XG4gIGNvbnN0IGluZGljYXRvckNvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGluZGljYXRvckNvbnRhaW5lci5jbGFzc0xpc3QucmVtb3ZlKFwiZC1ub25lXCIpO1xuXG4gIGxldCBzdGF0dXNUZXh0ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudChcImRpdlwiKVxuICBzdGF0dXNUZXh0LmNsYXNzTGlzdCA9IFwiZXhlcmNpc2UtbG9hZGluZy1kZXRhaWxzXCI7XG4gIHN0YXR1c1RleHQgPSBzdGF0dXNDb250YWluZXIuYXBwZW5kQ2hpbGQoc3RhdHVzVGV4dCk7XG4gIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgSW5pdGlhbGlzZWA7XG5cbiAgLy8gSG9pc3QgaW5kaWNhdG9yIG91dCBmcm9tIGZpbmFsIHNsaWRlIHdoZW4gcnVubmluZyB1bmRlciByZXZlYWxcbiAgY29uc3QgcmV2ZWFsU3RhdHVzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgLmV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpZiAocmV2ZWFsU3RhdHVzKSB7XG4gICAgcmV2ZWFsU3RhdHVzLnJlbW92ZSgpO1xuICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsID4gLnNsaWRlc1wiKS5hcHBlbmRDaGlsZChyZXZlYWxTdGF0dXMpO1xuICB9XG5cbiAgLy8gTWFrZSBhbnkgcmV2ZWFsIHNsaWRlcyB3aXRoIGxpdmUgY2VsbHMgc2Nyb2xsYWJsZVxuICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKFwiLnJldmVhbCAuZXhlcmNpc2UtY2VsbFwiKS5mb3JFYWNoKChlbCkgPT4ge1xuICAgIGVsLmNsb3Nlc3QoJ3NlY3Rpb24uc2xpZGUnKS5jbGFzc0xpc3QuYWRkKFwic2Nyb2xsYWJsZVwiKTtcbiAgfSlcblxuICAvLyB3ZWJSIHN1cHBsZW1lbnRhbCBkYXRhIGFuZCBvcHRpb25zXG4gIGNvbnN0IGRhdGFDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItZGF0YVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGRhdGEgPSBKU09OLnBhcnNlKGI2NERlY29kZShkYXRhQ29udGVudCkpO1xuXG4gIC8vIEdyYWIgbGlzdCBvZiByZXNvdXJjZXMgdG8gYmUgZG93bmxvYWRlZFxuICBjb25zdCBmaWxlc0NvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwidmZzLWZpbGVcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBmaWxlcyA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGZpbGVzQ29udGVudCkpO1xuXG4gIC8vIEluaXRpYWxpc2Ugd2ViUiBhbmQgc2V0dXAgZm9yIFIgY29kZSBldmFsdWF0aW9uXG4gIGxldCB3ZWJSUHJvbWlzZSA9IChhc3luYyAod2ViUikgPT4ge1xuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgd2ViUmA7XG4gICAgYXdhaXQgd2ViUi5pbml0KCk7XG5cbiAgICAvLyBJbnN0YWxsIHByb3ZpZGVkIGxpc3Qgb2YgcGFja2FnZXNcbiAgICAvLyBFbnN1cmUgd2ViUiBkZWZhdWx0IHJlcG8gaXMgaW5jbHVkZWRcbiAgICBkYXRhLnBhY2thZ2VzLnJlcG9zLnB1c2goXCJodHRwczovL3JlcG8uci13YXNtLm9yZ1wiKVxuICAgIGF3YWl0IGRhdGEucGFja2FnZXMucGtncy5tYXAoKHBrZykgPT4gKCkgPT4ge1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiAke3BrZ31gO1xuICAgICAgcmV0dXJuIHdlYlIuZXZhbFJWb2lkKGBcbiAgICAgICAgd2Vicjo6aW5zdGFsbChwa2csIHJlcG9zID0gcmVwb3MpXG4gICAgICAgIGxpYnJhcnkocGtnLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpXG4gICAgICBgLCB7IGVudjoge1xuICAgICAgICBwa2c6IHBrZyxcbiAgICAgICAgcmVwb3M6IGRhdGEucGFja2FnZXMucmVwb3MsXG4gICAgICB9fSk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICAvLyBEb3dubG9hZCBhbmQgaW5zdGFsbCByZXNvdXJjZXNcbiAgICBhd2FpdCBmaWxlcy5tYXAoKGZpbGUpID0+IGFzeW5jICgpID0+IHtcbiAgICAgIGNvbnN0IG5hbWUgPSBmaWxlLnN1YnN0cmluZyhmaWxlLmxhc3RJbmRleE9mKCcvJykgKyAxKTtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcmVzb3VyY2U6ICR7bmFtZX1gO1xuICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChmaWxlKTtcbiAgICAgIGlmICghcmVzcG9uc2Uub2spIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBDYW4ndCBkb3dubG9hZCBcXGAke2ZpbGV9XFxgLiBFcnJvciAke3Jlc3BvbnNlLnN0YXR1c306IFwiJHtyZXNwb25zZS5zdGF0dXNUZXh0fVwiLmApO1xuICAgICAgfVxuICAgICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmFycmF5QnVmZmVyKCk7XG5cbiAgICAgIC8vIFN0b3JlIFVSTHMgaW4gdGhlIGN3ZCB3aXRob3V0IGFueSBzdWJkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBpZiAoZmlsZS5pbmNsdWRlcyhcIjovL1wiKSkge1xuICAgICAgICBmaWxlID0gbmFtZTtcbiAgICAgIH1cblxuICAgICAgLy8gQ29sbGFwc2UgaGlnaGVyIGRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGZpbGUgPSBjb2xsYXBzZVBhdGgoZmlsZSk7XG5cbiAgICAgIC8vIENyZWF0ZSBkaXJlY3RvcnkgdHJlZSwgaWdub3JpbmcgXCJkaXJlY3RvcnkgZXhpc3RzXCIgVkZTIGVycm9yc1xuICAgICAgY29uc3QgcGFydHMgPSBmaWxlLnNwbGl0KCcvJykuc2xpY2UoMCwgLTEpO1xuICAgICAgbGV0IHBhdGggPSAnJztcbiAgICAgIHdoaWxlIChwYXJ0cy5sZW5ndGggPiAwKSB7XG4gICAgICAgIHBhdGggKz0gcGFydHMuc2hpZnQoKSArICcvJztcbiAgICAgICAgY29uc3QgYW5hbHlzaXMgPSBhd2FpdCB3ZWJSLkZTLmFuYWx5emVQYXRoKHBhdGgpO1xuICAgICAgICBpZiAoIWFuYWx5c2lzLmV4aXN0cykge1xuICAgICAgICAgIHRyeSB7XG4gICAgICAgICAgICBhd2FpdCB3ZWJSLkZTLm1rZGlyKHBhdGgpO1xuICAgICAgICAgIH0gY2F0Y2ggKGUpIHtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvcjogXCIke2UubWVzc2FnZX1cIi5gKTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgLy8gV3JpdGUgdGhpcyBmaWxlIHRvIHRoZSBWRlNcbiAgICAgIHJldHVybiBhd2FpdCB3ZWJSLkZTLndyaXRlRmlsZShmaWxlLCBuZXcgVWludDhBcnJheShkYXRhKSk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYEluc3RhbGxpbmcgd2ViUiBzaGltc2A7XG4gICAgYXdhaXQgd2ViUi5ldmFsUlZvaWQoYHdlYnI6OnNoaW1faW5zdGFsbCgpYCk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYFdlYlIgZW52aXJvbm1lbnQgc2V0dXBgO1xuICAgIGF3YWl0IHNldHVwUih3ZWJSLCBkYXRhKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiB3ZWJSO1xuICB9KShuZXcgV2ViUihkYXRhLm9wdGlvbnMpKTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3Qgd2ViUiA9IGF3YWl0IHdlYlJQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBXZWJSRXZhbHVhdG9yKHdlYlIsIGNvbnRleHQpXG4gICAgYXdhaXQgZXZhbHVhdG9yLnByb2Nlc3MoaW5wdXRzKTtcbiAgICByZXR1cm4gZXZhbHVhdG9yLmNvbnRhaW5lcjtcbiAgfVxuXG4gIHJldHVybiB7XG4gICAgcHJvY2VzcyxcbiAgICB3ZWJSUHJvbWlzZSxcbiAgICByZW5kZXJlZE9qcyxcbiAgfTtcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLXByZWx1ZGUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJweW9kaWRlT2pzID0ge1xuICBjb25zdCB7XG4gICAgUHlvZGlkZUV2YWx1YXRvcixcbiAgICBQeW9kaWRlRW52aXJvbm1lbnRNYW5hZ2VyLFxuICAgIHNldHVwUHl0aG9uLFxuICAgIHN0YXJ0UHlvZGlkZVdvcmtlcixcbiAgICBiNjREZWNvZGUsXG4gICAgY29sbGFwc2VQYXRoLFxuICB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzdGF0dXNDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctc3RhdHVzXCIpO1xuICBjb25zdCBpbmRpY2F0b3JDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpbmRpY2F0b3JDb250YWluZXIuY2xhc3NMaXN0LnJlbW92ZShcImQtbm9uZVwiKTtcblxuICBsZXQgc3RhdHVzVGV4dCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoXCJkaXZcIilcbiAgc3RhdHVzVGV4dC5jbGFzc0xpc3QgPSBcImV4ZXJjaXNlLWxvYWRpbmctZGV0YWlsc1wiO1xuICBzdGF0dXNUZXh0ID0gc3RhdHVzQ29udGFpbmVyLmFwcGVuZENoaWxkKHN0YXR1c1RleHQpO1xuICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYEluaXRpYWxpc2VgO1xuXG4gIC8vIEhvaXN0IGluZGljYXRvciBvdXQgZnJvbSBmaW5hbCBzbGlkZSB3aGVuIHJ1bm5pbmcgdW5kZXIgcmV2ZWFsXG4gIGNvbnN0IHJldmVhbFN0YXR1cyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsIC5leGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaWYgKHJldmVhbFN0YXR1cykge1xuICAgIHJldmVhbFN0YXR1cy5yZW1vdmUoKTtcbiAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCA+IC5zbGlkZXNcIikuYXBwZW5kQ2hpbGQocmV2ZWFsU3RhdHVzKTtcbiAgfVxuXG4gIC8vIE1ha2UgYW55IHJldmVhbCBzbGlkZXMgd2l0aCBsaXZlIGNlbGxzIHNjcm9sbGFibGVcbiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbChcIi5yZXZlYWwgLmV4ZXJjaXNlLWNlbGxcIikuZm9yRWFjaCgoZWwpID0+IHtcbiAgICBlbC5jbG9zZXN0KCdzZWN0aW9uLnNsaWRlJykuY2xhc3NMaXN0LmFkZChcInNjcm9sbGFibGVcIik7XG4gIH0pXG5cbiAgLy8gUHlvZGlkZSBzdXBwbGVtZW50YWwgZGF0YSBhbmQgb3B0aW9uc1xuICBjb25zdCBkYXRhQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLWRhdGFcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBkYXRhID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZGF0YUNvbnRlbnQpKTtcblxuICAvLyBHcmFiIGxpc3Qgb2YgcmVzb3VyY2VzIHRvIGJlIGRvd25sb2FkZWRcbiAgY29uc3QgZmlsZXNDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInZmcy1maWxlXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZmlsZXMgPSBKU09OLnBhcnNlKGI2NERlY29kZShmaWxlc0NvbnRlbnQpKTtcblxuICBsZXQgcHlvZGlkZVByb21pc2UgPSAoYXN5bmMgKCkgPT4ge1xuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgUHlvZGlkZWA7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHN0YXJ0UHlvZGlkZVdvcmtlcihkYXRhLm9wdGlvbnMpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiBtaWNyb3BpcGA7XG4gICAgYXdhaXQgcHlvZGlkZS5sb2FkUGFja2FnZShcIm1pY3JvcGlwXCIpO1xuICAgIGNvbnN0IG1pY3JvcGlwID0gYXdhaXQgcHlvZGlkZS5weWltcG9ydChcIm1pY3JvcGlwXCIpO1xuICAgIGF3YWl0IGRhdGEucGFja2FnZXMucGtncy5tYXAoKHBrZykgPT4gKCkgPT4ge1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiAke3BrZ31gO1xuICAgICAgcmV0dXJuIG1pY3JvcGlwLmluc3RhbGwocGtnKTtcbiAgICB9KS5yZWR1Y2UoKGN1ciwgbmV4dCkgPT4gY3VyLnRoZW4obmV4dCksIFByb21pc2UucmVzb2x2ZSgpKTtcbiAgICBhd2FpdCBtaWNyb3BpcC5kZXN0cm95KCk7XG5cbiAgICAvLyBEb3dubG9hZCBhbmQgaW5zdGFsbCByZXNvdXJjZXNcbiAgICBhd2FpdCBmaWxlcy5tYXAoKGZpbGUpID0+IGFzeW5jICgpID0+IHtcbiAgICAgIGNvbnN0IG5hbWUgPSBmaWxlLnN1YnN0cmluZyhmaWxlLmxhc3RJbmRleE9mKCcvJykgKyAxKTtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcmVzb3VyY2U6ICR7bmFtZX1gO1xuICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChmaWxlKTtcbiAgICAgIGlmICghcmVzcG9uc2Uub2spIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBDYW4ndCBkb3dubG9hZCBcXGAke2ZpbGV9XFxgLiBFcnJvciAke3Jlc3BvbnNlLnN0YXR1c306IFwiJHtyZXNwb25zZS5zdGF0dXNUZXh0fVwiLmApO1xuICAgICAgfVxuICAgICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmFycmF5QnVmZmVyKCk7XG5cbiAgICAgIC8vIFN0b3JlIFVSTHMgaW4gdGhlIGN3ZCB3aXRob3V0IGFueSBzdWJkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBpZiAoZmlsZS5pbmNsdWRlcyhcIjovL1wiKSkge1xuICAgICAgICBmaWxlID0gbmFtZTtcbiAgICAgIH1cblxuICAgICAgLy8gQ29sbGFwc2UgaGlnaGVyIGRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGZpbGUgPSBjb2xsYXBzZVBhdGgoZmlsZSk7XG5cbiAgICAgIC8vIENyZWF0ZSBkaXJlY3RvcnkgdHJlZSwgaWdub3JpbmcgXCJkaXJlY3RvcnkgZXhpc3RzXCIgVkZTIGVycm9yc1xuICAgICAgY29uc3QgcGFydHMgPSBmaWxlLnNwbGl0KCcvJykuc2xpY2UoMCwgLTEpO1xuICAgICAgbGV0IHBhdGggPSAnJztcbiAgICAgIHdoaWxlIChwYXJ0cy5sZW5ndGggPiAwKSB7XG4gICAgICAgIHBhdGggKz0gcGFydHMuc2hpZnQoKSArICcvJztcbiAgICAgICAgdHJ5IHtcbiAgICAgICAgICBhd2FpdCBweW9kaWRlLkZTLm1rZGlyKHBhdGgpO1xuICAgICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgICAgaWYgKGUubmFtZSAhPT0gXCJFcnJub0Vycm9yXCIpIHRocm93IGU7XG4gICAgICAgICAgaWYgKGUuZXJybm8gIT09IDIwKSB7XG4gICAgICAgICAgICBjb25zdCBlcnJvclRleHRQdHIgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuX3N0cmVycm9yKGUuZXJybm8pO1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBGaWxlc3lzdGVtIEVycm9yICR7ZS5lcnJub30gXCIke2Vycm9yVGV4dH1cIi5gKTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgLy8gV3JpdGUgdGhpcyBmaWxlIHRvIHRoZSBWRlNcbiAgICAgIHRyeSB7XG4gICAgICAgIHJldHVybiBhd2FpdCBweW9kaWRlLkZTLndyaXRlRmlsZShmaWxlLCBuZXcgVWludDhBcnJheShkYXRhKSk7XG4gICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICBjb25zdCBlcnJvclRleHRQdHIgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuX3N0cmVycm9yKGUuZXJybm8pO1xuICAgICAgICBjb25zdCBlcnJvclRleHQgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuVVRGOFRvU3RyaW5nKGVycm9yVGV4dFB0cik7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICB9XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYFB5b2RpZGUgZW52aXJvbm1lbnQgc2V0dXBgO1xuICAgIGF3YWl0IHNldHVwUHl0aG9uKHB5b2RpZGUpO1xuXG4gICAgc3RhdHVzVGV4dC5yZW1vdmUoKTtcbiAgICBpZiAoc3RhdHVzQ29udGFpbmVyLmNoaWxkcmVuLmxlbmd0aCA9PSAwKSB7XG4gICAgICBzdGF0dXNDb250YWluZXIucGFyZW50Tm9kZS5yZW1vdmUoKTtcbiAgICB9XG4gICAgcmV0dXJuIHB5b2RpZGU7XG4gIH0pKCkuY2F0Y2goKGVycikgPT4ge1xuICAgIHN0YXR1c1RleHQuc3R5bGUuY29sb3IgPSBcInZhcigtLWV4ZXJjaXNlLWVkaXRvci1obC1lciwgI0FEMDAwMClcIjtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gZXJyLm1lc3NhZ2U7XG4gICAgLy9pbmRpY2F0b3JDb250YWluZXIucXVlcnlTZWxlY3RvcihcIi5zcGlubmVyLWdyb3dcIikuY2xhc3NMaXN0LmFkZChcImQtbm9uZVwiKTtcbiAgICB0aHJvdyBlcnI7XG4gIH0pO1xuXG4gIC8vIEtlZXAgdHJhY2sgb2YgaW5pdGlhbCBPSlMgYmxvY2sgcmVuZGVyXG4gIGNvbnN0IHJlbmRlcmVkT2pzID0ge307XG5cbiAgY29uc3QgcHJvY2VzcyA9IGFzeW5jIChjb250ZXh0LCBpbnB1dHMpID0+IHtcbiAgICBjb25zdCBweW9kaWRlID0gYXdhaXQgcHlvZGlkZVByb21pc2U7XG4gICAgY29uc3QgZXZhbHVhdG9yID0gbmV3IFB5b2RpZGVFdmFsdWF0b3IocHlvZGlkZSwgY29udGV4dCk7XG4gICAgYXdhaXQgZXZhbHVhdG9yLnByb2Nlc3MoaW5wdXRzKTtcbiAgICByZXR1cm4gZXZhbHVhdG9yLmNvbnRhaW5lcjtcbiAgfVxuXG4gIHJldHVybiB7XG4gICAgcHlvZGlkZVByb21pc2UsXG4gICAgcmVuZGVyZWRPanMsXG4gICAgcHJvY2VzcyxcbiAgfTtcbn1cbiJ9XX0=
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJkYXRhL0NPTVRfZXhvbnMudHN2IiwiZGF0YS9DT01UX2dlbmUuZmEiLCJkYXRhL0NPTVRfcHJvdGVpbi5mYSIsImRhdGEvcmVhZHNfNWsuZmFzdHEiLCJkYXRhL2NocjIyX2V4cHJlc3Npb24udHN2IiwiZGF0YS9haXJ3YXlfbWV0YWRhdGEudHN2IiwiZGF0YS9haXJ3YXlfY291bnRzLnRzdiIsImRhdGEvQ09NVF9jZHMuZmEiLCJkYXRhL2NocjIyX21pc21hdGNoZXMudHN2IiwiZGF0YS9jaHIyMl9nZW5lcy50c3YiLCJkYXRhL2xhYjIvZ3dhc19yZWdpb24udHN2IiwiZGF0YS9sYWIyL3JzMjgxNDc3OF9ieV9wb3B1bGF0aW9uLnRzdiIsImRhdGEvbGFiMi9zdHJhdGlmaWNhdGlvbi50c3YiLCJkYXRhL2xhYjIvZ3dhc19zbnBzLnRzdiJd
+</script>
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>DATA405 Genomic Data Science · Jinrui Xu · Howard University · Fall 2026</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Code runs in your browser (Pyodide + webR). Nothing is uploaded.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

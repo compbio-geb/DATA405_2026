@@ -1,0 +1,452 @@
+---
+title: "Lecture 10 · Programming for Biologists: Python and R"
+subtitle: "The main knowledge from the slides, with every code example runnable"
+resources:
+  - data
+---
+
+::: {.callout-tip appearance="simple"}
+The lecture teaches Python first, then R. Here the same steps are shown side by side so you can compare the two languages line by line. Use it after lecture or during the lab. Press **Run Code** on any cell; edit it and run again.
+:::
+
+## Part 1 · Why two languages?
+
+**Python** (Guido van Rossum, 1991) was designed as a general-purpose language that reads like pseudocode. When DNA sequencing started producing *text* at scale (2005–2010), Python's string handling and its "glue" nature made it the language of pipelines: reads, files, tools, web services.
+
+**R** (Ross Ihaka & Robert Gentleman, University of Auckland, 1993) is the open-source descendant of **S** (John Chambers, Bell Labs, 1976), a language *built for statistics*. In 2001 **Bioconductor** was founded on R, and since then most statistical methods for genomics (limma, edgeR, **DESeq2**) have been published as R packages first.
+
+| | Python | R |
+|---|---|---|
+| Born | 1991, general purpose | 1993, statistics (from S, 1976) |
+| Natural unit | string, list, dict | vector, data frame |
+| Genomics home | Biopython, pysam, scanpy, PyTorch | Bioconductor: DESeq2, edgeR, Seurat |
+| Plots | matplotlib (a library) | `plot()` is built into the language |
+| Where you meet it | pipelines, machine learning, web | statistics, figures for the paper |
+
+**Neither is "the real one".** A typical genomics project runs a Python (or shell) pipeline to produce a table of counts, then an R notebook to test hypotheses and draw the figures.
+
+## Part 2 · Same idea, two syntaxes
+
+The first thing to learn is that the differences are mostly *surface*. Here is the same tiny program.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+gene = "COMT"          # a variable holding text
+n = 271                # a number
+print(gene, "has", n, "amino acids")
+
+for base in "ATG":     # a loop over letters
+    print(base)
+
+def gc_content(dna):   # a function
+    g = dna.count("G")
+    c = dna.count("C")
+    return (g + c) / len(dna)
+
+print(gc_content("ATGCCGGAGG"))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+gene <- "COMT"         # a variable holding text
+n <- 271               # a number
+cat(gene, "has", n, "amino acids\n")
+
+for (base in c("A", "T", "G")) {   # a loop over letters
+  cat(base, "\n")
+}
+
+gc_content <- function(dna) {      # a function
+  bases <- strsplit(dna, "")[[1]]
+  mean(bases %in% c("G", "C"))
+}
+
+gc_content("ATGCCGGAGG")
+```
+:::
+:::
+
+### The four differences that actually matter
+
+1. **Indexing starts at 0 in Python and at 1 in R.** `dna[0]` in Python is the first letter; `substr(dna, 1, 1)` in R is the first letter. Half of all coordinate bugs in genomics come from this. (BED files are 0-based; GTF/VCF files are 1-based.)
+2. **Python works on one string; R works on vectors.** In R, almost everything is a vector, so `mean(bases %in% c("G","C"))` computes GC content without a loop. Python needs a loop or `str.count`.
+3. **Assignment**: `=` in Python, `<-` in R (R also accepts `=`).
+4. **Blocks**: Python uses indentation; R uses `{ }`.
+
+::: {.yourturn}
+In the cells above, change the sequence to `"ATGAAATTT"` and predict the GC content **before** you run.
+:::
+
+## Part 3 · Biology as strings
+
+The coding sequence of **COMT** (catechol-*O*-methyltransferase, chromosome 22) is 816 letters. We will read it from a FASTA file, then do what every sequence tool does: count, reverse-complement, translate.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+def read_fasta(path):
+    seq = []
+    for line in open(path):
+        if not line.startswith(">"):
+            seq.append(line.strip())
+    return "".join(seq)
+
+cds = read_fasta("data/COMT_cds.fa")
+print(len(cds), "nt")
+print(cds[:30])
+gc = (cds.count("G") + cds.count("C")) / len(cds)
+print("GC content:", round(gc * 100, 1), "%")
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+read_fasta <- function(path) {
+  lines <- readLines(path)
+  paste(lines[!startsWith(lines, ">")], collapse = "")
+}
+
+cds <- read_fasta("data/COMT_cds.fa")
+cat(nchar(cds), "nt\n")
+cat(substr(cds, 1, 30), "\n")
+bases <- strsplit(cds, "")[[1]]
+gc <- mean(bases %in% c("G", "C"))
+cat("GC content:", round(gc * 100, 1), "%\n")
+```
+:::
+:::
+
+### Reverse complement
+
+DNA is double-stranded; a read may come from either strand. The reverse complement is *reverse* the string, then *complement* each letter.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+complement = {"A": "T", "T": "A", "G": "C", "C": "G"}
+rc = "".join(complement[b] for b in reversed(cds))
+print(rc[:20])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+complement <- c(A = "T", T = "A", G = "C", C = "G")
+rc <- paste(rev(complement[bases]), collapse = "")
+cat(substr(rc, 1, 20), "\n")
+```
+:::
+:::
+
+### The genetic code is a dictionary
+
+64 codons → 21 outcomes (20 amino acids + stop). In Python this is a **dict**; in R it is a **named vector**. The string below lists the amino acids in the standard TCAG order.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+bases = "TCAG"
+aas = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG"
+codon_table = {}
+i = 0
+for a in bases:
+    for b in bases:
+        for c in bases:
+            codon_table[a + b + c] = aas[i]
+            i += 1
+
+def translate(dna):
+    protein = ""
+    for i in range(0, len(dna) - 2, 3):
+        protein += codon_table[dna[i:i+3]]
+    return protein
+
+protein = translate(cds)
+print(protein[:30], "...", protein[-5:])
+print(len(protein) - 1, "amino acids + stop")
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+b <- c("T", "C", "A", "G")
+aas <- strsplit("FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG", "")[[1]]
+codons <- character(0)
+for (x in b) for (y in b) for (z in b) codons <- c(codons, paste0(x, y, z))
+codon_table <- setNames(aas, codons)
+
+translate <- function(dna) {
+  n <- nchar(dna) %/% 3
+  starts <- seq(1, by = 3, length.out = n)
+  cod <- substring(dna, starts, starts + 2)
+  paste(codon_table[cod], collapse = "")
+}
+
+protein <- translate(cds)
+cat(substr(protein, 1, 30), "...", substr(protein, nchar(protein) - 4, nchar(protein)), "\n")
+cat(nchar(protein) - 1, "amino acids + stop\n")
+```
+:::
+:::
+
+### One letter, one amino acid: rs4680 (Val158Met)
+
+The most studied variant in COMT is **rs4680**: a G→A change in codon 158 that turns **valine (GTG)** into **methionine (ATG)** and reduces enzyme activity 3–4 fold. The reference genome carries the G. Watch the off-by-one:
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+i = (158 - 1) * 3              # codon 158 → 0-based offset 471
+print("codon 158:", cds[i:i+3], "=", codon_table[cds[i:i+3]])
+mutant = cds[:i] + "A" + cds[i+1:]
+print("mutant   :", mutant[i:i+3], "=", translate(mutant)[157])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+i <- (158 - 1) * 3 + 1         # codon 158 → 1-based position 472
+cat("codon 158:", substr(cds, i, i + 2), "=", codon_table[substr(cds, i, i + 2)], "\n")
+mutant <- cds
+substr(mutant, i, i) <- "A"
+cat("mutant   :", substr(mutant, i, i + 2), "=", substr(translate(mutant), 158, 158), "\n")
+```
+:::
+:::
+
+::: {.trap}
+Python `cds[471:474]` and R `substr(cds, 472, 474)` are **the same three letters**. If you copy a 1-based coordinate from a VCF or GTF file into Python without subtracting 1, you translate the wrong codon and never notice.
+:::
+
+## Part 4 · Biology as tables
+
+Once reads are counted, everything is a **table**: one row per gene, one column per sample or attribute. Python's table object is the pandas **DataFrame**; R's is the built-in **data.frame**. The five verbs you need: *read, filter, sort, group, summarize*.
+
+`chr22_genes.tsv` lists all 1,747 GENCODE genes on chromosome 22.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import pandas as pd
+genes = pd.read_csv("data/chr22_genes.tsv", sep="\t")
+print(genes.shape)
+print(genes["gene_type"].value_counts().head(5))
+
+pc = genes[genes["gene_type"] == "protein_coding"]      # filter
+print(len(pc), "protein-coding genes")
+print(pc["length_bp"].median(), "bp median length")
+
+longest = genes.sort_values("length_bp", ascending=False) # sort
+print(longest[["gene_name", "length_bp"]].head(3))
+
+# group + summarize
+print(genes.groupby("gene_type")["length_bp"].median().sort_values(ascending=False).head(4))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+genes <- read.delim("data/chr22_genes.tsv")
+dim(genes)
+head(sort(table(genes$gene_type), decreasing = TRUE), 5)
+
+pc <- genes[genes$gene_type == "protein_coding", ]       # filter
+cat(nrow(pc), "protein-coding genes\n")
+cat(median(pc$length_bp), "bp median length\n")
+
+longest <- genes[order(-genes$length_bp), ]              # sort
+head(longest[, c("gene_name", "length_bp")], 3)
+
+# group + summarize
+head(sort(tapply(genes$length_bp, genes$gene_type, median), decreasing = TRUE), 4)
+```
+:::
+:::
+
+### Joining two tables
+
+`chr22_expression.tsv` is the output of an RSEM run on 100,000 real RNA-seq reads (BIOL419 Lab 4). Joining it to the gene table lets us ask: *which kinds of genes are expressed?*
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+expr = pd.read_csv("data/chr22_expression.tsv", sep="\t")
+print(expr.sort_values("TPM", ascending=False)[["gene_name", "gene_type", "TPM"]].head(3))
+
+m = genes.merge(expr[["gene_id", "TPM"]], on="gene_id")
+frac_on = m.groupby("gene_type")["TPM"].apply(lambda s: (s > 1).mean())
+print(frac_on.sort_values(ascending=False).head(4))
+print(expr[expr["gene_name"] == "COMT"])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+expr <- read.delim("data/chr22_expression.tsv")
+head(expr[order(-expr$TPM), c("gene_name", "gene_type", "TPM")], 3)
+
+m <- merge(genes, expr[, c("gene_id", "TPM")], by = "gene_id")
+frac_on <- tapply(m$TPM > 1, m$gene_type, mean)
+head(sort(frac_on, decreasing = TRUE), 4)
+expr[expr$gene_name == "COMT", ]
+```
+:::
+:::
+
+::: {.yourturn}
+The top-expressed genes are immunoglobulin genes (*IGLC2*, *IGLV2-23*). What kind of cell was sequenced? (This is the L9 idea — same genome, different program — now answered from a table.)
+:::
+
+## Part 5 · Plots and a first statistical test
+
+R's `plot()`, `hist()`, `boxplot()` are part of the language. In Python you import matplotlib. We follow the *publication-figure* rules from the CADSA workshop: set the **canvas size in inches first**, shrink margins, and add axes and labels yourself.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import matplotlib.pyplot as plt
+import numpy as np
+fig, ax = plt.subplots(figsize=(3.2, 3.2))
+ax.hist(np.log10(genes["length_bp"]), bins=30, color="grey")
+ax.set_xlabel("log10 gene length (bp)")
+ax.set_ylabel("Number of genes")
+for side in ["top", "right"]:
+    ax.spines[side].set_visible(False)
+plt.tight_layout()
+plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.2
+#| fig-height: 3.2
+par(mar = c(4, 4, 1, 1))
+hist(log10(genes$length_bp), breaks = 30, col = "grey80",
+     main = "", xlab = "", ylab = "", axes = FALSE)
+axis(1, line = 0.1); axis(2, line = 0.1)
+title(xlab = "log10 gene length (bp)", line = 2)
+title(ylab = "Number of genes", line = 2)
+```
+:::
+:::
+
+### A t-test on real RNA-seq counts
+
+The **airway** dataset (Himes et al. 2014): airway smooth-muscle cells from 4 donors, each untreated and treated with the steroid dexamethasone → 8 samples. Is gene *ENSG00000152583* (SPARCL1) changed by treatment?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+from scipy import stats
+cts = pd.read_csv("data/airway_counts.tsv", sep="\t", index_col=0)
+meta = pd.read_csv("data/airway_metadata.tsv", sep="\t")
+logc = np.log2(cts + 1)
+ctrl = meta["id"][meta["dex"] == "control"]
+trt  = meta["id"][meta["dex"] == "treated"]
+g = "ENSG00000152583"
+print(logc.loc[g].round(2))
+print(stats.ttest_ind(logc.loc[g, trt], logc.loc[g, ctrl]))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+cts  <- read.delim("data/airway_counts.tsv", row.names = 1)
+meta <- read.delim("data/airway_metadata.tsv")
+logc <- log2(cts + 1)
+ctrl <- meta$id[meta$dex == "control"]
+trt  <- meta$id[meta$dex == "treated"]
+g <- "ENSG00000152583"
+round(unlist(logc[g, ]), 2)
+t.test(unlist(logc[g, trt]), unlist(logc[g, ctrl]))
+```
+:::
+:::
+
+Notice how R prints the whole test (confidence interval, means) in one line of code — this is what "statistics is first-class" means. Notice also that this test is **wrong for 19,271 genes at once** and ignores that the four donors are paired; Lecture 11 fixes both.
+
+## Part 6 · Reads: the text sequencing produces
+
+A FASTQ record is four lines: name, sequence, `+`, quality. Each quality character encodes a Phred score: `Q = ord(char) − 33`, and the probability the base is wrong is 10^(−Q/10). `reads_5k.fastq` has 5,000 real 100-nt reads from ENCODE.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+reads = []
+with open("data/reads_5k.fastq") as f:
+    while True:
+        name = f.readline()
+        if not name:
+            break
+        seq = f.readline().strip()
+        f.readline()                      # the '+' line
+        qual = f.readline().strip()
+        reads.append((seq, qual))
+
+print(len(reads), "reads of", len(reads[0][0]), "nt")
+q = [ord(c) - 33 for c in reads[0][1]]
+print("first read qualities:", q[:10])
+# mean quality per position
+L = len(reads[0][0])
+mean_q = [sum(ord(r[1][i]) - 33 for r in reads) / len(reads) for i in range(L)]
+print([round(x, 1) for x in mean_q[::10]])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+lines <- readLines("data/reads_5k.fastq")
+seqs  <- lines[seq(2, length(lines), by = 4)]
+quals <- lines[seq(4, length(lines), by = 4)]
+cat(length(seqs), "reads of", nchar(seqs[1]), "nt\n")
+q <- utf8ToInt(quals[1]) - 33
+cat("first read qualities:", q[1:10], "\n")
+# mean quality per position: a 5000 x 100 matrix
+Q <- t(sapply(quals, function(s) utf8ToInt(s) - 33))
+round(colMeans(Q)[seq(1, 100, by = 10)], 1)
+```
+:::
+:::
+
+The Python version loops read-by-read; the R version builds a 5,000 × 100 **matrix** and takes column means. Same answer, two ways of thinking — and this is exactly why R feels natural once data are rectangular.
+
+## Part 7 · Working like a scientist
+
+- **Ecosystems.** Python packages come from PyPI (`pip install`) or conda; R packages from CRAN (`install.packages`) and **Bioconductor** (`BiocManager::install("DESeq2")`). A tool published in a paper is usually on one of these.
+- **Notebooks are lab notebooks.** Jupyter (`.ipynb`) and Quarto/R Markdown (`.qmd`, `.Rmd`) keep code, output and your comments together. This website is a Quarto document.
+- **Reproducibility.** Record versions (`pip freeze`, `sessionInfo()`), set random seeds, never edit raw data by hand, keep the script that made every figure.
+- **ChatGPT writes code; you verify it.** Use TRACE prompting, then run the code on a case you already know the answer to — *COMT codon 158 must be GTG; the protein must start with M* — before you trust it on new data.
+
+### The five bugs that bit real papers
+
+1. **0-based vs 1-based** coordinates (BED vs GTF/VCF).
+2. **Strand**: a k-mer from the minus strand never matches unless you reverse-complement.
+3. **Reference build**: GRCh37 positions pasted into a GRCh38 file (rs4680 is chr22:19,963,748 in GRCh38 but 19,951,271 in GRCh37).
+4. **Excel turns gene names into dates**: *SEPT7* → "7-Sep", *MARCH1* → "1-Mar". About one fifth of published supplementary gene lists contain this error (Ziemann et al. 2016), which is why HGNC renamed these genes in 2020 (*SEPTIN7*, *MARCHF1*).
+5. **Silent type coercion**: a column read as text because one row says "NA"; a p-value column sorted as strings ("1e-10" after "0.5").
+
+## Part 8 · The mental model
+
+> **Question → data shape → language → verify.**
+
+| The data are… | Think… | Reach for… |
+|---|---|---|
+| Sequences, reads, files, a tool to glue | text | Python (or the shell) |
+| One row per gene and columns of numbers | table | either; R if statistics come next |
+| Counts with replicates, a hypothesis | table + uncertainty | R (DESeq2, edgeR, limma) |
+| Images, deep learning, single cell at scale | arrays | Python (PyTorch, scanpy) |
+
+**Wednesday's lab** does all of this on the same files, in both languages, and ends with you catching a bug in code that ChatGPT wrote.

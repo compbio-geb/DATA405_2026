@@ -1,0 +1,280 @@
+---
+title: "Rosetta stone · Python ↔ R"
+subtitle: "The 90% of syntax you will meet in genomics code, side by side"
+resources:
+  - data
+---
+
+Read the row, then run both cells at the bottom of each section to see the outputs match. `dna` below is the first 30 letters of the COMT coding sequence.
+
+## Basics
+
+| Task | Python | R |
+|---|---|---|
+| assign | `x = 5` | `x <- 5` |
+| print | `print(x)` | `print(x)` or `cat(x, "\n")` |
+| comment | `# text` | `# text` |
+| text length | `len(s)` | `nchar(s)` |
+| first letter | `s[0]` | `substr(s, 1, 1)` |
+| letters 4–6 | `s[3:6]` | `substr(s, 4, 6)` |
+| last letter | `s[-1]` | `substr(s, nchar(s), nchar(s))` |
+| join text | `"A" + "T"` | `paste0("A", "T")` |
+| count a letter | `s.count("G")` | `sum(strsplit(s, "")[[1]] == "G")` |
+| upper case | `s.upper()` | `toupper(s)` |
+| replace | `s.replace("T", "U")` | `gsub("T", "U", s)` |
+| find a pattern | `"ATG" in s`, `s.find("ATG")` | `grepl("ATG", s)`, `regexpr("ATG", s)` |
+| reverse | `s[::-1]` | `paste(rev(strsplit(s, "")[[1]]), collapse = "")` |
+| help | `help(len)` | `?nchar` |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+dna = "ATGCCGGAGGCCCCGCCTCTGCTGTTGGCA"
+print(len(dna), dna[0], dna[3:6], dna[-1])
+print(dna.count("G"), "ATG" in dna, dna.find("CCG"))
+print(dna.replace("T", "U"))
+print(dna[::-1])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+dna <- "ATGCCGGAGGCCCCGCCTCTGCTGTTGGCA"
+cat(nchar(dna), substr(dna, 1, 1), substr(dna, 4, 6), substr(dna, nchar(dna), nchar(dna)), "\n")
+cat(sum(strsplit(dna, "")[[1]] == "G"), grepl("ATG", dna), regexpr("CCG", dna), "\n")
+cat(gsub("T", "U", dna), "\n")
+cat(paste(rev(strsplit(dna, "")[[1]]), collapse = ""), "\n")
+```
+:::
+:::
+
+::: {.trap}
+`dna.find("CCG")` returns **3** in Python and `regexpr("CCG", dna)` returns **4** in R. Same letter, two coordinate systems.
+:::
+
+## Collections
+
+| Task | Python | R |
+|---|---|---|
+| ordered collection | list `[1, 2, 3]` | vector `c(1, 2, 3)` |
+| length | `len(v)` | `length(v)` |
+| first element | `v[0]` | `v[1]` |
+| range 1..10 | `range(1, 11)` | `1:10` |
+| add element | `v.append(4)` | `v <- c(v, 4)` |
+| element-wise math | `[x * 2 for x in v]` | `v * 2` |
+| sum, mean | `sum(v)`, `sum(v)/len(v)` | `sum(v)`, `mean(v)` |
+| which are true | `[x for x in v if x > 1]` | `v[v > 1]` |
+| lookup table | dict `{"ATG": "M"}` | named vector `c(ATG = "M")` |
+| look up | `d["ATG"]` | `d["ATG"]` |
+| keys | `d.keys()` | `names(d)` |
+| membership | `"M" in v` | `"M" %in% v` |
+| sort | `sorted(v)` | `sort(v)` |
+| unique / counts | `set(v)` / `collections.Counter(v)` | `unique(v)` / `table(v)` |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+lengths = [816, 1260, 28204]
+print(len(lengths), lengths[0], sum(lengths) / len(lengths))
+print([x / 1000 for x in lengths])
+print([x for x in lengths if x > 1000])
+code = {"ATG": "M", "GTG": "V", "TAA": "*"}
+print(code["GTG"], list(code.keys()))
+from collections import Counter
+print(Counter("ATGCCGGAGGCC"))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+lengths <- c(816, 1260, 28204)
+cat(length(lengths), lengths[1], mean(lengths), "\n")
+lengths / 1000
+lengths[lengths > 1000]
+code <- c(ATG = "M", GTG = "V", TAA = "*")
+cat(code["GTG"], names(code), "\n")
+table(strsplit("ATGCCGGAGGCC", "")[[1]])
+```
+:::
+:::
+
+## Control flow and functions
+
+| Task | Python | R |
+|---|---|---|
+| if / else | `if x > 1:` … `else:` | `if (x > 1) { } else { }` |
+| loop | `for b in seq:` | `for (b in seq) { }` |
+| loop with index | `for i in range(len(v)):` | `for (i in seq_along(v)) { }` |
+| function | `def f(x):` … `return y` | `f <- function(x) { y }` |
+| apply to each | `[f(x) for x in v]`, `map(f, v)` | `sapply(v, f)` |
+| equality | `==` | `==` |
+| and / or / not | `and` `or` `not` | `&` `|` `!` |
+| missing value | `None`, `float("nan")` | `NA` |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+def classify(q):
+    if q >= 30:
+        return "good"
+    elif q >= 20:
+        return "ok"
+    else:
+        return "bad"
+
+quals = [35, 22, 8, 40]
+print([classify(q) for q in quals])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+classify <- function(q) {
+  if (q >= 30) "good" else if (q >= 20) "ok" else "bad"
+}
+
+quals <- c(35, 22, 8, 40)
+sapply(quals, classify)
+```
+:::
+:::
+
+## Tables (pandas ↔ data.frame)
+
+| Task | Python (pandas) | R (base) |
+|---|---|---|
+| read TSV | `pd.read_csv(f, sep="\t")` | `read.delim(f)` |
+| read CSV | `pd.read_csv(f)` | `read.csv(f)` |
+| size | `df.shape` | `dim(df)` |
+| first rows | `df.head()` | `head(df)` |
+| column | `df["x"]` | `df$x` |
+| new column | `df["y"] = df["x"] * 2` | `df$y <- df$x * 2` |
+| filter rows | `df[df["x"] > 1]` | `df[df$x > 1, ]` |
+| select columns | `df[["a", "b"]]` | `df[, c("a", "b")]` |
+| sort | `df.sort_values("x")` | `df[order(df$x), ]` |
+| count categories | `df["t"].value_counts()` | `table(df$t)` |
+| group + summarize | `df.groupby("t")["x"].median()` | `tapply(df$x, df$t, median)` or `aggregate(x ~ t, df, median)` |
+| join | `a.merge(b, on="id")` | `merge(a, b, by = "id")` |
+| write | `df.to_csv(f, sep="\t", index=False)` | `write.table(df, f, sep = "\t", quote = FALSE, row.names = FALSE)` |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import pandas as pd
+genes = pd.read_csv("data/chr22_genes.tsv", sep="\t")
+sub = genes[(genes["gene_type"] == "protein_coding") & (genes["strand"] == "+")]
+print(sub.shape)
+print(sub.sort_values("length_bp").head(3)[["gene_name", "length_bp"]])
+print(genes.groupby("strand")["length_bp"].median())
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+genes <- read.delim("data/chr22_genes.tsv")
+sub <- genes[genes$gene_type == "protein_coding" & genes$strand == "+", ]
+dim(sub)
+head(sub[order(sub$length_bp), c("gene_name", "length_bp")], 3)
+tapply(genes$length_bp, genes$strand, median)
+```
+:::
+:::
+
+## Plots (matplotlib ↔ base graphics)
+
+| Task | Python | R |
+|---|---|---|
+| canvas size (inches) | `plt.subplots(figsize=(3.2, 3.2))` | `dev.new(width = 3.2, height = 3.2)` / `png(..., width = 3.2, height = 3.2, units = "in")` |
+| scatter | `ax.scatter(x, y)` | `plot(x, y)` |
+| histogram | `ax.hist(x)` | `hist(x)` |
+| boxplot by group | `df.boxplot("x", by="g")` | `boxplot(x ~ g, data = df)` |
+| bar | `ax.bar(names, heights)` | `barplot(heights, names.arg = names)` |
+| axis labels | `ax.set_xlabel("...")` | `title(xlab = "...", line = 2)` |
+| margins | `plt.tight_layout()` | `par(mar = c(4, 4, 2, 1))` |
+| font sizes | `fontsize=` | `cex.axis =`, `cex.lab =`, `cex =` |
+| remove box | `ax.spines["top"].set_visible(False)` | `axes = FALSE` then `axis(1); axis(2)` |
+| save | `fig.savefig("f.pdf")` | `pdf("f.pdf", width = 3.2, height = 3.2); ...; dev.off()` |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import matplotlib.pyplot as plt
+expr = pd.read_csv("data/chr22_expression.tsv", sep="\t")
+on = expr[expr["TPM"] > 0]
+fig, ax = plt.subplots(figsize=(3.2, 3.2))
+ax.scatter(on["length"], on["TPM"], s=6, color="grey")
+ax.set_xscale("log"); ax.set_yscale("log")
+ax.set_xlabel("transcript length (nt)"); ax.set_ylabel("TPM")
+for s in ["top", "right"]: ax.spines[s].set_visible(False)
+plt.tight_layout(); plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.2
+#| fig-height: 3.2
+expr <- read.delim("data/chr22_expression.tsv")
+on <- expr[expr$TPM > 0, ]
+par(mar = c(4, 4, 1, 1))
+plot(on$length, on$TPM, log = "xy", pch = 16, cex = 0.5, col = "grey40",
+     xlab = "", ylab = "", axes = FALSE)
+axis(1, line = 0.1); axis(2, line = 0.1)
+title(xlab = "transcript length (nt)", line = 2)
+title(ylab = "TPM", line = 2)
+```
+:::
+:::
+
+## Statistics
+
+| Task | Python | R |
+|---|---|---|
+| mean, sd, median | `np.mean`, `np.std(ddof=1)`, `np.median` | `mean`, `sd`, `median` |
+| t-test | `scipy.stats.ttest_ind(a, b)` | `t.test(a, b)` |
+| paired t-test | `scipy.stats.ttest_rel(a, b)` | `t.test(a, b, paired = TRUE)` |
+| Wilcoxon | `scipy.stats.mannwhitneyu(a, b)` | `wilcox.test(a, b)` |
+| correlation | `np.corrcoef(x, y)[0, 1]` | `cor(x, y)` |
+| binomial test | `scipy.stats.binomtest(k, n, p)` | `binom.test(k, n, p)` |
+| Poisson tail | `scipy.stats.poisson.sf(k - 1, mu)` | `ppois(k - 1, mu, lower.tail = FALSE)` |
+| linear model | `statsmodels.formula.api.ols("y ~ x", df).fit()` | `lm(y ~ x, data = df)` |
+| multiple-testing (BH) | `statsmodels.stats.multitest.multipletests(p, method="fdr_bh")` | `p.adjust(p, method = "BH")` |
+| random numbers | `np.random.default_rng(1).poisson(5, 10)` | `set.seed(1); rpois(10, 5)` |
+| RNA-seq DE | — (pydeseq2 exists) | `DESeq2`, `edgeR`, `limma` (Bioconductor) |
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+from scipy import stats
+print(stats.binomtest(4, 10, 0.5))
+print(stats.poisson.sf(9, 3.0))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+binom.test(4, 10, 0.5)
+ppois(9, 3.0, lower.tail = FALSE)
+```
+:::
+:::
+
+## Files and packages
+
+| Task | Python | R |
+|---|---|---|
+| install a package | `pip install biopython` (terminal) | `install.packages("ggplot2")` |
+| Bioconductor | — | `BiocManager::install("DESeq2")` |
+| load a package | `import pandas as pd` | `library(DESeq2)` |
+| working directory | `os.getcwd()` | `getwd()` |
+| list files | `os.listdir("data")` | `list.files("data")` |
+| read all lines | `open(f).readlines()` | `readLines(f)` |
+| write text | `open(f, "w").write(s)` | `writeLines(s, f)` |
+| versions | `pip freeze` | `sessionInfo()` |
+| notebook | Jupyter `.ipynb` | R Markdown / Quarto `.qmd` |

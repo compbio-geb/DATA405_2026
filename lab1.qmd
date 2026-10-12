@@ -1,0 +1,930 @@
+---
+title: "Lab 1 · Python and R on real chr22 data"
+subtitle: "Wednesday Sep 30 · 1.5 hours · six exercises, each in both languages"
+resources:
+  - data
+---
+
+::: {.callout-important appearance="simple"}
+**Rules of the lab.** Do every exercise in **both** languages. Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the [handout](downloads/DATA405_Lab1_Handout.pdf) has the same exercises with blanks.
+:::
+
+**Data used today** (all real; see the [Data](data.qmd) page for where each file came from):
+
+| File | What | Used in |
+|---|---|---|
+| `COMT_cds.fa` | coding sequence of *COMT* (chr22), 816 nt | Ex 2 |
+| `reads_5k.fastq` | 5,000 real RNA-seq reads, 100 nt | Ex 3 |
+| `chr22_genes.tsv` | 1,747 genes on chr22 | Ex 4 |
+| `chr22_expression.tsv` | RSEM expression of those genes in one sample | Ex 4 |
+| `chr22_mismatches.tsv` | read-vs-reference mismatches from that sample | Ex 4 |
+| `airway_counts.tsv`, `airway_metadata.tsv` | 8-sample RNA-seq count matrix (dexamethasone) | Ex 5 |
+
+---
+
+## Exercise 1 · Hello, two languages (10 min)
+
+Run the two cells. Then change the gene name and the number, and run again. Wait for the first cell in each language to finish starting up (10–30 s).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+gene = "COMT"
+n_aa = 271
+print(gene, "encodes a protein of", n_aa, "amino acids")
+print("That needs", n_aa * 3, "nucleotides plus a stop codon")
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+gene <- "COMT"
+n_aa <- 271
+cat(gene, "encodes a protein of", n_aa, "amino acids\n")
+cat("That needs", n_aa * 3, "nucleotides plus a stop codon\n")
+```
+:::
+:::
+
+Now confirm the data files are there.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import os
+print(sorted(os.listdir("data")))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+list.files("data")
+```
+:::
+:::
+
+**Q1.** In the R cell, what happens if you write `n_aa = 271` instead of `n_aa <- 271`? And in Python, `n_aa <- 271`? Try both and write one sentence.
+
+---
+
+## Exercise 2 · DNA as a string: COMT and rs4680 (20 min)
+
+Run the setup cell for your language first (it defines `read_fasta` and reads the sequence into `cds`).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+def read_fasta(path):
+    seq = []
+    for line in open(path):
+        if not line.startswith(">"):
+            seq.append(line.strip())
+    return "".join(seq)
+
+cds = read_fasta("data/COMT_cds.fa")
+print(len(cds), "nt;", "starts with", cds[:3])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+read_fasta <- function(path) {
+  lines <- readLines(path)
+  paste(lines[!startsWith(lines, ">")], collapse = "")
+}
+
+cds <- read_fasta("data/COMT_cds.fa")
+cat(nchar(cds), "nt; starts with", substr(cds, 1, 3), "\n")
+```
+:::
+:::
+
+### 2a · GC content
+
+Fill in the blanks so the cell prints the GC content as a percentage.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex2a_py
+#| envir: global
+g = cds.count("G")
+c = ______
+gc = (g + c) / ______
+print(round(gc * 100, 1), "%")
+```
+
+::: {.hint exercise="ex2a_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`cds.count("C")` counts C's; `len(cds)` is the length.
+:::
+:::
+
+::: {.solution exercise="ex2a_py"}
+```python
+g = cds.count("G")
+c = cds.count("C")
+gc = (g + c) / len(cds)
+print(round(gc * 100, 1), "%")     # 61.8 %
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex2a_r
+#| envir: global
+bases <- strsplit(cds, "")[[1]]
+gc <- mean(bases %in% ______)
+cat(round(gc * 100, 1), "%\n")
+```
+
+::: {.hint exercise="ex2a_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`%in%` tests membership in a vector: `c("G", "C")`.
+:::
+:::
+
+::: {.solution exercise="ex2a_r"}
+```r
+bases <- strsplit(cds, "")[[1]]
+gc <- mean(bases %in% c("G", "C"))
+cat(round(gc * 100, 1), "%\n")     # 61.8 %
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+Both languages must print **61.8 %**. The human genome averages about 41 % — *COMT* is a GC-rich gene on a GC-rich chromosome.
+:::
+
+### 2b · Reverse complement
+
+Write the reverse complement of `cds` and print its first 20 letters.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex2b_py
+#| envir: global
+complement = {"A": "T", "T": "A", "G": "C", "C": "G"}
+rc = "".join(complement[b] for b in ______)
+print(rc[:20])
+```
+
+::: {.hint exercise="ex2b_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`reversed(cds)` walks the string backwards.
+:::
+:::
+
+::: {.solution exercise="ex2b_py"}
+```python
+complement = {"A": "T", "T": "A", "G": "C", "C": "G"}
+rc = "".join(complement[b] for b in reversed(cds))
+print(rc[:20])          # TCAGGGCCCTGCTTCGCTGC
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex2b_r
+#| envir: global
+complement <- c(A = "T", T = "A", G = "C", C = "G")
+rc <- paste(______(complement[bases]), collapse = "")
+cat(substr(rc, 1, 20), "\n")
+```
+
+::: {.hint exercise="ex2b_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`complement[bases]` looks up every base at once; `rev()` reverses a vector.
+:::
+:::
+
+::: {.solution exercise="ex2b_r"}
+```r
+complement <- c(A = "T", T = "A", G = "C", C = "G")
+rc <- paste(rev(complement[bases]), collapse = "")
+cat(substr(rc, 1, 20), "\n")   # TCAGGGCCCTGCTTCGCTGC
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+The reverse complement must **start with `TCA`** — because the CDS *ends* with the stop codon `TGA`.
+:::
+
+### 2c · Translate, then mutate codon 158
+
+Run the setup cell (codon table + `translate`). Then complete the exercise: print codon 158 and its amino acid, change its first letter G→A (this is **rs4680**), and print the new amino acid.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+bases4 = "TCAG"
+aas = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG"
+codon_table = {}
+k = 0
+for a in bases4:
+    for b in bases4:
+        for c in bases4:
+            codon_table[a + b + c] = aas[k]
+            k += 1
+
+def translate(dna):
+    return "".join(codon_table[dna[i:i+3]] for i in range(0, len(dna) - 2, 3))
+
+protein = translate(cds)
+print(protein[:10], "...", len(protein) - 1, "aa")
+```
+
+```{.pyodide}
+#| exercise: ex2c_py
+#| envir: global
+i = (158 - 1) * 3
+codon = cds[i:i+3]
+print("codon 158:", codon, "->", codon_table[codon])
+mutant = cds[:i] + ______ + cds[i+1:]
+print("mutant   :", mutant[i:i+3], "->", translate(mutant)[______])
+```
+
+::: {.hint exercise="ex2c_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+Replace the first letter with `"A"`. Amino acid 158 is index `157` in Python.
+:::
+:::
+
+::: {.solution exercise="ex2c_py"}
+```python
+i = (158 - 1) * 3
+codon = cds[i:i+3]
+print("codon 158:", codon, "->", codon_table[codon])      # GTG -> V
+mutant = cds[:i] + "A" + cds[i+1:]
+print("mutant   :", mutant[i:i+3], "->", translate(mutant)[157])   # ATG -> M
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+b4 <- c("T", "C", "A", "G")
+aas <- strsplit("FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG", "")[[1]]
+codons <- character(0)
+for (x in b4) for (y in b4) for (z in b4) codons <- c(codons, paste0(x, y, z))
+codon_table <- setNames(aas, codons)
+
+translate <- function(dna) {
+  n <- nchar(dna) %/% 3
+  starts <- seq(1, by = 3, length.out = n)
+  paste(codon_table[substring(dna, starts, starts + 2)], collapse = "")
+}
+
+protein <- translate(cds)
+cat(substr(protein, 1, 10), "...", nchar(protein) - 1, "aa\n")
+```
+
+```{.webr}
+#| exercise: ex2c_r
+#| envir: global
+i <- (158 - 1) * 3 + 1
+codon <- substr(cds, i, i + 2)
+cat("codon 158:", codon, "->", codon_table[codon], "\n")
+mutant <- cds
+substr(mutant, i, i) <- ______
+cat("mutant   :", substr(mutant, i, i + 2), "->", substr(translate(mutant), ______, ______), "\n")
+```
+
+::: {.hint exercise="ex2c_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`substr(x, i, i) <- "A"` replaces one letter in place. Amino acid 158 is position 158 in R.
+:::
+:::
+
+::: {.solution exercise="ex2c_r"}
+```r
+i <- (158 - 1) * 3 + 1
+codon <- substr(cds, i, i + 2)
+cat("codon 158:", codon, "->", codon_table[codon], "\n")    # GTG -> V
+mutant <- cds
+substr(mutant, i, i) <- "A"
+cat("mutant   :", substr(mutant, i, i + 2), "->", substr(translate(mutant), 158, 158), "\n")  # ATG -> M
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+The protein must start with **`MPEAPPLLLA`**, be **271 aa** long, and codon 158 must be **GTG (V) → ATG (M)**. This is Val158Met, the *COMT* variant that lowers enzyme activity 3–4 fold.
+:::
+
+**Q2.** Delete one letter instead of substituting (`cds[:i] + cds[i+1:]` in Python; `paste0(substr(cds,1,i-1), substr(cds,i+1,nchar(cds)))` in R). How many amino acids now match the original before the sequence goes wrong, and where is the first stop codon? Explain in one sentence why a deletion is worse than a substitution.
+
+---
+
+## Exercise 3 · Reads: FASTQ and quality (15 min)
+
+Run the setup cell (reads all 5,000 records).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+seqs, quals = [], []
+with open("data/reads_5k.fastq") as f:
+    while True:
+        name = f.readline()
+        if not name:
+            break
+        seqs.append(f.readline().strip())
+        f.readline()
+        quals.append(f.readline().strip())
+print(len(seqs), "reads;", len(seqs[0]), "nt each")
+print(seqs[0])
+print(quals[0])
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+lines <- readLines("data/reads_5k.fastq")
+seqs  <- lines[seq(2, length(lines), by = 4)]
+quals <- lines[seq(4, length(lines), by = 4)]
+cat(length(seqs), "reads;", nchar(seqs[1]), "nt each\n")
+cat(seqs[1], "\n")
+cat(quals[1], "\n")
+```
+:::
+:::
+
+### 3a · Decode quality and plot the mean per position
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex3a_py
+#| envir: global
+import matplotlib.pyplot as plt
+L = len(seqs[0])
+mean_q = []
+for i in range(L):
+    total = sum(ord(q[i]) - ______ for q in quals)
+    mean_q.append(total / len(quals))
+print([round(x, 1) for x in mean_q[::10]])
+fig, ax = plt.subplots(figsize=(4, 2.6))
+ax.plot(range(1, L + 1), mean_q)
+ax.set_xlabel("position in read"); ax.set_ylabel("mean Phred Q")
+plt.tight_layout(); plt.show()
+```
+
+::: {.hint exercise="ex3a_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+Phred+33 encoding: `ord(char) - 33`.
+:::
+:::
+
+::: {.solution exercise="ex3a_py"}
+```python
+total = sum(ord(q[i]) - 33 for q in quals)
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex3a_r
+#| envir: global
+#| fig-width: 4
+#| fig-height: 2.6
+Q <- t(sapply(quals, function(s) utf8ToInt(s) - ______))
+mean_q <- colMeans(Q)
+round(mean_q[seq(1, 100, by = 10)], 1)
+par(mar = c(4, 4, 1, 1))
+plot(mean_q, type = "l", xlab = "", ylab = "", axes = FALSE)
+axis(1); axis(2)
+title(xlab = "position in read", line = 2); title(ylab = "mean Phred Q", line = 2)
+```
+
+::: {.hint exercise="ex3a_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`utf8ToInt()` gives the ASCII codes; subtract 33.
+:::
+:::
+
+::: {.solution exercise="ex3a_r"}
+```r
+Q <- t(sapply(quals, function(s) utf8ToInt(s) - 33))
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+Mean Q starts around **33 at position 1**, peaks near **37**, and drifts down to about **35 by position 100**. Q = 30 means a 1-in-1000 error probability.
+:::
+
+### 3b · Count reads by content
+
+How many reads contain an `N`? How many contain a run of 15 A's (poly-A tail, or adapter)? What is the average GC content of the reads?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex3b_py
+#| envir: global
+n_N = sum("N" in s for s in seqs)
+n_polyA = sum(______ in s for s in seqs)
+gc = [(s.count("G") + s.count("C")) / len(s) for s in seqs]
+print(n_N, n_polyA, round(sum(gc) / len(gc), 3))
+```
+
+::: {.hint exercise="ex3b_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`"A" * 15` builds a string of 15 A's.
+:::
+:::
+
+::: {.solution exercise="ex3b_py"}
+```python
+n_polyA = sum("A" * 15 in s for s in seqs)     # 6  63  0.474
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex3b_r
+#| envir: global
+n_N <- sum(grepl("N", seqs))
+n_polyA <- sum(grepl(______, seqs))
+gc <- sapply(strsplit(seqs, ""), function(s) mean(s %in% c("G", "C")))
+cat(n_N, n_polyA, round(mean(gc), 3), "\n")
+```
+
+::: {.hint exercise="ex3b_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`strrep("A", 15)` builds a string of 15 A's; `grepl` returns TRUE/FALSE per read.
+:::
+:::
+
+::: {.solution exercise="ex3b_r"}
+```r
+n_polyA <- sum(grepl(strrep("A", 15), seqs))   # 6  63  0.474
+```
+:::
+:::
+:::
+
+**Q3.** The reads' GC content is about 47 %, but the genome's is 41 % and *COMT*'s is 62 %. Give one biological reason RNA-seq reads are GC-richer than the genome.
+
+---
+
+## Exercise 4 · Tables: genes, expression, mismatches (20 min)
+
+Setup: read the three tables.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import pandas as pd
+genes = pd.read_csv("data/chr22_genes.tsv", sep="\t")
+expr  = pd.read_csv("data/chr22_expression.tsv", sep="\t")
+mm    = pd.read_csv("data/chr22_mismatches.tsv", sep="\t")
+print(genes.shape, expr.shape, mm.shape)
+print(genes.head(3))
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+genes <- read.delim("data/chr22_genes.tsv")
+expr  <- read.delim("data/chr22_expression.tsv")
+mm    <- read.delim("data/chr22_mismatches.tsv")
+cat(dim(genes), "|", dim(expr), "|", dim(mm), "\n")
+head(genes, 3)
+```
+:::
+:::
+
+### 4a · Filter, sort, count
+
+How many protein-coding genes are on the **minus** strand? Which three protein-coding genes are the longest?
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex4a_py
+#| envir: global
+pc = genes[genes["gene_type"] == "protein_coding"]
+print((pc["strand"] == ______).sum())
+print(pc.sort_values("length_bp", ascending=______)[["gene_name", "length_bp"]].head(3))
+```
+
+::: {.hint exercise="ex4a_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+Strand is stored as the text `"-"`; sort descending with `ascending=False`.
+:::
+:::
+
+::: {.solution exercise="ex4a_py"}
+```python
+pc = genes[genes["gene_type"] == "protein_coding"]
+print((pc["strand"] == "-").sum())
+print(pc.sort_values("length_bp", ascending=False)[["gene_name", "length_bp"]].head(3))
+# LARGE1 760660, TTC28 701827, SYN3 550562
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex4a_r
+#| envir: global
+pc <- genes[genes$gene_type == "protein_coding", ]
+sum(pc$strand == ______)
+head(pc[order(______pc$length_bp), c("gene_name", "length_bp")], 3)
+```
+
+::: {.hint exercise="ex4a_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`order(-x)` sorts descending.
+:::
+:::
+
+::: {.solution exercise="ex4a_r"}
+```r
+pc <- genes[genes$gene_type == "protein_coding", ]
+sum(pc$strand == "-")
+head(pc[order(-pc$length_bp), c("gene_name", "length_bp")], 3)
+# LARGE1 760660, TTC28 701827, SYN3 550562
+```
+:::
+:::
+:::
+
+### 4b · Join and summarize: which gene types are expressed?
+
+Join `genes` to `expr` by `gene_id`, then compute, for each `gene_type`, the fraction of genes with TPM > 1. Sort descending; show the top 5.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex4b_py
+#| envir: global
+m = genes.merge(expr[["gene_id", "TPM"]], on=______)
+frac = m.groupby("gene_type")["TPM"].apply(lambda s: (s > 1).mean())
+print(frac.sort_values(ascending=False).head(5))
+print(expr.sort_values("TPM", ascending=False)[["gene_name", "gene_type", "TPM"]].head(5))
+```
+
+::: {.hint exercise="ex4b_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`on="gene_id"`.
+:::
+:::
+
+::: {.solution exercise="ex4b_py"}
+```python
+m = genes.merge(expr[["gene_id", "TPM"]], on="gene_id")
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex4b_r
+#| envir: global
+m <- merge(genes, expr[, c("gene_id", "TPM")], by = ______)
+frac <- tapply(m$TPM > 1, m$gene_type, mean)
+head(sort(frac, decreasing = TRUE), 5)
+head(expr[order(-expr$TPM), c("gene_name", "gene_type", "TPM")], 5)
+```
+
+::: {.hint exercise="ex4b_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`by = "gene_id"`.
+:::
+:::
+
+::: {.solution exercise="ex4b_r"}
+```r
+m <- merge(genes, expr[, c("gene_id", "TPM")], by = "gene_id")
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+About **47 % of protein-coding genes** have TPM > 1 in this sample. The top five genes are immunoglobulin genes and pseudogenes.
+:::
+
+**Q4.** What cell type do the top-expressed genes suggest? Why can a *pseudogene* (*ACTBP15*) have a high TPM even though it is not transcribed? (Think about Lecture 6 mapping: what is *ACTBP15* a copy of?)
+
+### 4c · Mismatches: which look like real variants?
+
+`chr22_mismatches.tsv` lists every position where ≥ 2 reads disagree with the reference. Filter to depth ≥ 10 and allele fraction between 0.3 and 0.7 (what a heterozygous SNP looks like). Then tabulate the most common substitution types across the whole table.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex4c_py
+#| envir: global
+het = mm[(mm["depth"] >= 10) & (mm["alt_fraction"] >= ______) & (mm["alt_fraction"] <= ______)]
+print(len(het))
+print(het[["pos", "ref", "alt", "alt_count", "depth", "gene_name"]])
+subst = mm["ref"] + ">" + mm["alt"]
+print(subst.value_counts().head(4))
+```
+
+::: {.hint exercise="ex4c_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`0.3` and `0.7`. In pandas, combine conditions with `&` and parentheses.
+:::
+:::
+
+::: {.solution exercise="ex4c_py"}
+```python
+het = mm[(mm["depth"] >= 10) & (mm["alt_fraction"] >= 0.3) & (mm["alt_fraction"] <= 0.7)]   # 8 rows
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex4c_r
+#| envir: global
+het <- mm[mm$depth >= 10 & mm$alt_fraction >= ______ & mm$alt_fraction <= ______, ]
+nrow(het)
+het[, c("pos", "ref", "alt", "alt_count", "depth", "gene_name")]
+subst <- paste0(mm$ref, ">", mm$alt)
+head(sort(table(subst), decreasing = TRUE), 4)
+```
+
+::: {.hint exercise="ex4c_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`0.3` and `0.7`; combine with `&`.
+:::
+:::
+
+::: {.solution exercise="ex4c_r"}
+```r
+het <- mm[mm$depth >= 10 & mm$alt_fraction >= 0.3 & mm$alt_fraction <= 0.7, ]   # 8 rows
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+Only **8** of 1,097 mismatch sites look heterozygous. The two most common substitutions are **T>C and A>G** — the same change seen from the two strands.
+:::
+
+**Q5.** A>G (and its mirror T>C) dominating the mismatches in *RNA*-seq is a known biological signal, not an error. What is it? (Search: "ADAR A-to-I editing".) Why does a DNA-sequencing experiment not show it?
+
+---
+
+## Exercise 5 · Statistics on counts: the t-test and its limits (15 min)
+
+Setup: read the airway count matrix and log-transform.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import warnings
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+warnings.filterwarnings("ignore")   # hide SciPy notes about genes with identical counts
+cts  = pd.read_csv("data/airway_counts.tsv", sep="\t", index_col=0)
+meta = pd.read_csv("data/airway_metadata.tsv", sep="\t")
+logc = np.log2(cts + 1)
+ctrl = list(meta["id"][meta["dex"] == "control"])
+trt  = list(meta["id"][meta["dex"] == "treated"])
+print(cts.shape)
+print(meta)
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+cts  <- read.delim("data/airway_counts.tsv", row.names = 1)
+meta <- read.delim("data/airway_metadata.tsv")
+logc <- log2(cts + 1)
+ctrl <- meta$id[meta$dex == "control"]
+trt  <- meta$id[meta$dex == "treated"]
+dim(cts)
+meta
+```
+:::
+:::
+
+### 5a · One gene, one boxplot, one t-test
+
+Gene `ENSG00000152583` (*SPARCL1*).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex5a_py
+#| envir: global
+g = "ENSG00000152583"
+a = logc.loc[g, ctrl]
+b = logc.loc[g, trt]
+fig, ax = plt.subplots(figsize=(3, 3))
+ax.boxplot([a, b], labels=["control", "dex"])
+ax.set_ylabel("log2(count + 1)")
+plt.tight_layout(); plt.show()
+print(stats.ttest_ind(______, ______))
+```
+
+::: {.hint exercise="ex5a_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`stats.ttest_ind(b, a)`.
+:::
+:::
+
+::: {.solution exercise="ex5a_py"}
+```python
+print(stats.ttest_ind(b, a))     # p ≈ 1.6e-05
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex5a_r
+#| envir: global
+#| fig-width: 3
+#| fig-height: 3
+g <- "ENSG00000152583"
+a <- unlist(logc[g, ctrl])
+b <- unlist(logc[g, trt])
+par(mar = c(3, 4, 1, 1))
+boxplot(list(control = a, dex = b), ylab = "log2(count + 1)")
+t.test(______, ______)
+```
+
+::: {.hint exercise="ex5a_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`t.test(b, a)`.
+:::
+:::
+
+::: {.solution exercise="ex5a_r"}
+```r
+t.test(b, a)          # p ≈ 3e-05 (Welch)
+```
+:::
+:::
+:::
+
+### 5b · The 19,271-tests trap
+
+Run a t-test on **every** gene. Count how many have p < 0.05. Then shuffle the sample labels and count again.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+#| exercise: ex5b_py
+#| envir: global
+p = stats.ttest_ind(logc[trt], logc[ctrl], axis=1).pvalue
+print("p < 0.05:", (p < ______).sum(), "of", len(p))
+rng = np.random.default_rng(1)
+cols = list(cts.columns); rng.shuffle(cols)
+p_shuf = stats.ttest_ind(logc[cols[:4]], logc[cols[4:]], axis=1).pvalue
+print("p < 0.05 with shuffled labels:", (p_shuf < 0.05).sum())
+```
+
+::: {.hint exercise="ex5b_py"}
+::: {.callout-tip collapse="false"}
+## Hint
+`0.05`.
+:::
+:::
+
+::: {.solution exercise="ex5b_py"}
+```python
+print("p < 0.05:", (p < 0.05).sum(), "of", len(p))    # ~1800 real, ~1200 shuffled
+```
+:::
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| exercise: ex5b_r
+#| envir: global
+tt <- function(a, b) tryCatch(t.test(a, b)$p.value, error = function(e) NA)
+p <- apply(logc, 1, function(x) tt(x[trt], x[ctrl]))
+cat("p < 0.05:", sum(p < ______, na.rm = TRUE), "of", length(p), "\n")
+set.seed(2)
+cols <- sample(colnames(cts))
+p_shuf <- apply(logc, 1, function(x) tt(x[cols[1:4]], x[cols[5:8]]))
+cat("p < 0.05 with shuffled labels:", sum(p_shuf < 0.05, na.rm = TRUE), "\n")
+```
+
+::: {.hint exercise="ex5b_r"}
+::: {.callout-tip collapse="false"}
+## Hint
+`0.05`. (This cell takes ~10 s in the browser.)
+:::
+:::
+
+::: {.solution exercise="ex5b_r"}
+```r
+cat("p < 0.05:", sum(p < 0.05, na.rm = TRUE), "of", length(p), "\n")   # ~1500 real, ~600 shuffled
+```
+:::
+:::
+:::
+
+::: {.checkpoint}
+With **random** labels, hundreds to over a thousand genes still pass p < 0.05 (the exact number depends on the shuffle) — about 5 % of 19,271 is what "p < 0.05" promises for false positives, and some shuffles accidentally line up with the four donors, which adds more. Now apply Benjamini–Hochberg: `p.adjust(p, "BH")` in R; in Python sort p, multiply by n/rank. How many survive at FDR 0.05?
+:::
+
+**Q6.** Two reasons the t-test is the wrong tool here (Lecture 11 will give you the words): what does it assume about the *distribution* of counts, and what does it ignore about the *four donors*?
+
+---
+
+## Exercise 6 · The apprentice: catch ChatGPT's bug (10 min)
+
+1. Ask ChatGPT (TRACE prompt): *"Write a Python (then R) function `reverse_complement(dna)` for DNA sequences that may contain `N`."*
+2. Paste its function into the cell below and run the three tests.
+3. If any test fails, **fix the function yourself** and paste the fixed version in your report together with the ChatGPT thread link.
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+# paste ChatGPT's function here, then run
+def reverse_complement(dna):
+    complement = {"A": "T", "T": "A", "G": "C", "C": "G"}
+    return "".join(complement[b] for b in reversed(dna))
+
+tests = {"ATGC": "GCAT", "AAANTT": "AANTTT", "atgc": "GCAT"}
+for dna, expected in tests.items():
+    try:
+        got = reverse_complement(dna)
+    except Exception as e:
+        got = "ERROR: " + str(e)
+    print(dna, "->", got, "| expected", expected, "| PASS" if got == expected else "| FAIL")
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+# paste ChatGPT's function here, then run
+reverse_complement <- function(dna) {
+  complement <- c(A = "T", T = "A", G = "C", C = "G")
+  paste(rev(complement[strsplit(dna, "")[[1]]]), collapse = "")
+}
+
+tests <- c(ATGC = "GCAT", AAANTT = "AANTTT", atgc = "GCAT")
+for (dna in names(tests)) {
+  got <- tryCatch(reverse_complement(dna), error = function(e) paste("ERROR:", conditionMessage(e)))
+  cat(dna, "->", got, "| expected", tests[dna], if (identical(got, unname(tests[dna]))) "| PASS" else "| FAIL", "\n")
+}
+```
+:::
+:::
+
+**Q7.** The starter function above (a typical first answer) fails two of the three tests. Name the two bugs. Which one would crash your pipeline loudly, and which one would silently give a wrong answer? Which is worse?
+
+---
+
+## Lab report (submit by Tuesday, Oct 13)
+
+Answers to **Q1–Q7**, the fixed `reverse_complement` in both languages, and one figure from Exercise 3 or 5 saved at 3.2 × 3.2 inches (use the local setup on the [Setup](setup.qmd) page, or right-click → save the image from this page). One page is enough.

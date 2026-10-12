@@ -1,0 +1,57 @@
+---
+title: "Python & R for Genomic Data Science"
+subtitle: "DATA405 Genomic Data Science · Week 7 · Howard University"
+toc: false
+---
+
+::: {.callout-note appearance="simple"}
+**Everything on this site runs inside your web browser.** No installation, no account, no upload. Windows, Mac, Chromebook and iPad all behave the same. The first code cell on a page takes 10–30 seconds to start (it downloads Python or R once); after that, cells run instantly.
+:::
+
+## This week
+
+| When | What | Where |
+|---|---|---|
+| **Mon Sep 28** | Lecture 10 — *Programming for Biologists: Python and R* | [Lecture 10 notes](notes.qmd) · [Rosetta stone](rosetta.qmd) |
+| **Tue Sep 29** | Lecture 11 — *Probability and Statistics for Genomic Data* | [Lecture 11 notes](stats.qmd) |
+| **Wed Sep 30** | Lab 1 — *Python and R on real chr22 data* (1.5 h) | [Lab 1](lab1.qmd) · [Data](data.qmd) |
+| **Wed Oct 14** | Lab 2 — *Statistics in personal and population genomics* (1.5 h) | [Lab 2](lab2.qmd) |
+
+## The one idea
+
+> A genome is a **script**. Sequencing turns it into **text**. Analysis turns text into **tables**, and tables into **claims with uncertainty**.
+
+- **Python** is the language of the *text and pipeline* layer (reads, sequences, files, tools).
+- **R** is the language of the *table and statistics* layer (counts, tests, figures for a paper).
+- You will read both. You will write whichever fits the step you are on.
+
+Every step of the lecture, and every exercise of the lab, is done **twice — once in each language — on the same real data**: human chromosome 22 (GRCh38), the gene *COMT*, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial.
+
+## How to use this site
+
+1. Click **Run Code** in any grey cell. Edit the code and run it again — nothing you do here can break anything.
+2. Every lab exercise has a **Hint** and a **Solution** button. Try before you click.
+3. To keep your work, copy your code into a text file, or use the *download* links on the [Setup](setup.qmd) page to run the same code locally in Jupyter or RStudio.
+4. ChatGPT is allowed (TRACE prompting, as in the proposal). Copilot-style autocomplete is **not** used in this lab — the point is to read every line.
+
+## Try it now
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+dna = "ATGCCGGAGGCC"
+print(len(dna), "letters")
+print(dna.count("G") + dna.count("C"), "are G or C")
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+dna <- "ATGCCGGAGGCC"
+cat(nchar(dna), "letters\n")
+bases <- strsplit(dna, "")[[1]]
+cat(sum(bases %in% c("G", "C")), "are G or C\n")
+```
+:::
+:::

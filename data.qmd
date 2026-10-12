@@ -1,0 +1,40 @@
+---
+title: "Data"
+subtitle: "Every file is real, small (2.4 MB total) and documented here"
+toc: true
+---
+
+All files live in the `data/` folder of this site and are loaded automatically into the browser's Python and R. Download any of them with the links below to use locally. Genome build: **GRCh38**; annotation: **GENCODE** (as shipped in BIOL419 Lab 4, Spring 2026).
+
+| File | Rows | Columns / content | Download |
+|---|---|---|---|
+| `COMT_cds.fa` | 816 nt | *COMT* coding sequence, transcript ENST00000361682 (MB-COMT), including the stop codon | [COMT_cds.fa](data/COMT_cds.fa) |
+| `COMT_protein.fa` | 271 aa | translation of the CDS | [COMT_protein.fa](data/COMT_protein.fa) |
+| `COMT_gene.fa` | 28,204 nt | genomic sequence chr22:19,941,772–19,969,975 (+ strand) | [COMT_gene.fa](data/COMT_gene.fa) |
+| `COMT_exons.tsv` | 6 exons + 4 CDS + stop | exon and CDS coordinates, chromosomal and gene-relative (0-based) | [COMT_exons.tsv](data/COMT_exons.tsv) |
+| `reads_5k.fastq` | 5,000 reads | 100-nt single-end Illumina reads, Phred+33 | [reads_5k.fastq](data/reads_5k.fastq) |
+| `chr22_genes.tsv` | 1,747 genes | `gene_id, gene_name, gene_type, start, end, strand, length_bp` | [chr22_genes.tsv](data/chr22_genes.tsv) |
+| `chr22_expression.tsv` | 1,747 genes | RSEM `expected_count` and `TPM` for one sample, joined to gene names | [chr22_expression.tsv](data/chr22_expression.tsv) |
+| `chr22_mismatches.tsv` | 1,097 sites | `pos, ref, alt, alt_count, depth, alt_fraction, gene_name` | [chr22_mismatches.tsv](data/chr22_mismatches.tsv) |
+| `airway_counts.tsv` | 19,271 genes × 8 samples | raw read counts (genes with ≥ 10 total reads) | [airway_counts.tsv](data/airway_counts.tsv) |
+| `airway_metadata.tsv` | 8 samples | `id, dex (control/treated), celltype (donor), geo_id` | [airway_metadata.tsv](data/airway_metadata.tsv) |
+
+## Where each file came from
+
+**COMT sequences and exons.** Extracted from the chromosome 22 FASTA and GENCODE GTF used in BIOL419 Lab 4 (`chr22.fa`, `chr22.gtf`). The canonical transcript (`Ensembl_canonical` tag) was used; CDS segments were concatenated in genomic order (the gene is on the + strand) and the GTF `stop_codon` appended. Sanity checks performed: the translation starts with M, has exactly one stop at the end, and codon 158 is GTG (Val) at the position of rs4680 (chr22:19,963,748, GRCh38).
+
+**Reads.** 5,000 records drawn at random (seed 405) from `ENCFF729YAX_subset100k.fastq`, a 100,000-read subset of ENCODE RNA-seq file **ENCFF729YAX** (HiSeq, 100-nt single-end) prepared for BIOL419 Lab 4. Immunoglobulin genes dominate the expression table, which points to a B-lymphocyte-derived sample.
+
+**chr22 genes.** All `gene` records of the GENCODE chr22 GTF. `length_bp` is genomic span (end − start + 1), not transcript length.
+
+**chr22 expression.** The `sample_rsem.genes.results` file produced in BIOL419 Lab 4 by STAR 2.7.10b → RSEM on the 100,000-read subset (see the `handout` in that lab). Columns kept: `length` (effective transcript length used by RSEM), `expected_count`, `TPM`. Because only chr22 was used as reference, TPM values are relative to chr22 only and are not comparable to whole-genome TPM.
+
+**chr22 mismatches.** Derived from the STAR alignment (`Aligned.sortedByCoord.out.bam`) of the same 100,000 reads: for every aligned base with mapping quality ≥ 20 and base quality ≥ 20, the read base was compared with the reference; sites with depth ≥ 5 and ≥ 2 reads supporting the same alternative base are listed. `gene_name` is the protein-coding gene overlapping the site, if any. This is **not** a variant call set — it deliberately contains mis-mapping artefacts, reference differences and RNA editing sites, which is what Lab 1 Exercise 4c asks you to sort out.
+
+**airway.** Himes BE *et al.* (2014) *PLoS ONE* 9:e99625, GEO **GSE52778**: four primary human airway smooth-muscle cell lines, each untreated and treated with 1 µM dexamethasone for 18 h. Counts are the gene-level table distributed with the Bioconductor `airway` package and used in the DESeq2 vignette; here filtered to genes with ≥ 10 reads in total. Sample IDs are SRA run accessions.
+
+## Re-creating the package
+
+The script that built these files (Python, requires `biopython`, `pysam`, `pandas`) is in the site repository as `tools/build_data.py`. Inputs are the BIOL419 Lab 4 folder and `airway_scaledcounts.csv` / `airway_metadata.csv` from the BIMM143 course materials (GitHub, bioboot/bimm143_S18).
+
+*Provenance recorded Sep 27, 2026.*

@@ -1,0 +1,55 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - data/**
+    - downloads/**
+    - images/**
+
+website:
+  title: "DATA405 · Python & R for Genomic Data Science"
+  description: "Lecture 10, Lecture 11 and Lab 1 of DATA405 Genomic Data Science (Howard University, Fall 2026)"
+  page-navigation: true
+  navbar:
+    background: "#0070C0"
+    left:
+      - href: index.qmd
+        text: Home
+      - href: notes.qmd
+        text: "Lecture 10 notes"
+      - href: rosetta.qmd
+        text: "Rosetta stone"
+      - href: lab1.qmd
+        text: "Lab 1"
+      - href: lab2.qmd
+        text: "Lab 2"
+      - href: stats.qmd
+        text: "Lecture 11 notes"
+      - href: data.qmd
+        text: Data
+      - href: setup.qmd
+        text: Setup
+  page-footer:
+    left: "DATA405 Genomic Data Science · Jinrui Xu · Howard University · Fall 2026"
+    right: "Code runs in your browser (Pyodide + webR). Nothing is uploaded."
+
+format:
+  live-html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    css: styles.css
+    webr:
+      render-df: paged-table
+    pyodide:
+      packages:
+        - pandas
+        - numpy
+        - scipy
+        - matplotlib
+    live:
+      show-hints: true
+      show-solutions: true
+
+engine: markdown

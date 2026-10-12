@@ -1,0 +1,28 @@
+/* DATA405 site — white background, blue titles (matches the lecture decks) */
+h1, h2 { color: #0070C0; }
+h3 { color: #005A9C; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+.lang-tag { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 0.5rem; color: white; margin-bottom: 0.25rem; }
+.py { background: #3572A5; }
+.r  { background: #198CE7; }
+.checkpoint { border-left: 4px solid #E97132; background: #FFF6EF; padding: 0.6rem 1rem; margin: 1rem 0; }
+.checkpoint::before { content: "Checkpoint"; font-weight: 700; color: #E97132; display: block; }
+.yourturn { border-left: 4px solid #7030A0; background: #F7F2FB; padding: 0.6rem 1rem; margin: 1rem 0; }
+.yourturn::before { content: "Your turn"; font-weight: 700; color: #7030A0; display: block; }
+.trap { border-left: 4px solid #C00000; background: #FFF2F2; padding: 0.6rem 1rem; margin: 1rem 0; }
+.trap::before { content: "Trap"; font-weight: 700; color: #C00000; display: block; }
+code { font-size: 0.95em; }
+.A { color: #00A651; font-weight: 700; } .C { color: #0070C0; font-weight: 700; }
+.G { color: #E97132; font-weight: 700; } .T { color: #C00000; font-weight: 700; }
+table.rosetta td { vertical-align: top; }
+table.rosetta code { white-space: pre; }
+
+/* Two-column code pages: keep code inside its column; no "On this page" list anywhere */
+.two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.two-col > div { min-width: 0; }
+@media (max-width: 800px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+#quarto-margin-sidebar { display: none !important; }
+@media (min-width: 801px) {
+  body:has(.two-col) #quarto-content.page-columns { display: block; max-width: 1500px; margin-left: auto; margin-right: auto; padding: 0 1.5rem; }
+}
