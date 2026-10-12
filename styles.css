@@ -26,3 +26,11 @@ table.rosetta code { white-space: pre; }
 @media (min-width: 801px) {
   body:has(.two-col) #quarto-content.page-columns { display: block; max-width: 1500px; margin-left: auto; margin-right: auto; padding: 0 1.5rem; }
 }
+
+/* Language switch (lang-switch.html): show Python, R, or both */
+.lang-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.5rem 0 1.2rem; padding: 0.5rem 0.75rem; border: 1px solid #cfe2f3; border-radius: 0.4rem; background: #f3f8fd; }
+.lang-switch-label { font-weight: 600; margin-right: 0.3rem; }
+.lang-switch button { border: 1px solid #0070C0; background: #fff; color: #0070C0; border-radius: 0.3rem; padding: 0.15rem 0.8rem; font-size: 0.9rem; cursor: pointer; }
+.lang-switch button.active { background: #0070C0; color: #fff; }
+body.show-py .two-col > .col-r, body.show-r .two-col > .col-py { display: none; }
+body.show-py .two-col, body.show-r .two-col { grid-template-columns: minmax(0, 1fr); }

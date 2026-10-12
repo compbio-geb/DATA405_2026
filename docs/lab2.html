@@ -227,7 +227,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><strong>Rules of the lab.</strong> <strong>Choose one language</strong>, Python or R, and use it for the whole lab: every exercise has both, side by side, so just follow your column. (Doing the other language too is welcome but not required.) Predict the output before you run. Use the Hint before the Solution. Write your answers to the numbered questions in your lab report — the <a href="downloads/DATA405_Lab2_Handout.pdf">handout</a> has the same exercises with blanks.</p>
+<p><strong>Rules of the lab.</strong> <strong>Choose one language</strong>, Python or R, and use it for the whole lab. Click <strong>Python</strong> or <strong>R</strong> in the <em>Show code in</em> bar above to hide the other language (your choice is remembered; <strong>Both</strong> brings it back). Predict the output before you run. Use the Hint before the Solution. Write your answers to the numbered questions in your lab report — the <a href="downloads/DATA405_Lab2_Handout.pdf">handout</a> has the same exercises with blanks.</p>
 </div>
 </div>
 </div>
@@ -274,7 +274,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>Run both setup cells first. They load the libraries and define <code>two_sided()</code>, which turns any count distribution into a two-sided p-value: the probability of a count <strong>at least as far from the middle</strong> as the one observed.</p>
+<p>Run the setup cell for your language first. It loads the libraries and define <code>two_sided()</code>, which turns any count distribution into a two-sided p-value: the probability of a count <strong>at least as far from the middle</strong> as the one observed.</p>
 <div class="two-col">
 <div>
 <p><span class="lang-tag py">Python</span></p>
@@ -1186,6 +1186,38 @@ WyJkYXRhL0NPTVRfZXhvbnMudHN2IiwiZGF0YS9DT01UX2dlbmUuZmEiLCJkYXRhL0NPTVRfcHJvdGVp
 </section>
 
 </main> <!-- /main -->
+<script>
+// Language switch: show Python, R, or both columns. The choice is remembered in this browser.
+(function () {
+  const cols = document.querySelectorAll(".two-col > div");
+  if (!cols.length) return;
+  cols.forEach(d => {
+    const tag = d.querySelector(":scope > p > .lang-tag, :scope > .lang-tag, .lang-tag");
+    if (tag && tag.classList.contains("py")) d.classList.add("col-py");
+    if (tag && tag.classList.contains("r")) d.classList.add("col-r");
+  });
+  const bar = document.createElement("div");
+  bar.className = "lang-switch";
+  bar.innerHTML = '<span class="lang-switch-label">Show code in:</span>' +
+    '<button type="button" data-lang="py">Python</button>' +
+    '<button type="button" data-lang="r">R</button>' +
+    '<button type="button" data-lang="both">Both</button>';
+  const header = document.querySelector("#title-block-header") || document.querySelector("main h1");
+  (header ? header : document.querySelector("main")).insertAdjacentElement(header ? "afterend" : "afterbegin", bar);
+  function apply(lang) {
+    document.body.classList.remove("show-py", "show-r");
+    if (lang === "py") document.body.classList.add("show-py");
+    if (lang === "r") document.body.classList.add("show-r");
+    bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+    try { localStorage.setItem("data405-lang", lang); } catch (e) {}
+    window.dispatchEvent(new Event("resize"));   // let the code editors redraw at the new width
+  }
+  bar.addEventListener("click", e => { if (e.target.dataset.lang) apply(e.target.dataset.lang); });
+  let saved = "both";
+  try { saved = localStorage.getItem("data405-lang") || "both"; } catch (e) {}
+  apply(saved);
+})();
+</script>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
 </script>

@@ -40,6 +40,7 @@ format:
     toc-depth: 3
     code-copy: true
     css: styles.css
+    include-after-body: lang-switch.html
     webr:
       render-df: paged-table
     pyodide:
