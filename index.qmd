@@ -12,7 +12,7 @@ toc: false
 
 | Lab | Date | Follows | Materials |
 |---|---|---|---|
-| **Lab 1** · *Python and R on real chr22 data* | Wed Sep 30 | Lecture 10 (Python and R) · Lecture 11 (Probability and statistics) | [Lab 1](lab1.qmd) · [Lecture 10 notes](notes.qmd) · [Rosetta stone](rosetta.qmd) · [Lecture 11 notes](stats.qmd) · [Data](data.qmd) |
+| **Lab 1** · *Python and R on real chr22 data* | Wed Oct 7 | Lecture 10 (Python and R) · Lecture 11 (Probability and statistics) | [Lab 1](lab1.qmd) · [Lecture 10 notes](notes.qmd) · [Rosetta stone](rosetta.qmd) · [Lecture 11 notes](stats.qmd) · [Data](data.qmd) |
 | **Lab 2** · *Statistics in personal and population genomics* | Wed Oct 14 | Lecture 12 (The personal genome) · Lecture 13 (Population genomics) | [Lab 2](lab2.qmd) |
 
 Each lab is 1.5 hours and has a handout (linked on the lab page) for your answers.

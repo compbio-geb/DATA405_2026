@@ -1,6 +1,6 @@
 ---
 title: "Lab 1 · Python and R on real chr22 data"
-subtitle: "Wednesday Sep 30 · 1.5 hours · six exercises, each in both languages"
+subtitle: "Wednesday Oct 7 · 1.5 hours · six exercises, each in both languages"
 body-classes: both-languages
 resources:
   - data
