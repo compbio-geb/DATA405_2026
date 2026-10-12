@@ -23,35 +23,35 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Genomic Data Science",
+    "title": "Genomic Data Science · Lab Sessions",
     "section": "",
     "text": "Everything on this site runs inside your web browser. No installation, no account, no upload. Windows, Mac, Chromebook and iPad all behave the same. The first code cell on a page takes 10–30 seconds to start (it downloads Python or R once); after that, cells run instantly."
   },
   {
     "objectID": "index.html#schedule",
     "href": "index.html#schedule",
-    "title": "Genomic Data Science",
+    "title": "Genomic Data Science · Lab Sessions",
     "section": "Schedule",
     "text": "Schedule\n\n\n\nWhen\nWhat\nWhere\n\n\n\n\nMon Sep 28\nLecture 10 — Programming for Biologists: Python and R\nLecture 10 notes · Rosetta stone\n\n\nTue Sep 29\nLecture 11 — Probability and Statistics for Genomic Data\nLecture 11 notes\n\n\nWed Sep 30\nLab 1 — Python and R on real chr22 data (1.5 h)\nLab 1 · Data\n\n\nWed Oct 14\nLab 2 — Statistics in personal and population genomics (1.5 h)\nLab 2"
   },
   {
     "objectID": "index.html#the-one-idea",
     "href": "index.html#the-one-idea",
-    "title": "Genomic Data Science",
+    "title": "Genomic Data Science · Lab Sessions",
     "section": "The one idea",
     "text": "The one idea\n\nA genome is a script. Sequencing turns it into text. Analysis turns text into tables, and tables into claims with uncertainty.\n\n\nPython is the language of the text and pipeline layer (reads, sequences, files, tools).\nR is the language of the table and statistics layer (counts, tests, figures for a paper).\nYou will read both. You will write whichever fits the step you are on.\n\nEvery step of the lecture, and every exercise of the lab, is done twice — once in each language — on the same real data: human chromosome 22 (GRCh38), the gene COMT, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial."
   },
   {
     "objectID": "index.html#how-to-use-this-site",
     "href": "index.html#how-to-use-this-site",
-    "title": "Genomic Data Science",
+    "title": "Genomic Data Science · Lab Sessions",
     "section": "How to use this site",
     "text": "How to use this site\n\nClick Run Code in any grey cell. Edit the code and run it again — nothing you do here can break anything.\nEvery lab exercise has a Hint and a Solution button. Try before you click.\nTo keep your work, copy your code into a text file, or use the download links on the Setup page to run the same code locally in Jupyter or RStudio.\nChatGPT is allowed (TRACE prompting, as in the proposal). Copilot-style autocomplete is not used in this lab — the point is to read every line."
   },
   {
     "objectID": "index.html#try-it-now",
     "href": "index.html#try-it-now",
-    "title": "Genomic Data Science",
+    "title": "Genomic Data Science · Lab Sessions",
     "section": "Try it now",
     "text": "Try it now\n\n\nPython\n\n\n\n\n\n\n\n\nR"
   },
