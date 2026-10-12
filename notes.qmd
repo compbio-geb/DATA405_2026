@@ -1,4 +1,5 @@
 ---
+body-classes: both-languages
 title: "Lecture 10 · Programming for Biologists: Python and R"
 subtitle: "The main knowledge from the slides, with every code example runnable"
 resources:

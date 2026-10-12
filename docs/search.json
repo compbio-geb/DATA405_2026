@@ -28,39 +28,32 @@
     "text": "Everything on this site runs inside your web browser. No installation, no account, no upload. Windows, Mac, Chromebook and iPad all behave the same. The first code cell on a page takes 10–30 seconds to start (it downloads Python or R once); after that, cells run instantly."
   },
   {
-    "objectID": "index.html#schedule",
-    "href": "index.html#schedule",
+    "objectID": "index.html#labs",
+    "href": "index.html#labs",
     "title": "Genomic Data Science · Lab Sessions",
-    "section": "Schedule",
-    "text": "Schedule\n\n\n\nWhen\nWhat\nWhere\n\n\n\n\nMon Sep 28\nLecture 10 — Programming for Biologists: Python and R\nLecture 10 notes · Rosetta stone\n\n\nTue Sep 29\nLecture 11 — Probability and Statistics for Genomic Data\nLecture 11 notes\n\n\nWed Sep 30\nLab 1 — Python and R on real chr22 data (1.5 h)\nLab 1 · Data\n\n\nWed Oct 14\nLab 2 — Statistics in personal and population genomics (1.5 h)\nLab 2"
+    "section": "Labs",
+    "text": "Labs\n\n\n\nLab\nDate\nFollows\nMaterials\n\n\n\n\nLab 1 · Python and R on real chr22 data\nWed Sep 30\nLecture 10 (Python and R) · Lecture 11 (Probability and statistics)\nLab 1 · Lecture 10 notes · Rosetta stone · Lecture 11 notes · Data\n\n\nLab 2 · Statistics in personal and population genomics\nWed Oct 14\nLecture 12 (The personal genome) · Lecture 13 (Population genomics)\nLab 2\n\n\n\nEach lab is 1.5 hours and has a handout (linked on the lab page) for your answers."
   },
   {
-    "objectID": "index.html#the-one-idea",
-    "href": "index.html#the-one-idea",
+    "objectID": "index.html#python-or-r",
+    "href": "index.html#python-or-r",
     "title": "Genomic Data Science · Lab Sessions",
-    "section": "The one idea",
-    "text": "The one idea\n\nA genome is a script. Sequencing turns it into text. Analysis turns text into tables, and tables into claims with uncertainty.\n\n\nPython is the language of the text and pipeline layer (reads, sequences, files, tools).\nR is the language of the table and statistics layer (counts, tests, figures for a paper).\nYou will read both. You will write whichever fits the step you are on.\n\nEvery step of the lecture, and every exercise of the lab, is done twice — once in each language — on the same real data: human chromosome 22 (GRCh38), the gene COMT, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial."
+    "section": "Python or R?",
+    "text": "Python or R?\n\nLab 1 is done in both languages, so that you can read either one.\nFrom Lab 2 on, choose one. Every exercise still shows both; use the Show code in bar at the top of the lab page to hide the language you are not using."
   },
   {
     "objectID": "index.html#how-to-use-this-site",
     "href": "index.html#how-to-use-this-site",
     "title": "Genomic Data Science · Lab Sessions",
     "section": "How to use this site",
-    "text": "How to use this site\n\nClick Run Code in any grey cell. Edit the code and run it again — nothing you do here can break anything.\nEvery lab exercise has a Hint and a Solution button. Try before you click.\nTo keep your work, copy your code into a text file, or use the download links on the Setup page to run the same code locally in Jupyter or RStudio.\nChatGPT is allowed (TRACE prompting, as in the proposal). Copilot-style autocomplete is not used in this lab — the point is to read every line."
-  },
-  {
-    "objectID": "index.html#try-it-now",
-    "href": "index.html#try-it-now",
-    "title": "Genomic Data Science · Lab Sessions",
-    "section": "Try it now",
-    "text": "Try it now\n\n\nPython\n\n\n\n\n\n\n\n\nR"
+    "text": "How to use this site\n\nClick Run Code in any grey cell. Edit the code and run it again; nothing you do here can break anything.\nEvery lab exercise has a Hint and a Solution button. Try before you click.\nVariables stay in memory until you reload the page. After a reload, run the lab’s setup cells again.\nTo keep your work, copy your code into a text file, or follow the Setup page to run the same code on your own laptop in Jupyter or RStudio.\nChatGPT is allowed (TRACE prompting). Copilot-style autocomplete is not used in the labs: the point is to read every line."
   },
   {
     "objectID": "lab1.html",
     "href": "lab1.html",
     "title": "Lab 1 · Python and R on real chr22 data",
     "section": "",
-    "text": "Rules of the lab. Lab 1 is the one lab done in both languages: do every exercise in Python and in R, so you can read either one later. (From Lab 2 on, you choose one.) Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the handout has the same exercises with blanks.\nData used today (all real; see the Data page for where each file came from):"
+    "text": "Lab 1 follows Lecture 10 (Programming for Biologists: Python and R) and Lecture 11 (Probability and Statistics for Genomic Data). The pages in the Lab 1 menu go with it: Lecture 10 notes, the Rosetta stone (Python ↔︎ R side by side), Lecture 11 notes, and the Data page.\nIn Lab 1 and its lecture notes, every step is done twice, once in each language, on the same real data: human chromosome 22 (GRCh38), the gene COMT, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial.\nData used today (all real; see the Data page for where each file came from):"
   },
   {
     "objectID": "lab1.html#exercise-1-hello-two-languages-10-min",
@@ -231,8 +224,8 @@
     "text": "Open any page of this site in Chrome, Edge, Firefox or Safari. Python (via Pyodide) and R (via webR) download once (~30 MB) and then run entirely on your machine; nothing is uploaded. Works the same on Windows, macOS, Linux, Chromebook and iPad.\n\nFirst cell on a page: 10–30 s. Later cells: instant.\nReloading the page resets all variables; re-run the setup cells.\nTo keep code, copy it into a text file. To keep a figure, right-click → Save image.\nIf a cell hangs, reload the page. If the runtime fails to start, try another browser or a network without a strict firewall (webR needs webr.r-wasm.org, Pyodide needs cdn.jsdelivr.net)."
   },
   {
-    "objectID": "setup.html#option-a-the-browser-default-for-lab-1",
-    "href": "setup.html#option-a-the-browser-default-for-lab-1",
+    "objectID": "setup.html#option-a-the-browser-default-for-every-lab",
+    "href": "setup.html#option-a-the-browser-default-for-every-lab",
     "title": "Setup",
     "section": "",
     "text": "Open any page of this site in Chrome, Edge, Firefox or Safari. Python (via Pyodide) and R (via webR) download once (~30 MB) and then run entirely on your machine; nothing is uploaded. Works the same on Windows, macOS, Linux, Chromebook and iPad.\n\nFirst cell on a page: 10–30 s. Later cells: instant.\nReloading the page resets all variables; re-run the setup cells.\nTo keep code, copy it into a text file. To keep a figure, right-click → Save image.\nIf a cell hangs, reload the page. If the runtime fails to start, try another browser or a network without a strict firewall (webR needs webr.r-wasm.org, Pyodide needs cdn.jsdelivr.net)."
@@ -242,7 +235,7 @@
     "href": "setup.html#option-b-python-locally-miniconda-jupyter",
     "title": "Setup",
     "section": "Option B — Python locally (Miniconda + Jupyter)",
-    "text": "Option B — Python locally (Miniconda + Jupyter)\nSame steps on Windows and macOS; only the terminal differs (Anaconda Prompt on Windows, Terminal on macOS).\n\nInstall Miniconda from https://www.anaconda.com/download/success (choose your OS; on Apple Silicon choose the arm64 installer).\nOpen the terminal and create an environment:\nconda create -n data405 -c conda-forge python=3.12 pandas numpy scipy matplotlib jupyterlab biopython -y\nconda activate data405\nDownload the data folder, unzip it, and start Jupyter inside that folder:\ncd path/to/DATA405_Lab1_data\njupyter lab\nPaste any Python cell from this site into a notebook. Paths like data/COMT_cds.fa work unchanged."
+    "text": "Option B — Python locally (Miniconda + Jupyter)\nSame steps on Windows and macOS; only the terminal differs (Anaconda Prompt on Windows, Terminal on macOS).\n\nInstall Miniconda from https://www.anaconda.com/download/success (choose your OS; on Apple Silicon choose the arm64 installer).\nOpen the terminal and create an environment:\nconda create -n data405 -c conda-forge python=3.12 pandas numpy scipy matplotlib jupyterlab biopython -y\nconda activate data405\nDownload the data folder for your lab (see Downloads below), unzip it, and start Jupyter inside that folder:\ncd path/to/DATA405_Lab1_data\njupyter lab\nPaste any Python cell from this site into a notebook. Paths like data/COMT_cds.fa work unchanged."
   },
   {
     "objectID": "setup.html#option-c-r-locally-r-rstudio",
@@ -270,7 +263,7 @@
     "href": "setup.html#downloads",
     "title": "Setup",
     "section": "Downloads",
-    "text": "Downloads\n\nLab 1 handout (PDF) · Word version\nLab 1 data folder (zip)\nLecture 10 slides (PDF)\nLecture 11 slides (PDF)"
+    "text": "Downloads\nLab 1\n\nLab 1 handout (PDF) · Word version\nLab 1 data folder (zip)\nLecture 10 slides (PDF)\nLecture 11 slides (PDF)\n\nLab 2\n\nLab 2 handout (PDF) · Word version\nLab 2 data folder (zip)"
   },
   {
     "objectID": "notes.html",

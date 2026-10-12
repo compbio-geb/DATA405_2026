@@ -132,29 +132,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./notes.html"> 
-<span class="menu-text">Lecture 10 notes</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab-1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab 1</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab-1">    
+        <li>
+    <a class="dropdown-item" href="./lab1.html">
+ <span class="dropdown-text">Lab 1 · Python and R on real chr22 data</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./rosetta.html"> 
-<span class="menu-text">Rosetta stone</span></a>
+        <li>
+    <a class="dropdown-item" href="./notes.html">
+ <span class="dropdown-text">Lecture 10 notes</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./lab1.html"> 
-<span class="menu-text">Lab 1</span></a>
+        <li>
+    <a class="dropdown-item" href="./rosetta.html">
+ <span class="dropdown-text">Rosetta stone (Python ↔︎ R)</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./stats.html">
+ <span class="dropdown-text">Lecture 11 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./data.html">
+ <span class="dropdown-text">Lab 1 data</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
     <a class="nav-link" href="./lab2.html"> 
 <span class="menu-text">Lab 2</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./stats.html"> 
-<span class="menu-text">Lecture 11 notes</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./data.html"> 
-<span class="menu-text">Data</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./setup.html" aria-current="page"> 
@@ -176,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#option-a-the-browser-default-for-lab-1" id="toc-option-a-the-browser-default-for-lab-1" class="nav-link active" data-scroll-target="#option-a-the-browser-default-for-lab-1">Option A — the browser (default for Lab 1)</a></li>
+  <li><a href="#option-a-the-browser-default-for-every-lab" id="toc-option-a-the-browser-default-for-every-lab" class="nav-link active" data-scroll-target="#option-a-the-browser-default-for-every-lab">Option A — the browser (default for every lab)</a></li>
   <li><a href="#option-b-python-locally-miniconda-jupyter" id="toc-option-b-python-locally-miniconda-jupyter" class="nav-link" data-scroll-target="#option-b-python-locally-miniconda-jupyter">Option B — Python locally (Miniconda + Jupyter)</a></li>
   <li><a href="#option-c-r-locally-r-rstudio" id="toc-option-c-r-locally-r-rstudio" class="nav-link" data-scroll-target="#option-c-r-locally-r-rstudio">Option C — R locally (R + RStudio)</a>
   <ul class="collapse">
@@ -211,8 +218,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="option-a-the-browser-default-for-lab-1" class="level2">
-<h2 class="anchored" data-anchor-id="option-a-the-browser-default-for-lab-1">Option A — the browser (default for Lab 1)</h2>
+<section id="option-a-the-browser-default-for-every-lab" class="level2">
+<h2 class="anchored" data-anchor-id="option-a-the-browser-default-for-every-lab">Option A — the browser (default for every lab)</h2>
 <p>Open any page of this site in Chrome, Edge, Firefox or Safari. Python (via <strong>Pyodide</strong>) and R (via <strong>webR</strong>) download once (~30 MB) and then run entirely on your machine; nothing is uploaded. Works the same on Windows, macOS, Linux, Chromebook and iPad.</p>
 <ul>
 <li>First cell on a page: 10–30 s. Later cells: instant.</li>
@@ -229,7 +236,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Open the terminal and create an environment:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> data405 <span class="at">-c</span> conda-forge python=3.12 pandas numpy scipy matplotlib jupyterlab biopython <span class="at">-y</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate data405</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li><p>Download the <a href="downloads/DATA405_Lab1_data.zip">data folder</a>, unzip it, and start Jupyter <strong>inside that folder</strong>:</p>
+<li><p>Download the data folder for your lab (see <a href="#downloads">Downloads</a> below), unzip it, and start Jupyter <strong>inside that folder</strong>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> path/to/DATA405_Lab1_data</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> lab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 <li><p>Paste any Python cell from this site into a notebook. Paths like <code>data/COMT_cds.fa</code> work unchanged.</p></li>
@@ -280,11 +287,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="downloads" class="level2">
 <h2 class="anchored" data-anchor-id="downloads">Downloads</h2>
+<p><strong>Lab 1</strong></p>
 <ul>
 <li><a href="downloads/DATA405_Lab1_Handout.pdf">Lab 1 handout (PDF)</a> · <a href="downloads/DATA405_Lab1_Handout.docx">Word version</a></li>
 <li><a href="downloads/DATA405_Lab1_data.zip">Lab 1 data folder (zip)</a></li>
 <li><a href="downloads/DATA405_Lecture10_Python_and_R.pdf">Lecture 10 slides (PDF)</a></li>
 <li><a href="downloads/DATA405_Lecture11_Probability_Statistics.pdf">Lecture 11 slides (PDF)</a></li>
+</ul>
+<p><strong>Lab 2</strong></p>
+<ul>
+<li><a href="downloads/DATA405_Lab2_Handout.pdf">Lab 2 handout (PDF)</a> · <a href="downloads/DATA405_Lab2_Handout.docx">Word version</a></li>
+<li><a href="downloads/DATA405_Lab2_data.zip">Lab 2 data folder (zip)</a></li>
 </ul>
 
 

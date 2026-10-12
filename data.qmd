@@ -1,4 +1,5 @@
 ---
+body-classes: both-languages
 title: "Data"
 subtitle: "Every file is real, small (2.4 MB total) and documented here"
 toc: true

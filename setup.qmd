@@ -4,7 +4,7 @@ subtitle: "Nothing to install for the lab. This page is for running the same cod
 toc: true
 ---
 
-## Option A — the browser (default for Lab 1)
+## Option A — the browser (default for every lab)
 
 Open any page of this site in Chrome, Edge, Firefox or Safari. Python (via **Pyodide**) and R (via **webR**) download once (~30 MB) and then run entirely on your machine; nothing is uploaded. Works the same on Windows, macOS, Linux, Chromebook and iPad.
 
@@ -23,7 +23,7 @@ Same steps on Windows and macOS; only the terminal differs (*Anaconda Prompt* on
    conda create -n data405 -c conda-forge python=3.12 pandas numpy scipy matplotlib jupyterlab biopython -y
    conda activate data405
    ```
-3. Download the [data folder](downloads/DATA405_Lab1_data.zip), unzip it, and start Jupyter **inside that folder**:
+3. Download the data folder for your lab (see [Downloads](#downloads) below), unzip it, and start Jupyter **inside that folder**:
    ```bash
    cd path/to/DATA405_Lab1_data
    jupyter lab
@@ -81,7 +81,14 @@ Multi-panel figures: `layout(matrix(c(1, 2), nrow = 1), widths = c(3, 5))`, then
 
 ## Downloads
 
+**Lab 1**
+
 - [Lab 1 handout (PDF)](downloads/DATA405_Lab1_Handout.pdf) · [Word version](downloads/DATA405_Lab1_Handout.docx)
 - [Lab 1 data folder (zip)](downloads/DATA405_Lab1_data.zip)
 - [Lecture 10 slides (PDF)](downloads/DATA405_Lecture10_Python_and_R.pdf)
 - [Lecture 11 slides (PDF)](downloads/DATA405_Lecture11_Probability_Statistics.pdf)
+
+**Lab 2**
+
+- [Lab 2 handout (PDF)](downloads/DATA405_Lab2_Handout.pdf) · [Word version](downloads/DATA405_Lab2_Handout.docx)
+- [Lab 2 data folder (zip)](downloads/DATA405_Lab2_data.zip)

@@ -1,4 +1,5 @@
 ---
+body-classes: both-languages
 title: "Lecture 11 · Probability and Statistics for Genomic Data"
 subtitle: "Sequencing is sampling: the ideas behind DESeq2, EM/RSEM and ChIP-seq peak calling — with runnable demos"
 resources:

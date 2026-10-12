@@ -132,29 +132,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./notes.html"> 
-<span class="menu-text">Lecture 10 notes</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab-1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab 1</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab-1">    
+        <li>
+    <a class="dropdown-item" href="./lab1.html">
+ <span class="dropdown-text">Lab 1 · Python and R on real chr22 data</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./rosetta.html"> 
-<span class="menu-text">Rosetta stone</span></a>
+        <li>
+    <a class="dropdown-item" href="./notes.html">
+ <span class="dropdown-text">Lecture 10 notes</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="./lab1.html" aria-current="page"> 
-<span class="menu-text">Lab 1</span></a>
+        <li>
+    <a class="dropdown-item" href="./rosetta.html">
+ <span class="dropdown-text">Rosetta stone (Python ↔︎ R)</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./stats.html">
+ <span class="dropdown-text">Lecture 11 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./data.html">
+ <span class="dropdown-text">Lab 1 data</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
     <a class="nav-link" href="./lab2.html"> 
 <span class="menu-text">Lab 2</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./stats.html"> 
-<span class="menu-text">Lecture 11 notes</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./data.html"> 
-<span class="menu-text">Data</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./setup.html"> 
@@ -227,6 +234,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>Lab 1 follows <strong>Lecture 10</strong> (<em>Programming for Biologists: Python and R</em>) and <strong>Lecture 11</strong> (<em>Probability and Statistics for Genomic Data</em>). The pages in the <strong>Lab 1</strong> menu go with it: <a href="./notes.html">Lecture 10 notes</a>, the <a href="./rosetta.html">Rosetta stone</a> (Python ↔︎ R side by side), <a href="./stats.html">Lecture 11 notes</a>, and the <a href="./data.html">Data</a> page.</p>
+<blockquote class="blockquote">
+<p>A genome is a <strong>script</strong>. Sequencing turns it into <strong>text</strong>. Analysis turns text into <strong>tables</strong>, and tables into <strong>claims with uncertainty</strong>.</p>
+</blockquote>
+<ul>
+<li><strong>Python</strong> is the language of the <em>text and pipeline</em> layer (reads, sequences, files, tools).</li>
+<li><strong>R</strong> is the language of the <em>table and statistics</em> layer (counts, tests, figures for a paper).</li>
+</ul>
+<p>In Lab 1 and its lecture notes, every step is done <strong>twice, once in each language, on the same real data</strong>: human chromosome 22 (GRCh38), the gene <em>COMT</em>, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial.</p>
 <div class="callout callout-style-simple callout-important">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">

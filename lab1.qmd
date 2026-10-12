@@ -6,6 +6,15 @@ resources:
   - data
 ---
 
+Lab 1 follows **Lecture 10** (*Programming for Biologists: Python and R*) and **Lecture 11** (*Probability and Statistics for Genomic Data*). The pages in the **Lab 1** menu go with it: [Lecture 10 notes](notes.qmd), the [Rosetta stone](rosetta.qmd) (Python ↔ R side by side), [Lecture 11 notes](stats.qmd), and the [Data](data.qmd) page.
+
+> A genome is a **script**. Sequencing turns it into **text**. Analysis turns text into **tables**, and tables into **claims with uncertainty**.
+
+- **Python** is the language of the *text and pipeline* layer (reads, sequences, files, tools).
+- **R** is the language of the *table and statistics* layer (counts, tests, figures for a paper).
+
+In Lab 1 and its lecture notes, every step is done **twice, once in each language, on the same real data**: human chromosome 22 (GRCh38), the gene *COMT*, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial.
+
 ::: {.callout-important appearance="simple"}
 **Rules of the lab.** Lab 1 is the one lab done in **both** languages: do every exercise in Python **and** in R, so you can read either one later. (From Lab 2 on, you choose one.) Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the [handout](downloads/DATA405_Lab1_Handout.pdf) has the same exercises with blanks.
 :::

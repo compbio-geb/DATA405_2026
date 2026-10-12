@@ -15,18 +15,20 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: notes.qmd
-        text: "Lecture 10 notes"
-      - href: rosetta.qmd
-        text: "Rosetta stone"
-      - href: lab1.qmd
-        text: "Lab 1"
+      - text: "Lab 1"
+        menu:
+          - href: lab1.qmd
+            text: "Lab 1 · Python and R on real chr22 data"
+          - href: notes.qmd
+            text: "Lecture 10 notes"
+          - href: rosetta.qmd
+            text: "Rosetta stone (Python ↔ R)"
+          - href: stats.qmd
+            text: "Lecture 11 notes"
+          - href: data.qmd
+            text: "Lab 1 data"
       - href: lab2.qmd
         text: "Lab 2"
-      - href: stats.qmd
-        text: "Lecture 11 notes"
-      - href: data.qmd
-        text: Data
       - href: setup.qmd
         text: Setup
   page-footer:
