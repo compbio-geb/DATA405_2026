@@ -1,6 +1,6 @@
 ---
-title: "Python & R for Genomic Data Science"
-subtitle: "DATA405 Genomic Data Science · Week 7 · Howard University"
+title: "Genomic Data Science"
+subtitle: "DATA405/BIOL480 · Fall 2026 · Howard University · Jinrui Xu"
 toc: false
 ---
 
@@ -8,7 +8,7 @@ toc: false
 **Everything on this site runs inside your web browser.** No installation, no account, no upload. Windows, Mac, Chromebook and iPad all behave the same. The first code cell on a page takes 10–30 seconds to start (it downloads Python or R once); after that, cells run instantly.
 :::
 
-## This week
+## Schedule
 
 | When | What | Where |
 |---|---|---|

@@ -23,35 +23,35 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Python & R for Genomic Data Science",
+    "title": "Genomic Data Science",
     "section": "",
     "text": "Everything on this site runs inside your web browser. No installation, no account, no upload. Windows, Mac, Chromebook and iPad all behave the same. The first code cell on a page takes 10–30 seconds to start (it downloads Python or R once); after that, cells run instantly."
   },
   {
-    "objectID": "index.html#this-week",
-    "href": "index.html#this-week",
-    "title": "Python & R for Genomic Data Science",
-    "section": "This week",
-    "text": "This week\n\n\n\nWhen\nWhat\nWhere\n\n\n\n\nMon Sep 28\nLecture 10 — Programming for Biologists: Python and R\nLecture 10 notes · Rosetta stone\n\n\nTue Sep 29\nLecture 11 — Probability and Statistics for Genomic Data\nLecture 11 notes\n\n\nWed Sep 30\nLab 1 — Python and R on real chr22 data (1.5 h)\nLab 1 · Data\n\n\nWed Oct 14\nLab 2 — Statistics in personal and population genomics (1.5 h)\nLab 2"
+    "objectID": "index.html#schedule",
+    "href": "index.html#schedule",
+    "title": "Genomic Data Science",
+    "section": "Schedule",
+    "text": "Schedule\n\n\n\nWhen\nWhat\nWhere\n\n\n\n\nMon Sep 28\nLecture 10 — Programming for Biologists: Python and R\nLecture 10 notes · Rosetta stone\n\n\nTue Sep 29\nLecture 11 — Probability and Statistics for Genomic Data\nLecture 11 notes\n\n\nWed Sep 30\nLab 1 — Python and R on real chr22 data (1.5 h)\nLab 1 · Data\n\n\nWed Oct 14\nLab 2 — Statistics in personal and population genomics (1.5 h)\nLab 2"
   },
   {
     "objectID": "index.html#the-one-idea",
     "href": "index.html#the-one-idea",
-    "title": "Python & R for Genomic Data Science",
+    "title": "Genomic Data Science",
     "section": "The one idea",
     "text": "The one idea\n\nA genome is a script. Sequencing turns it into text. Analysis turns text into tables, and tables into claims with uncertainty.\n\n\nPython is the language of the text and pipeline layer (reads, sequences, files, tools).\nR is the language of the table and statistics layer (counts, tests, figures for a paper).\nYou will read both. You will write whichever fits the step you are on.\n\nEvery step of the lecture, and every exercise of the lab, is done twice — once in each language — on the same real data: human chromosome 22 (GRCh38), the gene COMT, 5,000 real RNA-seq reads, and the eight-sample airway RNA-seq experiment used in the DESeq2 tutorial."
   },
   {
     "objectID": "index.html#how-to-use-this-site",
     "href": "index.html#how-to-use-this-site",
-    "title": "Python & R for Genomic Data Science",
+    "title": "Genomic Data Science",
     "section": "How to use this site",
     "text": "How to use this site\n\nClick Run Code in any grey cell. Edit the code and run it again — nothing you do here can break anything.\nEvery lab exercise has a Hint and a Solution button. Try before you click.\nTo keep your work, copy your code into a text file, or use the download links on the Setup page to run the same code locally in Jupyter or RStudio.\nChatGPT is allowed (TRACE prompting, as in the proposal). Copilot-style autocomplete is not used in this lab — the point is to read every line."
   },
   {
     "objectID": "index.html#try-it-now",
     "href": "index.html#try-it-now",
-    "title": "Python & R for Genomic Data Science",
+    "title": "Genomic Data Science",
     "section": "Try it now",
     "text": "Try it now\n\n\nPython\n\n\n\n\n\n\n\n\nR"
   },
@@ -67,7 +67,7 @@
     "href": "lab1.html#exercise-1-hello-two-languages-10-min",
     "title": "Lab 1 · Python and R on real chr22 data",
     "section": "Exercise 1 · Hello, two languages (10 min)",
-    "text": "Exercise 1 · Hello, two languages (10 min)\nRun the two cells. Then change the gene name and the number, and run again. Wait for the first cell in each language to finish starting up (10–30 s).\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nNow confirm the data files are there.\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nQ1. In the R cell, what happens if you write n_aa = 271 instead of n_aa &lt;- 271? And in Python, n_aa &lt;- 271? Try both and write one sentence."
+    "text": "Exercise 1 · Hello, two languages (10 min)\nRun the two cells. Then change the gene name and the number, and run again. Wait for the first cell in each language to finish starting up (10–30 s).\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nNow confirm the data files are there.\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nQ1. In the R cell, what happens if you write n_aa = 271 instead of n_aa &lt;- 271? And in Python, n_aa &lt;- 271? Try both and write one sentence.\nTip: variables stay in memory until you reload the page, so an old n_aa can hide what a wrong line does. Test with a new name instead, e.g. count &lt;- 271 followed by print(count) in Python. (Python reads count &lt;- 271 as count &lt; -271, a comparison, not an assignment.)"
   },
   {
     "objectID": "lab1.html#exercise-2-dna-as-a-string-comt-and-rs4680-20-min",
@@ -172,7 +172,7 @@
     "href": "lab2.html",
     "title": "Lab 2 · Statistics in personal and population genomics",
     "section": "",
-    "text": "Rules of the lab. Choose one language, Python or R, and use it for the whole lab. Click Python or R in the Show code in bar above to hide the other language (your choice is remembered; Both brings it back). Predict the output before you run. Use the Hint before the Solution. Write your answers to the numbered questions in your lab report — the handout has the same exercises with blanks.\nPart A follows Lecture 12 (one person, two copies, allele-specific reads). Part B follows Lecture 13 (many people: Hardy–Weinberg and GWAS).\nRun the setup cell for your language first. It loads the libraries and define two_sided(), which turns any count distribution into a two-sided p-value: the probability of a count at least as far from the middle as the one observed."
+    "text": "Rules of the lab. Choose one language, Python or R, and use it for the whole lab. Click Python or R in the Show code in bar above to hide the other language (your choice is remembered; Both brings it back). Predict the output before you run. Use the Hint before the Solution. Write your answers to the numbered questions in your lab report — the handout has the same exercises with blanks.\nPart A follows Lecture 12 (one person, two copies, allele-specific reads). Part B follows Lecture 13 (many people: Hardy–Weinberg and GWAS).\nRun the setup cell for your language first. It loads the libraries and defines two_sided(), which turns any count distribution into a two-sided p-value: the probability of a count at least as far from the middle as the one observed."
   },
   {
     "objectID": "lab2.html#exercise-1-is-16-of-20-evidence-of-imbalance-10-min",
