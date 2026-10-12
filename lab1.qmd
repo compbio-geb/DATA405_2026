@@ -939,4 +939,4 @@ for (dna in names(tests)) {
 
 ## Lab report (submit by Tuesday, Oct 13)
 
-Answers to **Q1–Q7**, the fixed `reverse_complement` in both languages, and one figure from Exercise 3 or 5 saved at 3.2 × 3.2 inches (use the local setup on the [Setup](setup.qmd) page, or right-click → save the image from this page). One page is enough.
+Answers to **Q1–Q7**, the fixed `reverse_complement` in both languages, and one figure from Exercise 3 or 5 (use the local setup on the [Setup](setup.qmd) page, or right-click → save the image from this page). One page is enough.
