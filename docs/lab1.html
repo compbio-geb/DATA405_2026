@@ -111,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed both-languages quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><strong>Rules of the lab.</strong> Do every exercise in <strong>both</strong> languages. Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the <a href="downloads/DATA405_Lab1_Handout.pdf">handout</a> has the same exercises with blanks.</p>
+<p><strong>Rules of the lab.</strong> Lab 1 is the one lab done in <strong>both</strong> languages: do every exercise in Python <strong>and</strong> in R, so you can read either one later. (From Lab 2 on, you choose one.) Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the <a href="downloads/DATA405_Lab1_Handout.pdf">handout</a> has the same exercises with blanks.</p>
 </div>
 </div>
 </div>
@@ -1287,6 +1287,8 @@ WyJkYXRhL0NPTVRfZXhvbnMudHN2IiwiZGF0YS9DT01UX2dlbmUuZmEiLCJkYXRhL0NPTVRfcHJvdGVp
 <script>
 // Language switch: show Python, R, or both columns. The choice is remembered in this browser.
 (function () {
+  // Pages marked "both-languages" (Lab 1) always show Python and R, with no switch.
+  if (document.body.classList.contains("both-languages")) return;
   const cols = document.querySelectorAll(".two-col > div");
   if (!cols.length) return;
   cols.forEach(d => {

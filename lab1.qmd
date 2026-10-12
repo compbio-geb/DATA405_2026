@@ -1,12 +1,13 @@
 ---
 title: "Lab 1 · Python and R on real chr22 data"
 subtitle: "Wednesday Sep 30 · 1.5 hours · six exercises, each in both languages"
+body-classes: both-languages
 resources:
   - data
 ---
 
 ::: {.callout-important appearance="simple"}
-**Rules of the lab.** Do every exercise in **both** languages. Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the [handout](downloads/DATA405_Lab1_Handout.pdf) has the same exercises with blanks.
+**Rules of the lab.** Lab 1 is the one lab done in **both** languages: do every exercise in Python **and** in R, so you can read either one later. (From Lab 2 on, you choose one.) Predict the output before you run. Use the Hint before the Solution. ChatGPT is allowed (Exercise 6 requires it); Copilot-style autocomplete is not. Write your answers to the numbered questions in your lab report — the [handout](downloads/DATA405_Lab1_Handout.pdf) has the same exercises with blanks.
 :::
 
 **Data used today** (all real; see the [Data](data.qmd) page for where each file came from):

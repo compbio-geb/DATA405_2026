@@ -279,6 +279,8 @@ W10=
 <script>
 // Language switch: show Python, R, or both columns. The choice is remembered in this browser.
 (function () {
+  // Pages marked "both-languages" (Lab 1) always show Python and R, with no switch.
+  if (document.body.classList.contains("both-languages")) return;
   const cols = document.querySelectorAll(".two-col > div");
   if (!cols.length) return;
   cols.forEach(d => {
