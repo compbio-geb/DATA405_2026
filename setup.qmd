@@ -92,3 +92,8 @@ Multi-panel figures: `layout(matrix(c(1, 2), nrow = 1), widths = c(3, 5))`, then
 
 - [Lab 2 handout (PDF)](downloads/DATA405_Lab2_Handout.pdf) · [Word version](downloads/DATA405_Lab2_Handout.docx)
 - [Lab 2 data folder (zip)](downloads/DATA405_Lab2_data.zip)
+
+**Lab 3**
+
+- [Lab 3 handout (PDF)](downloads/DATA405_Lab3_Handout.pdf) · [Word version](downloads/DATA405_Lab3_Handout.docx)
+- Notebooks: [Python](notebooks/Lab3_GWAS_PRS_Python.ipynb) · [R](notebooks/Lab3_GWAS_PRS_R.ipynb)

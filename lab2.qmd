@@ -19,7 +19,7 @@ resources:
 | `lab2/gwas_region.tsv`, `lab2/gwas_snps.tsv` | 2,000 people × 15 SNPs in one region, plus a trait | simulated | Ex 5 |
 | `lab2/stratification.tsv` | 1,000 people from two groups, one SNP, a trait | simulated | Ex 6 |
 
-Run the setup cell for your language first. It loads the libraries and define `two_sided()`, which turns any count distribution into a two-sided p-value: the probability of a count **at least as far from the middle** as the one observed.
+Run the setup cell for your language first. It loads the libraries and defines `two_sided()`, which turns any count distribution into a two-sided p-value: the probability of a count **at least as far from the middle** as the one observed.
 
 ::: {.two-col}
 ::: {}

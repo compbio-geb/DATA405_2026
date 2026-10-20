@@ -5,6 +5,7 @@ project:
     - data/**
     - downloads/**
     - images/**
+    - notebooks/**
 
 website:
   title: "DATA405/BIOL480 · Lab Sessions"
@@ -29,6 +30,8 @@ website:
             text: "Lab 1 data"
       - href: lab2.qmd
         text: "Lab 2"
+      - href: lab3.qmd
+        text: "Lab 3"
       - href: setup.qmd
         text: Setup
   page-footer:
