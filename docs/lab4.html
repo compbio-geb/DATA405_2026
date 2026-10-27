@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lab 4 · RNA-seq data analysis – DATA405/BIOL480 · Lab Sessions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c6fe8f099a88ecabc23f33ea3dbd3323.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="site_libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">DATA405/BIOL480 · Lab Sessions</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab-1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab 1</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab-1">    
+        <li>
+    <a class="dropdown-item" href="./lab1.html">
+ <span class="dropdown-text">Lab 1 · Python and R on real chr22 data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./notes.html">
+ <span class="dropdown-text">Lecture 10 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./rosetta.html">
+ <span class="dropdown-text">Rosetta stone (Python ↔︎ R)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./stats.html">
+ <span class="dropdown-text">Lecture 11 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./data.html">
+ <span class="dropdown-text">Lab 1 data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./lab2.html"> 
+<span class="menu-text">Lab 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./lab3.html"> 
+<span class="menu-text">Lab 3</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./lab4.html" aria-current="page"> 
+<span class="menu-text">Lab 4</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./setup.html"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#part-a-four-quantifications-in-colab" id="toc-part-a-four-quantifications-in-colab" class="nav-link active" data-scroll-target="#part-a-four-quantifications-in-colab">Part A · Four quantifications in Colab</a></li>
+  <li><a href="#part-b-compare-the-four-answers" id="toc-part-b-compare-the-four-answers" class="nav-link" data-scroll-target="#part-b-compare-the-four-answers">Part B · Compare the four answers</a></li>
+  <li><a href="#exercise-1-how-many-reads-did-each-tool-use-5-min" id="toc-exercise-1-how-many-reads-did-each-tool-use-5-min" class="nav-link" data-scroll-target="#exercise-1-how-many-reads-did-each-tool-use-5-min">Exercise 1 · How many reads did each tool use? (5 min)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 4 · RNA-seq data analysis</h1>
+<p class="subtitle lead">Wednesday Oct 28 · 1.5 hours · gene expression with STAR, RSEM, Cufflinks and Salmon in Google Colab (Galaxy as backup)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-simple callout-important">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>The question.</strong> Qian, Liao, Chang &amp; Zhang (2010, <em>Trends in Genetics</em>) found that <strong>duplicate genes are expressed at lower levels</strong> than single-copy genes, and proposed that this is <em>why</em> duplicates are kept. Their yeast numbers came from RNA-seq reads that were counted <strong>only when they mapped to a unique place</strong> in the genome. Duplicate genes are similar to each other, so many of their reads map to <em>both</em> copies and are thrown away by that rule. Today you quantify the <strong>same yeast reads</strong> four ways, three of them with the EM algorithm from Lecture 7, and decide whether the conclusion depends on the tool. <strong>Part A</strong> runs the four tools in a <strong>Google Colab</strong> notebook (Run all, about 20 minutes; Galaxy is the backup). <strong>Part B</strong>, the comparison, is in the same notebook, and also on this page in Python or R using the instructor’s results. The <a href="downloads/DATA405_Lab4_Handout.pdf">handout</a> (<a href="downloads/DATA405_Lab4_Handout.docx">Word</a>) explains every step and has the report questions. <strong>Report due Tuesday, Nov 3, 11:59 pm on Canvas.</strong></p>
+</div>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/lab4_pipeline.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>The four quantifications. STAR counts only uniquely mapped reads (no EM). RSEM, Cufflinks and Salmon share multi-mapping reads with EM.</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Part</th>
+<th>What you do</th>
+<th>Where</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>Install the tools, download reads + reference, run STAR → RSEM, Cufflinks, Salmon</td>
+<td>Colab notebook (Run all)</td>
+<td>≈ 20 min, all waiting: read A1 meanwhile</td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td>Join the four results with the duplicate-gene table; look at TEF1/TEF2; test the paper’s conclusion</td>
+<td>same notebook (Python), or this page (Python or R)</td>
+<td>≈ 40 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data.</strong> The reads are the real yeast RNA-seq reads Qian et al.&nbsp;used (Nagalakshmi et al.&nbsp;2008, <em>Science</em>; run SRR002051, Illumina 2008, 33 bp, single-end), subsampled to 2 million. Reference: <em>S. cerevisiae</em> R64 genome, gene annotation and transcripts (Ensembl Fungi 63). Duplicate genes: Ensembl paralogues with the protein identity of the closest paralog.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/lab4_multimap.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<figcaption>Why multi-mapping reads matter for duplicate genes.</figcaption>
+</figure>
+</div>
+<section id="part-a-four-quantifications-in-colab" class="level2">
+<h2 class="anchored" data-anchor-id="part-a-four-quantifications-in-colab">Part A · Four quantifications in Colab</h2>
+<p><a class="btn btn-primary" href="https://colab.research.google.com/github/compbio-geb/DATA405_2026/blob/main/notebooks/Lab4_RNAseq_Quantification.ipynb" target="_blank">Open the Lab 4 notebook in Colab</a></p>
+<p><strong>File → Save a copy in Drive</strong>, then <strong>Runtime → Run all</strong>. While it runs (about 20 minutes), read the handout’s Section A1. The notebook:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Command (core)</th>
+<th>What it does</th>
+<th>Output you need</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>apt-get install rna-star rsem salmon cufflinks</code></td>
+<td>installs the four tools</td>
+<td>versions</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>wget …/data/lab4/…</code></td>
+<td>reads (2 M × 33 bp), genome, GTF, transcripts, paralog table</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><code>STAR … --quantMode TranscriptomeSAM GeneCounts</code></td>
+<td>maps reads; <strong>unique reads per gene</strong> (no EM) + transcriptome BAM</td>
+<td><code>star_Log.final.out</code>, <code>star_ReadsPerGene.out.tab</code></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><code>rsem-calculate-expression --alignments …</code></td>
+<td>EM on the transcriptome BAM (ENCODE pipeline)</td>
+<td><code>rsem.genes.results</code></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><code>cufflinks -G genes.gtf …</code></td>
+<td>multi-reads split evenly, EM across isoforms</td>
+<td><code>cufflinks/genes.fpkm_tracking</code></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td><code>salmon quant -k 19 -g genes.gtf …</code></td>
+<td>k-mer quasi-mapping + EM</td>
+<td><code>salmon/quant.genes.sf</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>You should see</strong> in the STAR log: 2,000,000 input reads · uniquely mapped 51.3 % · multi-mapped 6.8 % (135,672 reads) · too many loci 2.0 % · unmapped (too short) 39.3 %. Salmon’s mapping rate is about 29 %.</p>
+</section>
+<section id="part-b-compare-the-four-answers" class="level2">
+<h2 class="anchored" data-anchor-id="part-b-compare-the-four-answers">Part B · Compare the four answers</h2>
+<p>The notebook already contains Exercises 1–5 in Python. The same analysis is here for R users, or if Colab is slow; it loads the instructor’s four result tables (same files, same settings as Part A) and the duplicate-gene table, and joins them into one table <code>d</code> with one row per gene.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-1" class="exercise-cell">
+
+</div>
+<script type="pyodide-1-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiaW1wb3J0IG51bXB5IGFzIG5wXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0XG5EID0gXCJkYXRhL2xhYjRfcmVzdWx0cy9cIlxuXG5zdGFyID0gcGQucmVhZF9jc3YoRCArIFwic3Rhcl9yZWFkc19wZXJfZ2VuZS50YWJcIiwgc2VwPVwiXFx0XCIsIGhlYWRlcj1Ob25lLFxuICAgICAgICAgICAgICAgICAgIG5hbWVzPVtcImdlbmVcIiwgXCJjb3VudFwiLCBcImZ3ZFwiLCBcInJldlwiXSlcbnNwZWNpYWwgPSBzdGFyW3N0YXIuZ2VuZS5zdHIuc3RhcnRzd2l0aChcIk5fXCIpXSAgICAgICAgICAgIyB0aGUgTl8gc3VtbWFyeSByb3dzXG5zdGFyID0gc3Rhclt+c3Rhci5nZW5lLnN0ci5zdGFydHN3aXRoKFwiTl9cIildW1tcImdlbmVcIiwgXCJjb3VudFwiXV0ucmVuYW1lKGNvbHVtbnM9e1wiY291bnRcIjogXCJTVEFSXCJ9KVxucnNlbSA9IChwZC5yZWFkX2NzdihEICsgXCJyc2VtX2dlbmVzLnJlc3VsdHNcIiwgc2VwPVwiXFx0XCIpW1tcImdlbmVfaWRcIiwgXCJleHBlY3RlZF9jb3VudFwiLCBcIlRQTVwiXV1cbiAgICAgICAgICAucmVuYW1lKGNvbHVtbnM9e1wiZ2VuZV9pZFwiOiBcImdlbmVcIiwgXCJleHBlY3RlZF9jb3VudFwiOiBcIlJTRU1cIiwgXCJUUE1cIjogXCJSU0VNX1RQTVwifSkpXG5jdWZmID0gKHBkLnJlYWRfY3N2KEQgKyBcImN1ZmZsaW5rc19nZW5lcy5mcGttX3RyYWNraW5nXCIsIHNlcD1cIlxcdFwiKVtbXCJ0cmFja2luZ19pZFwiLCBcIkZQS01cIl1dXG4gICAgICAgICAgLnJlbmFtZShjb2x1bW5zPXtcInRyYWNraW5nX2lkXCI6IFwiZ2VuZVwiLCBcIkZQS01cIjogXCJDdWZmbGlua3NfRlBLTVwifSkpXG5zYWxtb24gPSAocGQucmVhZF9jc3YoRCArIFwic2FsbW9uX3F1YW50X2dlbmVzLnNmXCIsIHNlcD1cIlxcdFwiKVtbXCJOYW1lXCIsIFwiTnVtUmVhZHNcIiwgXCJUUE1cIl1dXG4gICAgICAgICAgICAucmVuYW1lKGNvbHVtbnM9e1wiTmFtZVwiOiBcImdlbmVcIiwgXCJOdW1SZWFkc1wiOiBcIlNhbG1vblwiLCBcIlRQTVwiOiBcIlNhbG1vbl9UUE1cIn0pKVxucGFyID0gcGQucmVhZF9jc3YoRCArIFwieWVhc3RfcGFyYWxvZ3MudHN2XCIsIHNlcD1cIlxcdFwiKVxuXG5kID0gKHN0YXIubWVyZ2UocnNlbSwgb249XCJnZW5lXCIpLm1lcmdlKGN1ZmYsIG9uPVwiZ2VuZVwiLCBob3c9XCJsZWZ0XCIpLm1lcmdlKHNhbG1vbiwgb249XCJnZW5lXCIsIGhvdz1cImxlZnRcIilcbiAgICAgICAgIC5tZXJnZShwYXJbW1wiZ2VuZVwiLCBcIm5hbWVcIiwgXCJjbG9zZXN0X3BhcmFsb2dcIiwgXCJtaW5fcGN0X2lkXCJdXSwgb249XCJnZW5lXCIsIGhvdz1cImxlZnRcIikpXG5kW1wiaWRlbnRpdHlcIl0gPSBwZC5jdXQoZC5taW5fcGN0X2lkLmZpbGxuYSgwKSwgWy0xLCAzMCwgNzAsIDk1LCAxMDFdLFxuICAgICAgICAgICAgICAgICAgICAgICBsYWJlbHM9W1wibm8gY2xvc2UgcGFyYWxvZ1wiLCBcIjMwLTcwICVcIiwgXCI3MC05NSAlXCIsIFwiOTUtMTAwICVcIl0pXG5wcmludChzcGVjaWFsLnRvX3N0cmluZyhpbmRleD1GYWxzZSkpXG5wcmludChsZW4oZCksIFwiZ2VuZXM7XCIsIGQubWluX3BjdF9pZC5ub3RuYSgpLnN1bSgpLCBcImhhdmUgYSBwYXJhbG9nXCIpIn0=
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-2" class="exercise-cell">
+
+</div>
+<script type="webr-2-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWV9LCJjb2RlIjoiRCA8LSBcImRhdGEvbGFiNF9yZXN1bHRzL1wiXG5cbnN0YXIgPC0gcmVhZC5kZWxpbShwYXN0ZTAoRCwgXCJzdGFyX3JlYWRzX3Blcl9nZW5lLnRhYlwiKSwgaGVhZGVyID0gRkFMU0UsXG4gICAgICAgICAgICAgICAgICAgY29sLm5hbWVzID0gYyhcImdlbmVcIiwgXCJjb3VudFwiLCBcImZ3ZFwiLCBcInJldlwiKSlcbnNwZWNpYWwgPC0gc3RhcltncmVwbChcIl5OX1wiLCBzdGFyJGdlbmUpLCBdICAgICAgICAgICAgICAgICAjIHRoZSBOXyBzdW1tYXJ5IHJvd3NcbnN0YXIgPC0gc3RhclshZ3JlcGwoXCJeTl9cIiwgc3RhciRnZW5lKSwgYyhcImdlbmVcIiwgXCJjb3VudFwiKV07IG5hbWVzKHN0YXIpWzJdIDwtIFwiU1RBUlwiXG5yc2VtIDwtIHJlYWQuZGVsaW0ocGFzdGUwKEQsIFwicnNlbV9nZW5lcy5yZXN1bHRzXCIpKVssIGMoXCJnZW5lX2lkXCIsIFwiZXhwZWN0ZWRfY291bnRcIiwgXCJUUE1cIildXG5uYW1lcyhyc2VtKSA8LSBjKFwiZ2VuZVwiLCBcIlJTRU1cIiwgXCJSU0VNX1RQTVwiKVxuY3VmZiA8LSByZWFkLmRlbGltKHBhc3RlMChELCBcImN1ZmZsaW5rc19nZW5lcy5mcGttX3RyYWNraW5nXCIpKVssIGMoXCJ0cmFja2luZ19pZFwiLCBcIkZQS01cIildXG5uYW1lcyhjdWZmKSA8LSBjKFwiZ2VuZVwiLCBcIkN1ZmZsaW5rc19GUEtNXCIpXG5zYWxtb24gPC0gcmVhZC5kZWxpbShwYXN0ZTAoRCwgXCJzYWxtb25fcXVhbnRfZ2VuZXMuc2ZcIikpWywgYyhcIk5hbWVcIiwgXCJOdW1SZWFkc1wiLCBcIlRQTVwiKV1cbm5hbWVzKHNhbG1vbikgPC0gYyhcImdlbmVcIiwgXCJTYWxtb25cIiwgXCJTYWxtb25fVFBNXCIpXG5wYXIgPC0gcmVhZC5kZWxpbShwYXN0ZTAoRCwgXCJ5ZWFzdF9wYXJhbG9ncy50c3ZcIikpXG5cbmQgPC0gbWVyZ2Uoc3RhciwgcnNlbSwgYnkgPSBcImdlbmVcIilcbmQgPC0gbWVyZ2UoZCwgY3VmZiwgYnkgPSBcImdlbmVcIiwgYWxsLnggPSBUUlVFKVxuZCA8LSBtZXJnZShkLCBzYWxtb24sIGJ5ID0gXCJnZW5lXCIsIGFsbC54ID0gVFJVRSlcbmQgPC0gbWVyZ2UoZCwgcGFyWywgYyhcImdlbmVcIiwgXCJuYW1lXCIsIFwiY2xvc2VzdF9wYXJhbG9nXCIsIFwibWluX3BjdF9pZFwiKV0sIGJ5ID0gXCJnZW5lXCIsIGFsbC54ID0gVFJVRSlcbmQkaWRlbnRpdHkgPC0gY3V0KGlmZWxzZShpcy5uYShkJG1pbl9wY3RfaWQpLCAwLCBkJG1pbl9wY3RfaWQpLCBjKC0xLCAzMCwgNzAsIDk1LCAxMDEpLFxuICAgICAgICAgICAgICAgICAgbGFiZWxzID0gYyhcIm5vIGNsb3NlIHBhcmFsb2dcIiwgXCIzMC03MCAlXCIsIFwiNzAtOTUgJVwiLCBcIjk1LTEwMCAlXCIpKVxucHJpbnQoc3BlY2lhbCwgcm93Lm5hbWVzID0gRkFMU0UpXG5jYXQobnJvdyhkKSwgXCJnZW5lcztcIiwgc3VtKCFpcy5uYShkJG1pbl9wY3RfaWQpKSwgXCJoYXZlIGEgcGFyYWxvZ1xcblwiKSJ9
+</script>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-1-how-many-reads-did-each-tool-use-5-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1-how-many-reads-did-each-tool-use-5-min">Exercise 1 · How many reads did each tool use? (5 min)</h2>
+<p>STAR’s table starts with four <code>N_</code> rows: unmapped, multi-mapping, no feature (mapped outside any gene), ambiguous (inside two overlapping genes). Only <em>uniquely</em> mapped reads inside one gene are counted for genes. Add up what each tool assigned to genes.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-3" class="exercise-cell">
+
+</div>
+<script type="pyodide-3-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDFfcHkifSwiY29kZSI6InByaW50KFwiU1RBUiwgdW5pcXVlIHJlYWRzIGluIGdlbmVzOlwiLCBpbnQoZC5TVEFSLnN1bSgpKSlcbnByaW50KFwiUlNFTSwgZXhwZWN0ZWQgY291bnRzICAgICAgOlwiLCBpbnQoZC5SU0VNLnN1bSgpKSlcbnByaW50KFwiU2FsbW9uLCByZWFkcyAgICAgICAgICAgICAgOlwiLCBpbnQoZC5TYWxtb24uc3VtKCkpKVxucHJpbnQoXCJtdWx0aS1tYXBwaW5nIHJlYWRzIFNUQVIgdGhyZXcgYXdheTpcIiwgaW50KHNwZWNpYWwubG9jW3NwZWNpYWwuZ2VuZSA9PSBcIl9fX19fX1wiLCBcImNvdW50XCJdLmlsb2NbMF0pKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex1_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The row is called <code>N_multimapping</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex1_py">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"STAR, unique reads in genes:"</span>, <span class="bu">int</span>(d.STAR.<span class="bu">sum</span>()))            <span class="co"># 681,891</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"RSEM, expected counts      :"</span>, <span class="bu">int</span>(d.RSEM.<span class="bu">sum</span>()))            <span class="co"># 726,466</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Salmon, reads              :"</span>, <span class="bu">int</span>(d.Salmon.<span class="bu">sum</span>()))          <span class="co"># 584,107</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"multi-mapping reads STAR threw away:"</span>, <span class="bu">int</span>(special.loc[special.gene <span class="op">==</span> <span class="st">"N_multimapping"</span>, <span class="st">"count"</span>].iloc[<span class="dv">0</span>]))  <span class="co"># 135,672</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-4" class="exercise-cell">
+
+</div>
+<script type="webr-4-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDFfciJ9LCJjb2RlIjoiY2F0KFwiU1RBUiwgdW5pcXVlIHJlYWRzIGluIGdlbmVzOlwiLCBzdW0oZCRTVEFSKSwgXCJcXG5cIilcbmNhdChcIlJTRU0sIGV4cGVjdGVkIGNvdW50cyAgICAgIDpcIiwgcm91bmQoc3VtKGQkUlNFTSkpLCBcIlxcblwiKVxuY2F0KFwiU2FsbW9uLCByZWFkcyAgICAgICAgICAgICAgOlwiLCByb3VuZChzdW0oZCRTYWxtb24sIG5hLnJtID0gVFJVRSkpLCBcIlxcblwiKVxuY2F0KFwibXVsdGktbWFwcGluZyByZWFkcyBTVEFSIHRocmV3IGF3YXk6XCIsIHNwZWNpYWwkY291bnRbc3BlY2lhbCRnZW5lID09IFwiX19fX19fXCJdLCBcIlxcblwiKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex1_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The row is called <code>N_multimapping</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex1_r">
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"STAR, unique reads in genes:"</span>, <span class="fu">sum</span>(d<span class="sc">$</span>STAR), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)              <span class="co"># 681,891</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"RSEM, expected counts      :"</span>, <span class="fu">round</span>(<span class="fu">sum</span>(d<span class="sc">$</span>RSEM)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)       <span class="co"># 726,466</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Salmon, reads              :"</span>, <span class="fu">round</span>(<span class="fu">sum</span>(d<span class="sc">$</span>Salmon, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)   <span class="co"># 584,107</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"multi-mapping reads STAR threw away:"</span>, special<span class="sc">$</span>count[special<span class="sc">$</span>gene <span class="sc">==</span> <span class="st">"N_multimapping"</span>], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)  <span class="co"># 135,672</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<section id="exercise-2-one-duplicate-pair-tef1-and-tef2-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2-one-duplicate-pair-tef1-and-tef2-10-min">Exercise 2 · One duplicate pair: TEF1 and TEF2 (10 min)</h2>
+<p><em>TEF1</em> (YPR080W) and <em>TEF2</em> (YBR118W) encode translation elongation factor 1α. Their proteins are <strong>100 % identical</strong> and their coding sequences differ at only a handful of positions. Look them up in all four results, then do the same for <em>TDH3</em>/<em>TDH2</em> (96 % identical) and <em>ADH1</em>/<em>ADH2</em> (93 %).</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-5" class="exercise-cell">
+
+</div>
+<script type="pyodide-5-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDJfcHkifSwiY29kZSI6ImNvbHMgPSBbXCJnZW5lXCIsIFwibmFtZVwiLCBcImNsb3Nlc3RfcGFyYWxvZ1wiLCBcIm1pbl9wY3RfaWRcIiwgXCJTVEFSXCIsIFwiUlNFTVwiLCBcIkN1ZmZsaW5rc19GUEtNXCIsIFwiU2FsbW9uXCJdXG5wYWlycyA9IFtcIllQUjA4MFdcIiwgXCJZQlIxMThXXCIsIFwiWUdSMTkyQ1wiLCBcIllKUjAwOUNcIiwgXCJZT0wwODZDXCIsIFwiX19fX19fXCJdXG5wcmludChkW2QuZ2VuZS5pc2luKHBhaXJzKV1bY29sc10ucm91bmQoMSkudG9fc3RyaW5nKGluZGV4PUZhbHNlKSkifQ==
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex2_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><em>ADH2</em> is YMR303C (it is the <code>closest_paralog</code> listed for YOL086C).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex2_py">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [<span class="st">"gene"</span>, <span class="st">"name"</span>, <span class="st">"closest_paralog"</span>, <span class="st">"min_pct_id"</span>, <span class="st">"STAR"</span>, <span class="st">"RSEM"</span>, <span class="st">"Cufflinks_FPKM"</span>, <span class="st">"Salmon"</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pairs <span class="op">=</span> [<span class="st">"YPR080W"</span>, <span class="st">"YBR118W"</span>, <span class="st">"YGR192C"</span>, <span class="st">"YJR009C"</span>, <span class="st">"YOL086C"</span>, <span class="st">"YMR303C"</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(d[d.gene.isin(pairs)][cols].<span class="bu">round</span>(<span class="dv">1</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># TEF1: STAR 768 · RSEM 7,006 · Cufflinks 4,957 FPKM · Salmon 5,585      TEF2: 859 · 6,218 · 4,931 · 4,614</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># TDH3: 9,111 · 15,613 · 11,719                   TDH2: 2,637 · 4,891 · 3,490</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-6" class="exercise-cell">
+
+</div>
+<script type="webr-6-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDJfciJ9LCJjb2RlIjoiY29scyA8LSBjKFwiZ2VuZVwiLCBcIm5hbWVcIiwgXCJjbG9zZXN0X3BhcmFsb2dcIiwgXCJtaW5fcGN0X2lkXCIsIFwiU1RBUlwiLCBcIlJTRU1cIiwgXCJDdWZmbGlua3NfRlBLTVwiLCBcIlNhbG1vblwiKVxucGFpcnMgPC0gYyhcIllQUjA4MFdcIiwgXCJZQlIxMThXXCIsIFwiWUdSMTkyQ1wiLCBcIllKUjAwOUNcIiwgXCJZT0wwODZDXCIsIFwiX19fX19fXCIpXG5wcmludChkW2QkZ2VuZSAlaW4lIHBhaXJzLCBjb2xzXSwgcm93Lm5hbWVzID0gRkFMU0UsIGRpZ2l0cyA9IDQpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex2_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><em>ADH2</em> is YMR303C (it is the <code>closest_paralog</code> listed for YOL086C).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex2_r">
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"gene"</span>, <span class="st">"name"</span>, <span class="st">"closest_paralog"</span>, <span class="st">"min_pct_id"</span>, <span class="st">"STAR"</span>, <span class="st">"RSEM"</span>, <span class="st">"Cufflinks_FPKM"</span>, <span class="st">"Salmon"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pairs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"YPR080W"</span>, <span class="st">"YBR118W"</span>, <span class="st">"YGR192C"</span>, <span class="st">"YJR009C"</span>, <span class="st">"YOL086C"</span>, <span class="st">"YMR303C"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(d[d<span class="sc">$</span>gene <span class="sc">%in%</span> pairs, cols], <span class="at">row.names =</span> <span class="cn">FALSE</span>, <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># TEF1: STAR 768 · RSEM 7006 · Cufflinks 4957 FPKM · Salmon 5585      TEF2: 859 · 6218 · 4931 · 4614</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<section id="exercise-3-from-one-pair-to-all-genes-15-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3-from-one-pair-to-all-genes-15-min">Exercise 3 · From one pair to all genes (15 min)</h2>
+<p>For every gene with at least 20 RSEM reads, compute the <strong>gain</strong> = RSEM count ÷ STAR unique count: how many times more reads EM gives than unique-only counting. Summarise it by how similar the gene is to its closest paralog.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-7" class="exercise-cell">
+
+</div>
+<script type="pyodide-7-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNfcHkifSwiY29kZSI6ImUgPSBkW2QuUlNFTSA+PSAyMF0uY29weSgpXG5lW1wiZ2FpblwiXSA9IGUuUlNFTSAvIGUuU1RBUi5jbGlwKGxvd2VyPTEpXG5zdW1tYXJ5ID0gZS5ncm91cGJ5KFwiaWRlbnRpdHlcIiwgb2JzZXJ2ZWQ9VHJ1ZSkuZ2Fpbi5hZ2coXG4gICAgbj1cInNpemVcIiwgbWVkaWFuPVwibWVkaWFuXCIsIHE3NT1sYW1iZGEgeDogeC5xdWFudGlsZSgwLjc1KSxcbiAgICBzaGFyZV9vdmVyXzFfNT1sYW1iZGEgeDogKHggPiBfX19fX18pLm1lYW4oKSlcbnByaW50KHN1bW1hcnkucm91bmQoMikpXG5cbmZpZywgYXggPSBwbHQuc3VicGxvdHMoZmlnc2l6ZT0oNiwgNCkpXG5lLmJveHBsb3QoY29sdW1uPVwiZ2FpblwiLCBieT1cImlkZW50aXR5XCIsIGF4PWF4LCBzaG93ZmxpZXJzPUZhbHNlKVxuYXguc2V0X3lzY2FsZShcImxvZ1wiKTsgYXguc2V0X3lsYWJlbChcIlJTRU0gLyBTVEFSIHVuaXF1ZVwiKTsgYXguc2V0X3hsYWJlbChcInByb3RlaW4gaWRlbnRpdHkgdG8gY2xvc2VzdCBwYXJhbG9nXCIpXG5heC5zZXRfdGl0bGUoXCJcIik7IGZpZy5zdXB0aXRsZShcIlwiKTsgcGx0LnNob3coKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Count the genes whose gain is above 1.5 (EM gives at least 50 % more reads).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3_py">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> d[d.RSEM <span class="op">&gt;=</span> <span class="dv">20</span>].copy()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>e[<span class="st">"gain"</span>] <span class="op">=</span> e.RSEM <span class="op">/</span> e.STAR.clip(lower<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> e.groupby(<span class="st">"identity"</span>, observed<span class="op">=</span><span class="va">True</span>).gain.agg(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    n<span class="op">=</span><span class="st">"size"</span>, median<span class="op">=</span><span class="st">"median"</span>, q75<span class="op">=</span><span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    share_over_1_5<span class="op">=</span><span class="kw">lambda</span> x: (x <span class="op">&gt;</span> <span class="fl">1.5</span>).mean())</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary.<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># no close paralog: n 3398, median 0.91, 5 % over 1.5 · 30-70 %: 0.92, 2 % · 70-95 %: 0.95, 11 % · 95-100 %: n 143, median 1.28, q75 3.4, 43 % over 1.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-8" class="exercise-cell">
+
+</div>
+<script type="webr-8-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDNfciJ9LCJjb2RlIjoiZSA8LSBkW2QkUlNFTSA+PSAyMCwgXVxuZSRnYWluIDwtIGUkUlNFTSAvIHBtYXgoZSRTVEFSLCAxKVxuc3VtbWFyeSA8LSBhZ2dyZWdhdGUoZ2FpbiB+IGlkZW50aXR5LCBlLCBmdW5jdGlvbih4KVxuICBjKG4gPSBsZW5ndGgoeCksIG1lZGlhbiA9IG1lZGlhbih4KSwgcTc1ID0gcXVhbnRpbGUoeCwgMC43NSksIHNoYXJlX292ZXJfMV81ID0gbWVhbih4ID4gX19fX19fKSkpXG5wcmludChzdW1tYXJ5LCBkaWdpdHMgPSAzKVxuXG5ib3hwbG90KGdhaW4gfiBpZGVudGl0eSwgZSwgbG9nID0gXCJ5XCIsIG91dGxpbmUgPSBGQUxTRSxcbiAgICAgICAgeGxhYiA9IFwicHJvdGVpbiBpZGVudGl0eSB0byBjbG9zZXN0IHBhcmFsb2dcIiwgeWxhYiA9IFwiUlNFTSAvIFNUQVIgdW5pcXVlXCIpIn0=
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex3_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Count the genes whose gain is above 1.5 (EM gives at least 50 % more reads).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex3_r">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> d[d<span class="sc">$</span>RSEM <span class="sc">&gt;=</span> <span class="dv">20</span>, ]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>e<span class="sc">$</span>gain <span class="ot">&lt;-</span> e<span class="sc">$</span>RSEM <span class="sc">/</span> <span class="fu">pmax</span>(e<span class="sc">$</span>STAR, <span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>summary <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(gain <span class="sc">~</span> identity, e, <span class="cf">function</span>(x)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">n =</span> <span class="fu">length</span>(x), <span class="at">median =</span> <span class="fu">median</span>(x), <span class="at">q75 =</span> <span class="fu">quantile</span>(x, <span class="fl">0.75</span>), <span class="at">share_over_1_5 =</span> <span class="fu">mean</span>(x <span class="sc">&gt;</span> <span class="fl">1.5</span>)))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(summary, <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 95-100 %: n 143, median 1.28, q75 3.4, 43 % over 1.5; all other groups: median ≈ 0.9, ≤ 11 % over 1.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<section id="exercise-4-the-papers-test-with-and-without-em-15-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4-the-papers-test-with-and-without-em-15-min">Exercise 4 · The paper’s test, with and without EM (15 min)</h2>
+<p>Qian et al.&nbsp;compared the <strong>two copies together</strong> with the single ancestral gene and found that about 31 % more duplicate pairs than expected looked reduced. The ancestral gene is not in our data, but we can ask the question that matters: <em>how much of a duplicate pair’s expression disappears when only unique reads are counted?</em> For each pair, lost = 1 − (STAR₁ + STAR₂) / (RSEM₁ + RSEM₂).</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-9" class="exercise-cell">
+
+</div>
+<script type="pyodide-9-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDRfcHkifSwiY29kZSI6InAgPSBkLmRyb3BuYShzdWJzZXQ9W1wiY2xvc2VzdF9wYXJhbG9nXCJdKS5tZXJnZShcbiAgICAgICAgZFtbXCJnZW5lXCIsIFwiU1RBUlwiLCBcIlJTRU1cIl1dLnJlbmFtZShjb2x1bW5zPXtcImdlbmVcIjogXCJjbG9zZXN0X3BhcmFsb2dcIiwgXCJTVEFSXCI6IFwiU1RBUjJcIiwgXCJSU0VNXCI6IFwiUlNFTTJcIn0pLFxuICAgICAgICBvbj1cImNsb3Nlc3RfcGFyYWxvZ1wiKVxucCA9IHBbcC5nZW5lIDwgcC5jbG9zZXN0X3BhcmFsb2ddICAgICAgICAgICAgICAgICAgICAgICAjIGtlZXAgZWFjaCBwYWlyIG9uY2VcbnAgPSBwWyhwLlJTRU0gKyBwLlJTRU0yKSA+PSA0MF1cbnBbXCJsb3N0XCJdID0gMSAtIChwLlNUQVIgKyBwLlNUQVIyKSAvIChwLlJTRU0gKyBwLlJTRU0yKVxucFtcImlkZW50aXR5XCJdID0gcGQuY3V0KHAubWluX3BjdF9pZCwgWzAsIDcwLCA5NSwgMTAxXSwgbGFiZWxzPVtcIjw3MCAlXCIsIFwiNzAtOTUgJVwiLCBcIjk1LTEwMCAlXCJdKVxucHJpbnQocC5ncm91cGJ5KFwiaWRlbnRpdHlcIiwgb2JzZXJ2ZWQ9VHJ1ZSkubG9zdC5hZ2cobj1cInNpemVcIiwgbWVkaWFuPVwibWVkaWFuXCIsXG4gICAgICBzaGFyZV9vdmVyXzMxPWxhbWJkYSB4OiAoeCA+IF9fX19fXykubWVhbigpKS5yb3VuZCgyKSlcbnByaW50KHAuc29ydF92YWx1ZXMoXCJsb3N0XCIsIGFzY2VuZGluZz1GYWxzZSlbW1wiZ2VuZVwiLCBcIm5hbWVcIiwgXCJjbG9zZXN0X3BhcmFsb2dcIiwgXCJtaW5fcGN0X2lkXCIsIFwiU1RBUlwiLCBcIlNUQVIyXCIsIFwiUlNFTVwiLCBcIlJTRU0yXCIsIFwibG9zdFwiXV0uaGVhZCg2KS5yb3VuZCgyKS50b19zdHJpbmcoaW5kZXg9RmFsc2UpKSJ9
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex4_py">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The paper’s excess was 31 %, so test <code>x &gt; 0.31</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex4_py">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ... same code with (x &gt; 0.31)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># &lt;70 %: 1,124 pairs, median lost −0.09, 2 % over 31 % · 70-95 %: 90 pairs, −0.06, 12 % · 95-100 %: 70 pairs, median 0.19, 43 % over 31 %</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># top: CUP1-1/CUP1-2, ASP3-1..4 (100 % identical, no unique reads at all: lost = 100 %), then EFT2/EFT1 89 %, TEF2/TEF1 88 %</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-10" class="exercise-cell">
+
+</div>
+<script type="webr-10-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDRfciJ9LCJjb2RlIjoicCA8LSBkWyFpcy5uYShkJGNsb3Nlc3RfcGFyYWxvZyksIF1cbnAyIDwtIGRbLCBjKFwiZ2VuZVwiLCBcIlNUQVJcIiwgXCJSU0VNXCIpXTsgbmFtZXMocDIpIDwtIGMoXCJjbG9zZXN0X3BhcmFsb2dcIiwgXCJTVEFSMlwiLCBcIlJTRU0yXCIpXG5wIDwtIG1lcmdlKHAsIHAyLCBieSA9IFwiY2xvc2VzdF9wYXJhbG9nXCIpXG5wIDwtIHBbcCRnZW5lIDwgcCRjbG9zZXN0X3BhcmFsb2csIF0gICAgICAgICAgICAgICAgICAgICMga2VlcCBlYWNoIHBhaXIgb25jZVxucCA8LSBwWyhwJFJTRU0gKyBwJFJTRU0yKSA+PSA0MCwgXVxucCRsb3N0IDwtIDEgLSAocCRTVEFSICsgcCRTVEFSMikgLyAocCRSU0VNICsgcCRSU0VNMilcbnAkaWRlbnRpdHkgPC0gY3V0KHAkbWluX3BjdF9pZCwgYygwLCA3MCwgOTUsIDEwMSksIGxhYmVscyA9IGMoXCI8NzAgJVwiLCBcIjcwLTk1ICVcIiwgXCI5NS0xMDAgJVwiKSlcbnByaW50KGFnZ3JlZ2F0ZShsb3N0IH4gaWRlbnRpdHksIHAsIGZ1bmN0aW9uKHgpIGMobiA9IGxlbmd0aCh4KSwgbWVkaWFuID0gbWVkaWFuKHgpLCBzaGFyZV9vdmVyXzMxID0gbWVhbih4ID4gX19fX19fKSkpLCBkaWdpdHMgPSAyKVxudG9wIDwtIHBbb3JkZXIoLXAkbG9zdCksIGMoXCJnZW5lXCIsIFwibmFtZVwiLCBcImNsb3Nlc3RfcGFyYWxvZ1wiLCBcIm1pbl9wY3RfaWRcIiwgXCJTVEFSXCIsIFwiU1RBUjJcIiwgXCJSU0VNXCIsIFwiUlNFTTJcIiwgXCJsb3N0XCIpXVxucHJpbnQoaGVhZCh0b3AsIDYpLCByb3cubmFtZXMgPSBGQUxTRSwgZGlnaXRzID0gMykifQ==
+</script>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex4_r">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The paper’s excess was 31 %, so test <code>x &gt; 0.31</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex4_r">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ... same code with mean(x &gt; 0.31)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 95-100 %: 70 pairs, median lost 0.19, 43 % of pairs lose more than 31 %; &lt;70 %: 2 %</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<section id="exercise-5-do-the-three-em-tools-agree-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5-do-the-three-em-tools-agree-10-min">Exercise 5 · Do the three EM tools agree? (10 min)</h2>
+<p>Plot RSEM against Salmon, and RSEM against STAR, on log axes, colouring the 95–100 % group.</p>
+<div class="two-col">
+<div>
+<p><span class="lang-tag py">Python</span></p>
+<div>
+<div id="pyodide-11" class="exercise-cell">
+
+</div>
+<script type="pyodide-11-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDVfcHkifSwiY29kZSI6ImZpZywgYXhlcyA9IHBsdC5zdWJwbG90cygxLCAyLCBmaWdzaXplPSgxMCwgNC4zKSlcbmZvciBheCwgeCwgbGFiIGluIFsoYXhlc1swXSwgXCJTVEFSXCIsIFwiU1RBUiB1bmlxdWUgcmVhZHNcIiksIChheGVzWzFdLCBcIlNhbG1vblwiLCBcIlNhbG1vbiByZWFkc1wiKV06XG4gICAgY2xvc2UgPSBlLmlkZW50aXR5ID09IFwiOTUtMTAwICVcIlxuICAgIGF4LnNjYXR0ZXIoZVt4XVt+Y2xvc2VdICsgMSwgZS5SU0VNW35jbG9zZV0gKyAxLCBzPTQsIGFscGhhPS4zLCBjb2xvcj1cImdyZXlcIilcbiAgICBheC5zY2F0dGVyKGVbeF1bY2xvc2VdICsgMSwgZS5SU0VNW2Nsb3NlXSArIDEsIHM9OCwgY29sb3I9XCIjQzAwMDAwXCIsIGxhYmVsPVwicGFyYWxvZyA5NS0xMDAgJSBpZGVudGljYWxcIilcbiAgICBheC5wbG90KFsxLCAzZTRdLCBbMSwgM2U0XSwgXCJrLS1cIiwgbHc9MSk7IGF4LnNldF94c2NhbGUoXCJsb2dcIik7IGF4LnNldF95c2NhbGUoXCJsb2dcIilcbiAgICBheC5zZXRfeGxhYmVsKGxhYik7IGF4LnNldF95bGFiZWwoXCJSU0VNIGV4cGVjdGVkIGNvdW50XCIpOyBheC5sZWdlbmQobG9jPVwidXBwZXIgbGVmdFwiKVxuICAgIHIgPSBucC5jb3JyY29lZihucC5sb2cxMChlW3hdICsgMSksIG5wLmxvZzEwKGUuUlNFTSArIDEpKVswLCAxXVxuICAgIGF4LnNldF90aXRsZShmXCJjb3JyZWxhdGlvbiBvZiBsb2cgY291bnRzOiByID0ge3I6LjNmfVwiKVxucGx0LnRpZ2h0X2xheW91dCgpOyBwbHQuc2hvdygpXG5wcmludChcIkN1ZmZsaW5rcyBGUEtNIHZzIFJTRU0gVFBNLCByID1cIiwgcm91bmQobnAuY29ycmNvZWYobnAubG9nMTAoZS5DdWZmbGlua3NfRlBLTS5maWxsbmEoMCkgKyAxKSwgbnAubG9nMTAoZS5SU0VNX1RQTSArIDEpKVswLCAxXSwgMykpIn0=
+</script>
+</div>
+</div>
+<div>
+<p><span class="lang-tag r">R</span></p>
+<div>
+<div id="webr-12" class="exercise-cell">
+
+</div>
+<script type="webr-12-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleDVfciJ9LCJjb2RlIjoicGFyKG1mcm93ID0gYygxLCAyKSlcbmNsb3NlIDwtIGUkaWRlbnRpdHkgPT0gXCI5NS0xMDAgJVwiXG5mb3IgKHggaW4gYyhcIlNUQVJcIiwgXCJTYWxtb25cIikpIHtcbiAgcGxvdChlW1t4XV0gKyAxLCBlJFJTRU0gKyAxLCBsb2cgPSBcInh5XCIsIHBjaCA9IDE2LCBjZXggPSAuMywgY29sID0gXCJncmV5XCIsXG4gICAgICAgeGxhYiA9IHBhc3RlKHgsIFwicmVhZHNcIiksIHlsYWIgPSBcIlJTRU0gZXhwZWN0ZWQgY291bnRcIilcbiAgcG9pbnRzKGVbW3hdXVtjbG9zZV0gKyAxLCBlJFJTRU1bY2xvc2VdICsgMSwgcGNoID0gMTYsIGNleCA9IC41LCBjb2wgPSBcIiNDMDAwMDBcIilcbiAgYWJsaW5lKDAsIDEsIGx0eSA9IDIpXG4gIHIgPC0gY29yKGxvZzEwKGVbW3hdXSArIDEpLCBsb2cxMChlJFJTRU0gKyAxKSwgdXNlID0gXCJjb21wbGV0ZS5vYnNcIilcbiAgdGl0bGUoc3ByaW50ZihcInIgPSAlLjNmIChsb2cgY291bnRzKVwiLCByKSlcbn1cbmNhdChcIkN1ZmZsaW5rcyBGUEtNIHZzIFJTRU0gVFBNLCByID1cIiwgcm91bmQoY29yKGxvZzEwKGlmZWxzZShpcy5uYShlJEN1ZmZsaW5rc19GUEtNKSwgMCwgZSRDdWZmbGlua3NfRlBLTSkgKyAxKSwgbG9nMTAoZSRSU0VNX1RQTSArIDEpKSwgMyksIFwiXFxuXCIpIn0=
+</script>
+</div>
+</div>
+</div>
+</section>
+<section id="report-questions-5-points" class="level2">
+<h2 class="anchored" data-anchor-id="report-questions-5-points">Report questions (5 points)</h2>
+<p>See the handout: <strong>Q1</strong> read fate from the STAR log · <strong>Q2</strong> your own Galaxy numbers for TEF1, TEF2 and TDH3 in all four tools, next to the page’s · <strong>Q3</strong> why TEF1 gains 9× under EM but ADH1 does not · <strong>Q4</strong> how EM decides how to share the reads (Lecture 7) · <strong>Q5</strong> Qian’s pipeline and which of their duplicate pairs it could misjudge · <strong>Q6</strong> does the conclusion survive? · <strong>Q7</strong> what changes with 150-bp reads. Include your box plot (Ex 3) and one scatter (Ex 5).</p>
+</section>
+<section id="appendix-the-same-four-quantifications-in-galaxy-backup" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-the-same-four-quantifications-in-galaxy-backup">Appendix · The same four quantifications in Galaxy (backup)</h2>
+<p>If Colab is unavailable, the same pipeline runs by clicking in Galaxy. Use <strong>usegalaxy.eu</strong> (it has RSEM; usegalaxy.org has the other three). Sign in, then make a new history (＋ in the history panel) called <em>Lab 4</em>. The settings below were checked on Oct 27 and give the same numbers as the notebook.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">1 · Upload (4 files)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">2 · STAR</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">3 · RSEM</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">4 · Cufflinks</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false">5 · Salmon</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false">Fallback</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><strong>Upload → Paste/Fetch data</strong>, paste all four addresses (one per line), set <strong>Type</strong> as shown, click <strong>Start</strong>:</p>
+<pre><code>https://compbio-geb.github.io/DATA405_2026/data/lab4/yeast_reads_2M.fastq.gz
+https://compbio-geb.github.io/DATA405_2026/data/lab4/yeast_genome_R64.fa
+https://compbio-geb.github.io/DATA405_2026/data/lab4/yeast_genes_R64.gtf
+https://compbio-geb.github.io/DATA405_2026/data/lab4/yeast_transcripts_R64.fa</code></pre>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Type to set</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>yeast_reads_2M.fastq.gz</td>
+<td><code>fastqsanger.gz</code></td>
+<td>2,000,000 reads, 33 bp</td>
+</tr>
+<tr class="even">
+<td>yeast_genome_R64.fa</td>
+<td><code>fasta</code></td>
+<td>16 chromosomes + mitochondrion (12 MB)</td>
+</tr>
+<tr class="odd">
+<td>yeast_genes_R64.gtf</td>
+<td><code>gtf</code></td>
+<td>7,127 genes, one transcript each (10 MB)</td>
+</tr>
+<tr class="even">
+<td>yeast_transcripts_R64.fa</td>
+<td><code>fasta</code></td>
+<td>the 7,127 transcript sequences (9 MB)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>You should see:</strong> four green datasets (reads ≈ 73 MB).</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Tool <strong>RNA STAR</strong>. Settings: single-end · reads = dataset 1 · <em>Custom or built-in reference genome:</em> <strong>Use reference genome from history</strong> · genome = dataset 2 · <em>Length of the SA pre-indexing string:</em> <strong>10</strong> · <em>Build index with or without known splice junctions annotation:</em> <strong>with gene-model</strong> · gene model = dataset 3 · <em>Length of the genomic sequence around annotated junctions:</em> <strong>32</strong> · <em>Per gene/transcript output:</em> <strong>Per gene read counts and transcriptome BAM (TranscriptomeSAM GeneCounts)</strong>. Run.</p>
+<p><strong>You should see</strong> five outputs: log, splice junctions, <em>mapped.bam</em>, <em>transcriptome-mapped.bam</em>, <em>reads per gene</em>. Open the <strong>log</strong>: 2,000,000 input reads · uniquely mapped ≈ 51 % · multi-mapped ≈ 7 % · “too many loci” ≈ 2 % · unmapped ≈ 39 % (these 2008 reads have poor 3′ ends). ✏️ Write those four numbers down.</p>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Tool <strong>RSEM calculate expression</strong> (version 1.3.3). <em>Transcriptome alignments</em> = STAR’s <strong>transcriptome-mapped.bam</strong> · <em>Reference sequences:</em> <strong>genome</strong> · <em>Genome source:</em> <strong>history</strong> → dataset 2 · <em>Gene annotation</em> = dataset 3 · <em>Library layout:</em> <strong>single</strong>. Run.</p>
+<p><strong>You should see:</strong> <em>gene expression</em> and <em>isoform expression</em> tables. Columns: <code>gene_id, transcript_id(s), length, effective_length, expected_count, TPM, FPKM</code>.</p>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<p>Tool <strong>Cufflinks</strong>. Input = STAR’s <strong>mapped.bam</strong> · <em>Use Reference Annotation:</em> <strong>Use reference annotation</strong> → dataset 3 · leave <em>Use multi-read correct</em> at <strong>No</strong>. Run.</p>
+<p><strong>You should see:</strong> <em>gene expression</em> (columns include <code>tracking_id</code>, <code>gene_id</code>, <code>FPKM</code>), <em>transcript expression</em>, and <em>assembled transcripts</em>.</p>
+</div>
+<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
+<p>Tool <strong>Salmon quant</strong>. <em>Select a reference transcriptome from your history:</em> dataset 4 · <em>Kmer size:</em> <strong>19</strong> · single-end · reads = dataset 1 · <em>library type:</em> <strong>U</strong> · <em>File containing a mapping of transcripts to genes:</em> dataset 3. Run.</p>
+<p><strong>You should see:</strong> <em>gene quantification</em> (<code>Name, Length, EffectiveLength, TPM, NumReads</code>) and <em>transcript quantification</em>. The log reports a mapping rate ≈ 30 %.</p>
+</div>
+<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
+<p>If uploads or jobs are slow on usegalaxy.eu, switch to <strong>usegalaxy.org</strong> (same steps; it has everything except RSEM — take the RSEM values from the page for Q2 and say so). If a job is stuck, continue with Part B: the page loads the instructor’s four results (same data, same settings). Finish Part A later and check three genes against the page (Q2).</p>
+</div>
+</div>
+</div>
+
+
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<script type="webr-data">
+eyJvcHRpb25zIjp7ImJhc2VVcmwiOiJodHRwczovL3dlYnIuci13YXNtLm9yZy92MC42LjAvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsiZXZhbHVhdGUiLCJrbml0ciIsImh0bWx0b29scyIsInJtYXJrZG93biJdLCJyZXBvcyI6W119LCJyZW5kZXJfZGYiOiJwYWdlZC10YWJsZSJ9
+</script>
+<script type="pyodide-data">
+eyJvcHRpb25zIjp7ImVudiI6eyJQTE9UTFlfUkVOREVSRVIiOiJwbG90bHlfbWltZXR5cGUifSwiaW5kZXhVUkwiOiJodHRwczovL2Nkbi5qc2RlbGl2ci5uZXQvcHlvZGlkZS92MC4yOC4xL2Z1bGwvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsicHlvZGlkZV9odHRwIiwibWljcm9waXAiLCJpcHl0aG9uIiwicGFuZGFzIiwibnVtcHkiLCJzY2lweSIsIm1hdHBsb3RsaWIiXX19
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTI7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEyID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici0xMi1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzEyID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8xMiwge30pO1xuX3dlYnJfZmVlZGJhY2tfMTIgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzEyLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTExIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMTEgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTExLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtMTEtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8xMSA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfMTEsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzExID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8xMS5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMTAiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzEwO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMTAiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8xMCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTEwLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItMTAtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfd2Vicl92YWx1ZV8xMCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTAsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzEwID0ge1xuICBjb25zdCB7IFdlYlJHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgV2ViUkdyYWRlcihfd2Vicl92YWx1ZV8xMC5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS05IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfOSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtOS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTktY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV85ID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl85LCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja185ID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV85LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV84O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItOCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzggPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici04LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItOC1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzggPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzgsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzggPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzguZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6InB5b2RpZGUtNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3B5b2RpZGVfZWRpdG9yXzcgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLTctY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwicHlvZGlkZS03LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFB5b2RpZGVFeGVyY2lzZUVkaXRvcihweW9kaWRlT2pzLnB5b2RpZGVQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3B5b2RpZGVfdmFsdWVfNyA9IHB5b2RpZGVPanMucHJvY2VzcyhfcHlvZGlkZV9lZGl0b3JfNywge30pO1xuX3B5b2RpZGVfZmVlZGJhY2tfNyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFB5b2RpZGVHcmFkZXIoX3B5b2RpZGVfdmFsdWVfNy5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfNjtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTYiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl82ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItNi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJ3ZWJyLTYtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfd2Vicl92YWx1ZV82ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl82LCB7fSk7XG5fd2Vicl9mZWVkYmFja182ID0ge1xuICBjb25zdCB7IFdlYlJHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgV2ViUkdyYWRlcihfd2Vicl92YWx1ZV82LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLTUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF9weW9kaWRlX2VkaXRvcl81ID0ge1xuICBjb25zdCB7IFB5b2RpZGVFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwicHlvZGlkZS01LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcInB5b2RpZGUtNS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IocHlvZGlkZU9qcy5weW9kaWRlUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF9weW9kaWRlX3ZhbHVlXzUgPSBweW9kaWRlT2pzLnByb2Nlc3MoX3B5b2RpZGVfZWRpdG9yXzUsIHt9KTtcbl9weW9kaWRlX2ZlZWRiYWNrXzUgPSB7XG4gIGNvbnN0IHsgUHlvZGlkZUdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBQeW9kaWRlR3JhZGVyKF9weW9kaWRlX3ZhbHVlXzUuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTQiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzQ7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici00IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfNCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici00LWNvbnRlbnRzXCIsXG4gICAgICBlbnZpcjogYGV4ZXJjaXNlLWVudi0ke2Jsb2NrLmF0dHIuZXhlcmNpc2V9YCxcbiAgICAgIGVycm9yOiBmYWxzZSxcbiAgICAgIGNhcHRpb246ICdFeGVyY2lzZScsXG4gICAgfSxcbiAgICBibG9jay5hdHRyXG4gICk7XG5cbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG52aWV3b2YgX3dlYnJfdmFsdWVfNCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfNCwge30pO1xuX3dlYnJfZmVlZGJhY2tfNCA9IHtcbiAgY29uc3QgeyBXZWJSR3JhZGVyIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBlbXB0eUZlZWRiYWNrID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7XG5cbiAgY29uc3QgZ3JhZGVyID0gbmV3IFdlYlJHcmFkZXIoX3dlYnJfdmFsdWVfNC5ldmFsdWF0b3IpO1xuICBjb25zdCBmZWVkYmFjayA9IGF3YWl0IGdyYWRlci5ncmFkZUV4ZXJjaXNlKCk7XG4gIGlmICghZmVlZGJhY2spIHJldHVybiBlbXB0eUZlZWRiYWNrO1xuICByZXR1cm4gZmVlZGJhY2s7XG59XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0zIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMyA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMy1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJweW9kaWRlLTMtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfcHlvZGlkZV92YWx1ZV8zID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8zLCB7fSk7XG5fcHlvZGlkZV9mZWVkYmFja18zID0ge1xuICBjb25zdCB7IFB5b2RpZGVHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgUHlvZGlkZUdyYWRlcihfcHlvZGlkZV92YWx1ZV8zLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV8yO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzIgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici0yLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItMi1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8yID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8yLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoicHlvZGlkZS0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfcHlvZGlkZV9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBQeW9kaWRlRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInB5b2RpZGUtMS1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGBweW9kaWRlLTEtY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgUHlvZGlkZUV4ZXJjaXNlRWRpdG9yKFxuICAgIHB5b2RpZGVPanMucHlvZGlkZVByb21pc2UsXG4gICAgYmxvY2suY29kZSxcbiAgICBvcHRpb25zXG4gICk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fcHlvZGlkZV92YWx1ZV8xID0gcHlvZGlkZU9qcy5wcm9jZXNzKF9weW9kaWRlX2VkaXRvcl8xLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici1wcmVsdWRlIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoid2ViUk9qcyA9IHtcbiAgY29uc3QgeyBXZWJSLCBDaGFubmVsVHlwZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZS5XZWJSO1xuICBjb25zdCB7XG4gICAgV2ViUkV2YWx1YXRvcixcbiAgICBXZWJSRW52aXJvbm1lbnRNYW5hZ2VyLFxuICAgIHNldHVwUixcbiAgICBiNjREZWNvZGUsXG4gICAgY29sbGFwc2VQYXRoXG4gIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuXG4gIGNvbnN0IHN0YXR1c0NvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1zdGF0dXNcIik7XG4gIGNvbnN0IGluZGljYXRvckNvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKFwiZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGluZGljYXRvckNvbnRhaW5lci5jbGFzc0xpc3QucmVtb3ZlKFwiZC1ub25lXCIpO1xuXG4gIGxldCBzdGF0dXNUZXh0ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudChcImRpdlwiKVxuICBzdGF0dXNUZXh0LmNsYXNzTGlzdCA9IFwiZXhlcmNpc2UtbG9hZGluZy1kZXRhaWxzXCI7XG4gIHN0YXR1c1RleHQgPSBzdGF0dXNDb250YWluZXIuYXBwZW5kQ2hpbGQoc3RhdHVzVGV4dCk7XG4gIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgSW5pdGlhbGlzZWA7XG5cbiAgLy8gSG9pc3QgaW5kaWNhdG9yIG91dCBmcm9tIGZpbmFsIHNsaWRlIHdoZW4gcnVubmluZyB1bmRlciByZXZlYWxcbiAgY29uc3QgcmV2ZWFsU3RhdHVzID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgLmV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpZiAocmV2ZWFsU3RhdHVzKSB7XG4gICAgcmV2ZWFsU3RhdHVzLnJlbW92ZSgpO1xuICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsID4gLnNsaWRlc1wiKS5hcHBlbmRDaGlsZChyZXZlYWxTdGF0dXMpO1xuICB9XG5cbiAgLy8gTWFrZSBhbnkgcmV2ZWFsIHNsaWRlcyB3aXRoIGxpdmUgY2VsbHMgc2Nyb2xsYWJsZVxuICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKFwiLnJldmVhbCAuZXhlcmNpc2UtY2VsbFwiKS5mb3JFYWNoKChlbCkgPT4ge1xuICAgIGVsLmNsb3Nlc3QoJ3NlY3Rpb24uc2xpZGUnKS5jbGFzc0xpc3QuYWRkKFwic2Nyb2xsYWJsZVwiKTtcbiAgfSlcblxuICAvLyB3ZWJSIHN1cHBsZW1lbnRhbCBkYXRhIGFuZCBvcHRpb25zXG4gIGNvbnN0IGRhdGFDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItZGF0YVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGRhdGEgPSBKU09OLnBhcnNlKGI2NERlY29kZShkYXRhQ29udGVudCkpO1xuXG4gIC8vIEdyYWIgbGlzdCBvZiByZXNvdXJjZXMgdG8gYmUgZG93bmxvYWRlZFxuICBjb25zdCBmaWxlc0NvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwidmZzLWZpbGVcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBmaWxlcyA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGZpbGVzQ29udGVudCkpO1xuXG4gIC8vIEluaXRpYWxpc2Ugd2ViUiBhbmQgc2V0dXAgZm9yIFIgY29kZSBldmFsdWF0aW9uXG4gIGxldCB3ZWJSUHJvbWlzZSA9IChhc3luYyAod2ViUikgPT4ge1xuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgd2ViUmA7XG4gICAgYXdhaXQgd2ViUi5pbml0KCk7XG5cbiAgICAvLyBJbnN0YWxsIHByb3ZpZGVkIGxpc3Qgb2YgcGFja2FnZXNcbiAgICAvLyBFbnN1cmUgd2ViUiBkZWZhdWx0IHJlcG8gaXMgaW5jbHVkZWRcbiAgICBkYXRhLnBhY2thZ2VzLnJlcG9zLnB1c2goXCJodHRwczovL3JlcG8uci13YXNtLm9yZ1wiKVxuICAgIGF3YWl0IGRhdGEucGFja2FnZXMucGtncy5tYXAoKHBrZykgPT4gKCkgPT4ge1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiAke3BrZ31gO1xuICAgICAgcmV0dXJuIHdlYlIuZXZhbFJWb2lkKGBcbiAgICAgICAgd2Vicjo6aW5zdGFsbChwa2csIHJlcG9zID0gcmVwb3MpXG4gICAgICAgIGxpYnJhcnkocGtnLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpXG4gICAgICBgLCB7IGVudjoge1xuICAgICAgICBwa2c6IHBrZyxcbiAgICAgICAgcmVwb3M6IGRhdGEucGFja2FnZXMucmVwb3MsXG4gICAgICB9fSk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICAvLyBEb3dubG9hZCBhbmQgaW5zdGFsbCByZXNvdXJjZXNcbiAgICBhd2FpdCBmaWxlcy5tYXAoKGZpbGUpID0+IGFzeW5jICgpID0+IHtcbiAgICAgIGNvbnN0IG5hbWUgPSBmaWxlLnN1YnN0cmluZyhmaWxlLmxhc3RJbmRleE9mKCcvJykgKyAxKTtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcmVzb3VyY2U6ICR7bmFtZX1gO1xuICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChmaWxlKTtcbiAgICAgIGlmICghcmVzcG9uc2Uub2spIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBDYW4ndCBkb3dubG9hZCBcXGAke2ZpbGV9XFxgLiBFcnJvciAke3Jlc3BvbnNlLnN0YXR1c306IFwiJHtyZXNwb25zZS5zdGF0dXNUZXh0fVwiLmApO1xuICAgICAgfVxuICAgICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmFycmF5QnVmZmVyKCk7XG5cbiAgICAgIC8vIFN0b3JlIFVSTHMgaW4gdGhlIGN3ZCB3aXRob3V0IGFueSBzdWJkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBpZiAoZmlsZS5pbmNsdWRlcyhcIjovL1wiKSkge1xuICAgICAgICBmaWxlID0gbmFtZTtcbiAgICAgIH1cblxuICAgICAgLy8gQ29sbGFwc2UgaGlnaGVyIGRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGZpbGUgPSBjb2xsYXBzZVBhdGgoZmlsZSk7XG5cbiAgICAgIC8vIENyZWF0ZSBkaXJlY3RvcnkgdHJlZSwgaWdub3JpbmcgXCJkaXJlY3RvcnkgZXhpc3RzXCIgVkZTIGVycm9yc1xuICAgICAgY29uc3QgcGFydHMgPSBmaWxlLnNwbGl0KCcvJykuc2xpY2UoMCwgLTEpO1xuICAgICAgbGV0IHBhdGggPSAnJztcbiAgICAgIHdoaWxlIChwYXJ0cy5sZW5ndGggPiAwKSB7XG4gICAgICAgIHBhdGggKz0gcGFydHMuc2hpZnQoKSArICcvJztcbiAgICAgICAgY29uc3QgYW5hbHlzaXMgPSBhd2FpdCB3ZWJSLkZTLmFuYWx5emVQYXRoKHBhdGgpO1xuICAgICAgICBpZiAoIWFuYWx5c2lzLmV4aXN0cykge1xuICAgICAgICAgIHRyeSB7XG4gICAgICAgICAgICBhd2FpdCB3ZWJSLkZTLm1rZGlyKHBhdGgpO1xuICAgICAgICAgIH0gY2F0Y2ggKGUpIHtcbiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvcjogXCIke2UubWVzc2FnZX1cIi5gKTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgLy8gV3JpdGUgdGhpcyBmaWxlIHRvIHRoZSBWRlNcbiAgICAgIHJldHVybiBhd2FpdCB3ZWJSLkZTLndyaXRlRmlsZShmaWxlLCBuZXcgVWludDhBcnJheShkYXRhKSk7XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYEluc3RhbGxpbmcgd2ViUiBzaGltc2A7XG4gICAgYXdhaXQgd2ViUi5ldmFsUlZvaWQoYHdlYnI6OnNoaW1faW5zdGFsbCgpYCk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYFdlYlIgZW52aXJvbm1lbnQgc2V0dXBgO1xuICAgIGF3YWl0IHNldHVwUih3ZWJSLCBkYXRhKTtcblxuICAgIHN0YXR1c1RleHQucmVtb3ZlKCk7XG4gICAgaWYgKHN0YXR1c0NvbnRhaW5lci5jaGlsZHJlbi5sZW5ndGggPT0gMCkge1xuICAgICAgc3RhdHVzQ29udGFpbmVyLnBhcmVudE5vZGUucmVtb3ZlKCk7XG4gICAgfVxuICAgIHJldHVybiB3ZWJSO1xuICB9KShuZXcgV2ViUihkYXRhLm9wdGlvbnMpKTtcblxuICAvLyBLZWVwIHRyYWNrIG9mIGluaXRpYWwgT0pTIGJsb2NrIHJlbmRlclxuICBjb25zdCByZW5kZXJlZE9qcyA9IHt9O1xuXG4gIGNvbnN0IHByb2Nlc3MgPSBhc3luYyAoY29udGV4dCwgaW5wdXRzKSA9PiB7XG4gICAgY29uc3Qgd2ViUiA9IGF3YWl0IHdlYlJQcm9taXNlO1xuICAgIGNvbnN0IGV2YWx1YXRvciA9IG5ldyBXZWJSRXZhbHVhdG9yKHdlYlIsIGNvbnRleHQpXG4gICAgYXdhaXQgZXZhbHVhdG9yLnByb2Nlc3MoaW5wdXRzKTtcbiAgICByZXR1cm4gZXZhbHVhdG9yLmNvbnRhaW5lcjtcbiAgfVxuXG4gIHJldHVybiB7XG4gICAgcHJvY2VzcyxcbiAgICB3ZWJSUHJvbWlzZSxcbiAgICByZW5kZXJlZE9qcyxcbiAgfTtcbn1cbiJ9LHsiY2VsbE5hbWUiOiJweW9kaWRlLXByZWx1ZGUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJweW9kaWRlT2pzID0ge1xuICBjb25zdCB7XG4gICAgUHlvZGlkZUV2YWx1YXRvcixcbiAgICBQeW9kaWRlRW52aXJvbm1lbnRNYW5hZ2VyLFxuICAgIHNldHVwUHl0aG9uLFxuICAgIHN0YXJ0UHlvZGlkZVdvcmtlcixcbiAgICBiNjREZWNvZGUsXG4gICAgY29sbGFwc2VQYXRoLFxuICB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcblxuICBjb25zdCBzdGF0dXNDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctc3RhdHVzXCIpO1xuICBjb25zdCBpbmRpY2F0b3JDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChcImV4ZXJjaXNlLWxvYWRpbmctaW5kaWNhdG9yXCIpO1xuICBpbmRpY2F0b3JDb250YWluZXIuY2xhc3NMaXN0LnJlbW92ZShcImQtbm9uZVwiKTtcblxuICBsZXQgc3RhdHVzVGV4dCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoXCJkaXZcIilcbiAgc3RhdHVzVGV4dC5jbGFzc0xpc3QgPSBcImV4ZXJjaXNlLWxvYWRpbmctZGV0YWlsc1wiO1xuICBzdGF0dXNUZXh0ID0gc3RhdHVzQ29udGFpbmVyLmFwcGVuZENoaWxkKHN0YXR1c1RleHQpO1xuICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYEluaXRpYWxpc2VgO1xuXG4gIC8vIEhvaXN0IGluZGljYXRvciBvdXQgZnJvbSBmaW5hbCBzbGlkZSB3aGVuIHJ1bm5pbmcgdW5kZXIgcmV2ZWFsXG4gIGNvbnN0IHJldmVhbFN0YXR1cyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoXCIucmV2ZWFsIC5leGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaWYgKHJldmVhbFN0YXR1cykge1xuICAgIHJldmVhbFN0YXR1cy5yZW1vdmUoKTtcbiAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCA+IC5zbGlkZXNcIikuYXBwZW5kQ2hpbGQocmV2ZWFsU3RhdHVzKTtcbiAgfVxuXG4gIC8vIE1ha2UgYW55IHJldmVhbCBzbGlkZXMgd2l0aCBsaXZlIGNlbGxzIHNjcm9sbGFibGVcbiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbChcIi5yZXZlYWwgLmV4ZXJjaXNlLWNlbGxcIikuZm9yRWFjaCgoZWwpID0+IHtcbiAgICBlbC5jbG9zZXN0KCdzZWN0aW9uLnNsaWRlJykuY2xhc3NMaXN0LmFkZChcInNjcm9sbGFibGVcIik7XG4gIH0pXG5cbiAgLy8gUHlvZGlkZSBzdXBwbGVtZW50YWwgZGF0YSBhbmQgb3B0aW9uc1xuICBjb25zdCBkYXRhQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJweW9kaWRlLWRhdGFcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBkYXRhID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZGF0YUNvbnRlbnQpKTtcblxuICAvLyBHcmFiIGxpc3Qgb2YgcmVzb3VyY2VzIHRvIGJlIGRvd25sb2FkZWRcbiAgY29uc3QgZmlsZXNDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcInZmcy1maWxlXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZmlsZXMgPSBKU09OLnBhcnNlKGI2NERlY29kZShmaWxlc0NvbnRlbnQpKTtcblxuICBsZXQgcHlvZGlkZVByb21pc2UgPSAoYXN5bmMgKCkgPT4ge1xuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgUHlvZGlkZWA7XG4gICAgY29uc3QgcHlvZGlkZSA9IGF3YWl0IHN0YXJ0UHlvZGlkZVdvcmtlcihkYXRhLm9wdGlvbnMpO1xuXG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiBtaWNyb3BpcGA7XG4gICAgYXdhaXQgcHlvZGlkZS5sb2FkUGFja2FnZShcIm1pY3JvcGlwXCIpO1xuICAgIGNvbnN0IG1pY3JvcGlwID0gYXdhaXQgcHlvZGlkZS5weWltcG9ydChcIm1pY3JvcGlwXCIpO1xuICAgIGF3YWl0IGRhdGEucGFja2FnZXMucGtncy5tYXAoKHBrZykgPT4gKCkgPT4ge1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyBwYWNrYWdlOiAke3BrZ31gO1xuICAgICAgcmV0dXJuIG1pY3JvcGlwLmluc3RhbGwocGtnKTtcbiAgICB9KS5yZWR1Y2UoKGN1ciwgbmV4dCkgPT4gY3VyLnRoZW4obmV4dCksIFByb21pc2UucmVzb2x2ZSgpKTtcbiAgICBhd2FpdCBtaWNyb3BpcC5kZXN0cm95KCk7XG5cbiAgICAvLyBEb3dubG9hZCBhbmQgaW5zdGFsbCByZXNvdXJjZXNcbiAgICBhd2FpdCBmaWxlcy5tYXAoKGZpbGUpID0+IGFzeW5jICgpID0+IHtcbiAgICAgIGNvbnN0IG5hbWUgPSBmaWxlLnN1YnN0cmluZyhmaWxlLmxhc3RJbmRleE9mKCcvJykgKyAxKTtcbiAgICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgRG93bmxvYWRpbmcgcmVzb3VyY2U6ICR7bmFtZX1gO1xuICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChmaWxlKTtcbiAgICAgIGlmICghcmVzcG9uc2Uub2spIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBDYW4ndCBkb3dubG9hZCBcXGAke2ZpbGV9XFxgLiBFcnJvciAke3Jlc3BvbnNlLnN0YXR1c306IFwiJHtyZXNwb25zZS5zdGF0dXNUZXh0fVwiLmApO1xuICAgICAgfVxuICAgICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmFycmF5QnVmZmVyKCk7XG5cbiAgICAgIC8vIFN0b3JlIFVSTHMgaW4gdGhlIGN3ZCB3aXRob3V0IGFueSBzdWJkaXJlY3Rvcnkgc3RydWN0dXJlXG4gICAgICBpZiAoZmlsZS5pbmNsdWRlcyhcIjovL1wiKSkge1xuICAgICAgICBmaWxlID0gbmFtZTtcbiAgICAgIH1cblxuICAgICAgLy8gQ29sbGFwc2UgaGlnaGVyIGRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGZpbGUgPSBjb2xsYXBzZVBhdGgoZmlsZSk7XG5cbiAgICAgIC8vIENyZWF0ZSBkaXJlY3RvcnkgdHJlZSwgaWdub3JpbmcgXCJkaXJlY3RvcnkgZXhpc3RzXCIgVkZTIGVycm9yc1xuICAgICAgY29uc3QgcGFydHMgPSBmaWxlLnNwbGl0KCcvJykuc2xpY2UoMCwgLTEpO1xuICAgICAgbGV0IHBhdGggPSAnJztcbiAgICAgIHdoaWxlIChwYXJ0cy5sZW5ndGggPiAwKSB7XG4gICAgICAgIHBhdGggKz0gcGFydHMuc2hpZnQoKSArICcvJztcbiAgICAgICAgdHJ5IHtcbiAgICAgICAgICBhd2FpdCBweW9kaWRlLkZTLm1rZGlyKHBhdGgpO1xuICAgICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgICAgaWYgKGUubmFtZSAhPT0gXCJFcnJub0Vycm9yXCIpIHRocm93IGU7XG4gICAgICAgICAgaWYgKGUuZXJybm8gIT09IDIwKSB7XG4gICAgICAgICAgICBjb25zdCBlcnJvclRleHRQdHIgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuX3N0cmVycm9yKGUuZXJybm8pO1xuICAgICAgICAgICAgY29uc3QgZXJyb3JUZXh0ID0gYXdhaXQgcHlvZGlkZS5fbW9kdWxlLlVURjhUb1N0cmluZyhlcnJvclRleHRQdHIpO1xuICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBGaWxlc3lzdGVtIEVycm9yICR7ZS5lcnJub30gXCIke2Vycm9yVGV4dH1cIi5gKTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgLy8gV3JpdGUgdGhpcyBmaWxlIHRvIHRoZSBWRlNcbiAgICAgIHRyeSB7XG4gICAgICAgIHJldHVybiBhd2FpdCBweW9kaWRlLkZTLndyaXRlRmlsZShmaWxlLCBuZXcgVWludDhBcnJheShkYXRhKSk7XG4gICAgICB9IGNhdGNoIChlKSB7XG4gICAgICAgIGlmIChlLm5hbWUgIT09IFwiRXJybm9FcnJvclwiKSB0aHJvdyBlO1xuICAgICAgICBjb25zdCBlcnJvclRleHRQdHIgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuX3N0cmVycm9yKGUuZXJybm8pO1xuICAgICAgICBjb25zdCBlcnJvclRleHQgPSBhd2FpdCBweW9kaWRlLl9tb2R1bGUuVVRGOFRvU3RyaW5nKGVycm9yVGV4dFB0cik7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihgRmlsZXN5c3RlbSBFcnJvciAke2UuZXJybm99IFwiJHtlcnJvclRleHR9XCIuYCk7XG4gICAgICB9XG4gICAgfSkucmVkdWNlKChjdXIsIG5leHQpID0+IGN1ci50aGVuKG5leHQpLCBQcm9taXNlLnJlc29sdmUoKSk7XG5cbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYFB5b2RpZGUgZW52aXJvbm1lbnQgc2V0dXBgO1xuICAgIGF3YWl0IHNldHVwUHl0aG9uKHB5b2RpZGUpO1xuXG4gICAgc3RhdHVzVGV4dC5yZW1vdmUoKTtcbiAgICBpZiAoc3RhdHVzQ29udGFpbmVyLmNoaWxkcmVuLmxlbmd0aCA9PSAwKSB7XG4gICAgICBzdGF0dXNDb250YWluZXIucGFyZW50Tm9kZS5yZW1vdmUoKTtcbiAgICB9XG4gICAgcmV0dXJuIHB5b2RpZGU7XG4gIH0pKCkuY2F0Y2goKGVycikgPT4ge1xuICAgIHN0YXR1c1RleHQuc3R5bGUuY29sb3IgPSBcInZhcigtLWV4ZXJjaXNlLWVkaXRvci1obC1lciwgI0FEMDAwMClcIjtcbiAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gZXJyLm1lc3NhZ2U7XG4gICAgLy9pbmRpY2F0b3JDb250YWluZXIucXVlcnlTZWxlY3RvcihcIi5zcGlubmVyLWdyb3dcIikuY2xhc3NMaXN0LmFkZChcImQtbm9uZVwiKTtcbiAgICB0aHJvdyBlcnI7XG4gIH0pO1xuXG4gIC8vIEtlZXAgdHJhY2sgb2YgaW5pdGlhbCBPSlMgYmxvY2sgcmVuZGVyXG4gIGNvbnN0IHJlbmRlcmVkT2pzID0ge307XG5cbiAgY29uc3QgcHJvY2VzcyA9IGFzeW5jIChjb250ZXh0LCBpbnB1dHMpID0+IHtcbiAgICBjb25zdCBweW9kaWRlID0gYXdhaXQgcHlvZGlkZVByb21pc2U7XG4gICAgY29uc3QgZXZhbHVhdG9yID0gbmV3IFB5b2RpZGVFdmFsdWF0b3IocHlvZGlkZSwgY29udGV4dCk7XG4gICAgYXdhaXQgZXZhbHVhdG9yLnByb2Nlc3MoaW5wdXRzKTtcbiAgICByZXR1cm4gZXZhbHVhdG9yLmNvbnRhaW5lcjtcbiAgfVxuXG4gIHJldHVybiB7XG4gICAgcHlvZGlkZVByb21pc2UsXG4gICAgcmVuZGVyZWRPanMsXG4gICAgcHJvY2VzcyxcbiAgfTtcbn1cbiJ9XX0=
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJkYXRhL2xhYjRfcmVzdWx0cy9zdGFyX3JlYWRzX3Blcl9nZW5lLnRhYiIsImRhdGEvbGFiNF9yZXN1bHRzL3JzZW1fZ2VuZXMucmVzdWx0cyIsImRhdGEvbGFiNF9yZXN1bHRzL3N0YXJfbG9nX3N1bW1hcnkudHh0IiwiZGF0YS9sYWI0X3Jlc3VsdHMveWVhc3RfcGFyYWxvZ3MudHN2IiwiZGF0YS9sYWI0X3Jlc3VsdHMvY3VmZmxpbmtzX2dlbmVzLmZwa21fdHJhY2tpbmciLCJkYXRhL2xhYjRfcmVzdWx0cy9zYWxtb25fcXVhbnRfZ2VuZXMuc2YiLCJpbWFnZXMvbGFiNF9tdWx0aW1hcC5wbmciLCJpbWFnZXMvbGFiM19zbnBlZmYuanBnIiwiaW1hZ2VzL2xhYjNfdXBsb2FkLmpwZyIsImltYWdlcy9sYWIyX2JldGFfYmlub21pYWxfbW9kZWwucG5nIiwiaW1hZ2VzL2xhYjNfcGlwZWxpbmUucG5nIiwiaW1hZ2VzL2xhYjNfcGlsZXVwLnBuZyIsImltYWdlcy9sYWI0X3BpcGVsaW5lLnBuZyIsImltYWdlcy9sYWIzX3NucGVmZl92ZXJzaW9ucy5qcGciLCJpbWFnZXMvbGFiM19mcmVlYmF5ZXMuanBnIl0=
+</script>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Language switch: show Python, R, or both columns. The choice is remembered in this browser.
+(function () {
+  // Pages marked "both-languages" (Lab 1) always show Python and R, with no switch.
+  if (document.body.classList.contains("both-languages")) return;
+  const cols = document.querySelectorAll(".two-col > div");
+  if (!cols.length) return;
+  cols.forEach(d => {
+    const tag = d.querySelector(":scope > p > .lang-tag, :scope > .lang-tag, .lang-tag");
+    if (tag && tag.classList.contains("py")) d.classList.add("col-py");
+    if (tag && tag.classList.contains("r")) d.classList.add("col-r");
+  });
+  const bar = document.createElement("div");
+  bar.className = "lang-switch";
+  bar.innerHTML = '<span class="lang-switch-label">Show code in:</span>' +
+    '<button type="button" data-lang="py">Python</button>' +
+    '<button type="button" data-lang="r">R</button>' +
+    '<button type="button" data-lang="both">Both</button>';
+  const header = document.querySelector("#title-block-header") || document.querySelector("main h1");
+  (header ? header : document.querySelector("main")).insertAdjacentElement(header ? "afterend" : "afterbegin", bar);
+  function apply(lang) {
+    document.body.classList.remove("show-py", "show-r");
+    if (lang === "py") document.body.classList.add("show-py");
+    if (lang === "r") document.body.classList.add("show-r");
+    bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+    try { localStorage.setItem("data405-lang", lang); } catch (e) {}
+    window.dispatchEvent(new Event("resize"));   // let the code editors redraw at the new width
+  }
+  bar.addEventListener("click", e => { if (e.target.dataset.lang) apply(e.target.dataset.lang); });
+  let saved = "both";
+  try { saved = localStorage.getItem("data405-lang") || "both"; } catch (e) {}
+  apply(saved);
+})();
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Genomic Data Science · DATA405/BIOL480 · Jinrui Xu · Howard University · Fall 2026</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Code runs in your browser (Pyodide + webR). Nothing is uploaded.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

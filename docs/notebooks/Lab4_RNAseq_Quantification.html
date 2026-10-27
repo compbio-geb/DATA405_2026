@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Lab 4 · RNA-seq data analysis — four quantifications of the same reads – DATA405/BIOL480 · Lab Sessions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c6fe8f099a88ecabc23f33ea3dbd3323.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="../site_libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="../site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="../site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">DATA405/BIOL480 · Lab Sessions</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lab-1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Lab 1</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lab-1">    
+        <li>
+    <a class="dropdown-item" href="../lab1.html">
+ <span class="dropdown-text">Lab 1 · Python and R on real chr22 data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notes.html">
+ <span class="dropdown-text">Lecture 10 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../rosetta.html">
+ <span class="dropdown-text">Rosetta stone (Python ↔︎ R)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../stats.html">
+ <span class="dropdown-text">Lecture 11 notes</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../data.html">
+ <span class="dropdown-text">Lab 1 data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../lab2.html"> 
+<span class="menu-text">Lab 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../lab3.html"> 
+<span class="menu-text">Lab 3</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../lab4.html"> 
+<span class="menu-text">Lab 4</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../setup.html"> 
+<span class="menu-text">Setup</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#step-1-install-the-tools-2-min" id="toc-step-1-install-the-tools-2-min" class="nav-link active" data-scroll-target="#step-1-install-the-tools-2-min">Step 1 · Install the tools (≈ 2 min)</a></li>
+  <li><a href="#step-2-download-the-reads-and-the-reference-1-min" id="toc-step-2-download-the-reads-and-the-reference-1-min" class="nav-link" data-scroll-target="#step-2-download-the-reads-and-the-reference-1-min">Step 2 · Download the reads and the reference (≈ 1 min)</a></li>
+  <li><a href="#step-3-star-map-the-reads-and-count-unique-reads-per-gene-10-min" id="toc-step-3-star-map-the-reads-and-count-unique-reads-per-gene-10-min" class="nav-link" data-scroll-target="#step-3-star-map-the-reads-and-count-unique-reads-per-gene-10-min">Step 3 · STAR: map the reads and count unique reads per gene (≈ 10 min)</a></li>
+  <li><a href="#step-4-rsem-em-on-the-transcript-alignments-3-min" id="toc-step-4-rsem-em-on-the-transcript-alignments-3-min" class="nav-link" data-scroll-target="#step-4-rsem-em-on-the-transcript-alignments-3-min">Step 4 · RSEM: EM on the transcript alignments (≈ 3 min)</a></li>
+  <li><a href="#step-5-cufflinks-em-on-the-genome-alignments-3-min" id="toc-step-5-cufflinks-em-on-the-genome-alignments-3-min" class="nav-link" data-scroll-target="#step-5-cufflinks-em-on-the-genome-alignments-3-min">Step 5 · Cufflinks: EM on the genome alignments (≈ 3 min)</a></li>
+  <li><a href="#step-6-salmon-em-without-alignment-1-min" id="toc-step-6-salmon-em-without-alignment-1-min" class="nav-link" data-scroll-target="#step-6-salmon-em-without-alignment-1-min">Step 6 · Salmon: EM without alignment (≈ 1 min)</a></li>
+  <li><a href="#part-b-compare-the-four-answers" id="toc-part-b-compare-the-four-answers" class="nav-link" data-scroll-target="#part-b-compare-the-four-answers">Part B · Compare the four answers</a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-how-many-reads-did-each-tool-use" id="toc-exercise-1-how-many-reads-did-each-tool-use" class="nav-link" data-scroll-target="#exercise-1-how-many-reads-did-each-tool-use">Exercise 1 · How many reads did each tool use?</a></li>
+  <li><a href="#exercise-2-one-duplicate-pair-tef1-and-tef2" id="toc-exercise-2-one-duplicate-pair-tef1-and-tef2" class="nav-link" data-scroll-target="#exercise-2-one-duplicate-pair-tef1-and-tef2">Exercise 2 · One duplicate pair: TEF1 and TEF2</a></li>
+  <li><a href="#exercise-3-from-one-pair-to-all-genes" id="toc-exercise-3-from-one-pair-to-all-genes" class="nav-link" data-scroll-target="#exercise-3-from-one-pair-to-all-genes">Exercise 3 · From one pair to all genes</a></li>
+  <li><a href="#exercise-4-the-papers-test-with-and-without-em" id="toc-exercise-4-the-papers-test-with-and-without-em" class="nav-link" data-scroll-target="#exercise-4-the-papers-test-with-and-without-em">Exercise 4 · The paper’s test, with and without EM</a></li>
+  <li><a href="#exercise-5-do-the-em-tools-agree" id="toc-exercise-5-do-the-em-tools-agree" class="nav-link" data-scroll-target="#exercise-5-do-the-em-tools-agree">Exercise 5 · Do the EM tools agree?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 4 · RNA-seq data analysis — four quantifications of the same reads</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>DATA405/BIOL480 · Genomic Data Science · Fall 2026</strong></p>
+<p><strong>Runtime → Run all</strong> runs everything (about 20 minutes). Read the handout sections while the tools run, and write down the numbers marked <strong>✏️</strong>.</p>
+<p>What the notebook does: 1. installs STAR, RSEM, Cufflinks and Salmon (Ubuntu packages, ~2 min); 2. downloads 2,000,000 yeast RNA-seq reads (Nagalakshmi et al.&nbsp;2008 — the reads behind Qian et al.&nbsp;2010) and the yeast reference; 3. quantifies every gene four ways: STAR unique-read counts (no EM), RSEM, Cufflinks, Salmon; 4. joins the results with the duplicate-gene table and asks whether the choice of tool changes the paper’s conclusion.</p>
+<p>Lines starting with <code>!</code> are shell commands — exactly what you would type on a Linux server.</p>
+<section id="step-1-install-the-tools-2-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-install-the-tools-2-min">Step 1 · Install the tools (≈ 2 min)</h2>
+<div id="e4ecaf0f" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>apt<span class="op">-</span>get <span class="op">-</span>qq update <span class="op">&gt;</span> <span class="op">/</span>dev<span class="op">/</span>null</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>apt<span class="op">-</span>get <span class="op">-</span>qq install <span class="op">-</span>y rna<span class="op">-</span>star rsem salmon cufflinks samtools <span class="op">&gt;</span> <span class="op">/</span>dev<span class="op">/</span>null <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>echo <span class="st">"STAR      $(STAR --version)"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>echo <span class="st">"RSEM      $(rsem-calculate-expression --version | head -1)"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>echo <span class="st">"Salmon    $(salmon --version 2&gt;&amp;1)"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>echo <span class="st">"Cufflinks $(cufflinks 2&gt;&amp;1 | head -1)"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>echo <span class="st">"samtools  $(samtools --version | head -1)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-download-the-reads-and-the-reference-1-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-download-the-reads-and-the-reference-1-min">Step 2 · Download the reads and the reference (≈ 1 min)</h2>
+<p>Reads: 2,000,000 single-end 33-bp reads from SRR002051 (the poly(A) library of Nagalakshmi et al.&nbsp;2008). Reference: <em>S. cerevisiae</em> R64 genome, gene annotation (GTF) and transcript sequences (Ensembl Fungi 63).</p>
+<div id="99261d4a" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> yeast_reads_2M.fastq.gz yeast_genome_R64.fa yeast_genes_R64.gtf yeast_transcripts_R64.fa yeast_paralogs.tsv<span class="op">;</span> do</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  [ <span class="op">-</span>f $f ] <span class="op">||</span> wget <span class="op">-</span>q https:<span class="op">//</span>compbio<span class="op">-</span>geb.github.io<span class="op">/</span>DATA405_2026<span class="op">/</span>data<span class="op">/</span>lab4<span class="op">/</span>$f</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>done</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ls <span class="op">-</span>lh yeast_<span class="op">*</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>echo<span class="op">;</span> echo <span class="st">"first read:"</span><span class="op">;</span> zcat yeast_reads_2M.fastq.gz <span class="op">|</span> head <span class="op">-</span><span class="dv">4</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>echo<span class="op">;</span> echo <span class="st">"genes in the GTF: $(awk '$3==</span><span class="ch">\"</span><span class="st">gene</span><span class="ch">\"</span><span class="st">' yeast_genes_R64.gtf | wc -l)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-star-map-the-reads-and-count-unique-reads-per-gene-10-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-star-map-the-reads-and-count-unique-reads-per-gene-10-min">Step 3 · STAR: map the reads and count unique reads per gene (≈ 10 min)</h2>
+<p>STAR builds an index of the genome (with the annotated splice junctions), aligns every read, and with <code>--quantMode TranscriptomeSAM GeneCounts</code> also writes (a) <strong>counts of uniquely mapped reads per gene</strong> — our no-EM baseline, the same rule Qian et al.&nbsp;used — and (b) the alignments in transcript coordinates, which RSEM needs.</p>
+<div id="cc621ecc" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mkdir <span class="op">-</span>p star_index</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>STAR <span class="op">--</span>runMode genomeGenerate <span class="op">--</span>genomeDir star_index <span class="op">--</span>genomeFastaFiles yeast_genome_R64.fa <span class="op">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>     <span class="op">--</span>sjdbGTFfile yeast_genes_R64.gtf <span class="op">--</span>sjdbOverhang <span class="dv">32</span> <span class="op">--</span>genomeSAindexNbases <span class="dv">10</span> <span class="op">--</span>runThreadN <span class="dv">2</span> <span class="op">&gt;</span> star_index.log</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>STAR <span class="op">--</span>genomeDir star_index <span class="op">--</span>readFilesIn yeast_reads_2M.fastq.gz <span class="op">--</span>readFilesCommand zcat <span class="op">--</span>runThreadN <span class="dv">2</span> <span class="op">\</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>     <span class="op">--</span>outSAMtype BAM Unsorted <span class="op">--</span>quantMode TranscriptomeSAM GeneCounts <span class="op">--</span>outFileNamePrefix star_ <span class="op">&gt;</span> star_run.log</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>grep <span class="op">-</span>E <span class="st">"input reads|Uniquely mapped reads %|multiple loci|too many loci|unmapped: too short"</span> star_Log.final.out</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>echo<span class="op">;</span> head <span class="op">-</span><span class="dv">8</span> star_ReadsPerGene.out.tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>✏️ Record: % uniquely mapped, % multi-mapped, % unmapped. The first four rows of the counts table are not genes: <code>N_unmapped</code>, <code>N_multimapping</code>, <code>N_noFeature</code> (mapped outside any gene), <code>N_ambiguous</code>. Column 2 = unstranded counts.</p>
+</section>
+<section id="step-4-rsem-em-on-the-transcript-alignments-3-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-rsem-em-on-the-transcript-alignments-3-min">Step 4 · RSEM: EM on the transcript alignments (≈ 3 min)</h2>
+<p>RSEM prepares its own transcript set from genome + GTF, then runs EM over all reads at once (<code>expected_count</code> is fractional because shared reads are split). This STAR → RSEM pair is the ENCODE / TCGA standard.</p>
+<div id="13c4fbd9" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mkdir <span class="op">-</span>p rsem_ref</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>rsem<span class="op">-</span>prepare<span class="op">-</span>reference <span class="op">--</span>gtf yeast_genes_R64.gtf yeast_genome_R64.fa rsem_ref<span class="op">/</span>yeast <span class="op">&gt;</span> rsem_prep.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>rsem<span class="op">-</span>calculate<span class="op">-</span>expression <span class="op">--</span>alignments <span class="op">--</span>no<span class="op">-</span>bam<span class="op">-</span>output <span class="op">-</span>p <span class="dv">2</span> star_Aligned.toTranscriptome.out.bam rsem_ref<span class="op">/</span>yeast rsem <span class="op">&gt;</span> rsem_run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>head <span class="op">-</span><span class="dv">3</span> rsem.genes.results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-5-cufflinks-em-on-the-genome-alignments-3-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-cufflinks-em-on-the-genome-alignments-3-min">Step 5 · Cufflinks: EM on the genome alignments (≈ 3 min)</h2>
+<p>Cufflinks needs a position-sorted BAM. By default it splits each multi-mapping read evenly between its positions (a read at 2 places counts ½ each) and then runs EM across isoforms. (Its <code>-u</code> ‘multi-read correct’ option re-weights by unique-read coverage; for near-identical pairs with almost no unique reads it collapses the estimate — try it later as an extra.)</p>
+<div id="97bedc98" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>samtools sort <span class="op">-@</span> <span class="dv">2</span> <span class="op">-</span>o star_sorted.bam star_Aligned.out.bam <span class="dv">2</span><span class="op">&gt;</span> <span class="op">/</span>dev<span class="op">/</span>null</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>cufflinks <span class="op">-</span>q <span class="op">-</span>p <span class="dv">2</span> <span class="op">-</span>G yeast_genes_R64.gtf <span class="op">-</span>o cufflinks star_sorted.bam <span class="op">&gt;</span> cufflinks.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>cut <span class="op">-</span>f1,<span class="dv">5</span>,<span class="dv">8</span>,<span class="dv">10</span> cufflinks<span class="op">/</span>genes.fpkm_tracking <span class="op">|</span> head <span class="op">-</span><span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-6-salmon-em-without-alignment-1-min" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-salmon-em-without-alignment-1-min">Step 6 · Salmon: EM without alignment (≈ 1 min)</h2>
+<p>Salmon indexes the transcript sequences by k-mers (k = 19 here because the reads are only 33 bases), finds the transcripts each read could come from, and runs EM. <code>-g</code> adds up transcripts into genes.</p>
+<div id="87bde639" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="op">-</span>e</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>salmon index <span class="op">-</span>t yeast_transcripts_R64.fa <span class="op">-</span>i salmon_index <span class="op">-</span>k <span class="dv">19</span> <span class="op">&gt;</span> salmon_index.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>salmon quant <span class="op">-</span>i salmon_index <span class="op">-</span>l U <span class="op">-</span>r yeast_reads_2M.fastq.gz <span class="op">-</span>g yeast_genes_R64.gtf <span class="op">-</span>p <span class="dv">2</span> <span class="op">-</span>o salmon <span class="op">&gt;</span> salmon_run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>grep <span class="st">"Mapping rate"</span> salmon<span class="op">/</span>logs<span class="op">/</span>salmon_quant.log</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>head <span class="op">-</span><span class="dv">3</span> salmon<span class="op">/</span>quant.genes.sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="part-b-compare-the-four-answers" class="level2">
+<h2 class="anchored" data-anchor-id="part-b-compare-the-four-answers">Part B · Compare the four answers</h2>
+<p>Join the four tables with the duplicate-gene table (every yeast gene’s closest paralog from Ensembl, with the protein identity between them) into one table <code>d</code>, one row per gene.</p>
+<div id="5468ffb9" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd, numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>star <span class="op">=</span> pd.read_csv(<span class="st">"star_ReadsPerGene.out.tab"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, header<span class="op">=</span><span class="va">None</span>, names<span class="op">=</span>[<span class="st">"gene"</span>, <span class="st">"count"</span>, <span class="st">"fwd"</span>, <span class="st">"rev"</span>])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>special <span class="op">=</span> star[star.gene.<span class="bu">str</span>.startswith(<span class="st">"N_"</span>)]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>star <span class="op">=</span> star[<span class="op">~</span>star.gene.<span class="bu">str</span>.startswith(<span class="st">"N_"</span>)][[<span class="st">"gene"</span>, <span class="st">"count"</span>]].rename(columns<span class="op">=</span>{<span class="st">"count"</span>: <span class="st">"STAR"</span>})</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>rsem <span class="op">=</span> (pd.read_csv(<span class="st">"rsem.genes.results"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)[[<span class="st">"gene_id"</span>, <span class="st">"expected_count"</span>, <span class="st">"TPM"</span>]]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>          .rename(columns<span class="op">=</span>{<span class="st">"gene_id"</span>: <span class="st">"gene"</span>, <span class="st">"expected_count"</span>: <span class="st">"RSEM"</span>, <span class="st">"TPM"</span>: <span class="st">"RSEM_TPM"</span>}))</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>cuff <span class="op">=</span> (pd.read_csv(<span class="st">"cufflinks/genes.fpkm_tracking"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)[[<span class="st">"tracking_id"</span>, <span class="st">"FPKM"</span>]]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>          .rename(columns<span class="op">=</span>{<span class="st">"tracking_id"</span>: <span class="st">"gene"</span>, <span class="st">"FPKM"</span>: <span class="st">"Cufflinks_FPKM"</span>}))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>salmon <span class="op">=</span> (pd.read_csv(<span class="st">"salmon/quant.genes.sf"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)[[<span class="st">"Name"</span>, <span class="st">"NumReads"</span>, <span class="st">"TPM"</span>]]</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            .rename(columns<span class="op">=</span>{<span class="st">"Name"</span>: <span class="st">"gene"</span>, <span class="st">"NumReads"</span>: <span class="st">"Salmon"</span>, <span class="st">"TPM"</span>: <span class="st">"Salmon_TPM"</span>}))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>par <span class="op">=</span> pd.read_csv(<span class="st">"yeast_paralogs.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> (star.merge(rsem, on<span class="op">=</span><span class="st">"gene"</span>).merge(cuff, on<span class="op">=</span><span class="st">"gene"</span>, how<span class="op">=</span><span class="st">"left"</span>).merge(salmon, on<span class="op">=</span><span class="st">"gene"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>         .merge(par[[<span class="st">"gene"</span>, <span class="st">"name"</span>, <span class="st">"closest_paralog"</span>, <span class="st">"min_pct_id"</span>]], on<span class="op">=</span><span class="st">"gene"</span>, how<span class="op">=</span><span class="st">"left"</span>))</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>d[<span class="st">"identity"</span>] <span class="op">=</span> pd.cut(d.min_pct_id.fillna(<span class="dv">0</span>), [<span class="op">-</span><span class="dv">1</span>, <span class="dv">30</span>, <span class="dv">70</span>, <span class="dv">95</span>, <span class="dv">101</span>],</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                       labels<span class="op">=</span>[<span class="st">"no close paralog"</span>, <span class="st">"30-70 %"</span>, <span class="st">"70-95 %"</span>, <span class="st">"95-100 %"</span>])</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(special.to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(d), <span class="st">"genes;"</span>, d.min_pct_id.notna().<span class="bu">sum</span>(), <span class="st">"have a paralog"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="exercise-1-how-many-reads-did-each-tool-use" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-how-many-reads-did-each-tool-use">Exercise 1 · How many reads did each tool use?</h3>
+<div id="aa245a50" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"STAR, unique reads in genes:"</span>, <span class="bu">int</span>(d.STAR.<span class="bu">sum</span>()))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"RSEM, expected counts      :"</span>, <span class="bu">int</span>(d.RSEM.<span class="bu">sum</span>()))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Salmon, reads              :"</span>, <span class="bu">int</span>(d.Salmon.<span class="bu">sum</span>()))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"multi-mapping reads STAR threw away:"</span>, <span class="bu">int</span>(special.loc[special.gene <span class="op">==</span> <span class="st">"N_multimapping"</span>, <span class="st">"count"</span>].iloc[<span class="dv">0</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exercise-2-one-duplicate-pair-tef1-and-tef2" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-one-duplicate-pair-tef1-and-tef2">Exercise 2 · One duplicate pair: TEF1 and TEF2</h3>
+<p><em>TEF1</em> (YPR080W) and <em>TEF2</em> (YBR118W): proteins 100 % identical. Then <em>TDH3</em>/<em>TDH2</em> (96 %) and <em>ADH1</em>/<em>ADH2</em> (93 %). ✏️ Record the four values for TEF1, TEF2 and TDH3.</p>
+<div id="2bc5b089" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [<span class="st">"gene"</span>, <span class="st">"name"</span>, <span class="st">"closest_paralog"</span>, <span class="st">"min_pct_id"</span>, <span class="st">"STAR"</span>, <span class="st">"RSEM"</span>, <span class="st">"Cufflinks_FPKM"</span>, <span class="st">"Salmon"</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pairs <span class="op">=</span> [<span class="st">"YPR080W"</span>, <span class="st">"YBR118W"</span>, <span class="st">"YGR192C"</span>, <span class="st">"YJR009C"</span>, <span class="st">"YOL086C"</span>, <span class="st">"YMR303C"</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>d[d.gene.isin(pairs)][cols].<span class="bu">round</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exercise-3-from-one-pair-to-all-genes" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-from-one-pair-to-all-genes">Exercise 3 · From one pair to all genes</h3>
+<p><strong>gain</strong> = RSEM ÷ STAR unique count, for genes with ≥ 20 RSEM reads, by identity to the closest paralog. ✏️ Record the 95–100 % row. Save the box plot for the report (right-click → save image).</p>
+<div id="2d66d5bf" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> d[d.RSEM <span class="op">&gt;=</span> <span class="dv">20</span>].copy()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>e[<span class="st">"gain"</span>] <span class="op">=</span> e.RSEM <span class="op">/</span> e.STAR.clip(lower<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> e.groupby(<span class="st">"identity"</span>, observed<span class="op">=</span><span class="va">True</span>).gain.agg(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    n<span class="op">=</span><span class="st">"size"</span>, median<span class="op">=</span><span class="st">"median"</span>, q75<span class="op">=</span><span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>), share_over_1_5<span class="op">=</span><span class="kw">lambda</span> x: (x <span class="op">&gt;</span> <span class="fl">1.5</span>).mean())</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary.<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>e.boxplot(column<span class="op">=</span><span class="st">"gain"</span>, by<span class="op">=</span><span class="st">"identity"</span>, ax<span class="op">=</span>ax, showfliers<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>ax.set_yscale(<span class="st">"log"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"RSEM / STAR unique"</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">"protein identity to closest paralog"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">""</span>)<span class="op">;</span> fig.suptitle(<span class="st">""</span>)<span class="op">;</span> plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exercise-4-the-papers-test-with-and-without-em" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-4-the-papers-test-with-and-without-em">Exercise 4 · The paper’s test, with and without EM</h3>
+<p>For each duplicate pair (≥ 40 RSEM reads together): <strong>lost</strong> = 1 − (STAR₁ + STAR₂) / (RSEM₁ + RSEM₂), the share of the pair’s expression that disappears under unique-only counting. Qian et al.’s excess of reduced pairs was 31 %. ✏️ Record the share of pairs losing more than 31 % in each bin.</p>
+<div id="6d261c34" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> d.dropna(subset<span class="op">=</span>[<span class="st">"closest_paralog"</span>]).merge(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        d[[<span class="st">"gene"</span>, <span class="st">"STAR"</span>, <span class="st">"RSEM"</span>]].rename(columns<span class="op">=</span>{<span class="st">"gene"</span>: <span class="st">"closest_paralog"</span>, <span class="st">"STAR"</span>: <span class="st">"STAR2"</span>, <span class="st">"RSEM"</span>: <span class="st">"RSEM2"</span>}),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        on<span class="op">=</span><span class="st">"closest_paralog"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p[p.gene <span class="op">&lt;</span> p.closest_paralog]                       <span class="co"># each pair once</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p[(p.RSEM <span class="op">+</span> p.RSEM2) <span class="op">&gt;=</span> <span class="dv">40</span>]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>p[<span class="st">"lost"</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> (p.STAR <span class="op">+</span> p.STAR2) <span class="op">/</span> (p.RSEM <span class="op">+</span> p.RSEM2)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>p[<span class="st">"identity"</span>] <span class="op">=</span> pd.cut(p.min_pct_id, [<span class="dv">0</span>, <span class="dv">70</span>, <span class="dv">95</span>, <span class="dv">101</span>], labels<span class="op">=</span>[<span class="st">"&lt;70 %"</span>, <span class="st">"70-95 %"</span>, <span class="st">"95-100 %"</span>])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p.groupby(<span class="st">"identity"</span>, observed<span class="op">=</span><span class="va">True</span>).lost.agg(n<span class="op">=</span><span class="st">"size"</span>, median<span class="op">=</span><span class="st">"median"</span>, share_over_31<span class="op">=</span><span class="kw">lambda</span> x: (x <span class="op">&gt;</span> <span class="fl">0.31</span>).mean()).<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>p.sort_values(<span class="st">"lost"</span>, ascending<span class="op">=</span><span class="va">False</span>)[[<span class="st">"gene"</span>, <span class="st">"name"</span>, <span class="st">"closest_paralog"</span>, <span class="st">"min_pct_id"</span>, <span class="st">"STAR"</span>, <span class="st">"STAR2"</span>, <span class="st">"RSEM"</span>, <span class="st">"RSEM2"</span>, <span class="st">"lost"</span>]].head(<span class="dv">8</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exercise-5-do-the-em-tools-agree" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-5-do-the-em-tools-agree">Exercise 5 · Do the EM tools agree?</h3>
+<div id="ae9a9149" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="fl">4.3</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>close <span class="op">=</span> e.identity <span class="op">==</span> <span class="st">"95-100 %"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, x, y, xl, yl <span class="kw">in</span> [(axes[<span class="dv">0</span>], <span class="st">"STAR"</span>, <span class="st">"RSEM"</span>, <span class="st">"STAR unique reads"</span>, <span class="st">"RSEM expected count"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                         (axes[<span class="dv">1</span>], <span class="st">"Salmon"</span>, <span class="st">"RSEM"</span>, <span class="st">"Salmon reads"</span>, <span class="st">"RSEM expected count"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                         (axes[<span class="dv">2</span>], <span class="st">"Cufflinks_FPKM"</span>, <span class="st">"RSEM_TPM"</span>, <span class="st">"Cufflinks FPKM"</span>, <span class="st">"RSEM TPM"</span>)]:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    ax.scatter(e[x][<span class="op">~</span>close] <span class="op">+</span> <span class="dv">1</span>, e[y][<span class="op">~</span>close] <span class="op">+</span> <span class="dv">1</span>, s<span class="op">=</span><span class="dv">4</span>, alpha<span class="op">=</span><span class="fl">.3</span>, color<span class="op">=</span><span class="st">"grey"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    ax.scatter(e[x][close] <span class="op">+</span> <span class="dv">1</span>, e[y][close] <span class="op">+</span> <span class="dv">1</span>, s<span class="op">=</span><span class="dv">8</span>, color<span class="op">=</span><span class="st">"#C00000"</span>, label<span class="op">=</span><span class="st">"paralog 95-100 </span><span class="sc">% i</span><span class="st">dentical"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    ax.plot([<span class="dv">1</span>, <span class="fl">3e4</span>], [<span class="dv">1</span>, <span class="fl">3e4</span>], <span class="st">"k--"</span>, lw<span class="op">=</span><span class="dv">1</span>)<span class="op">;</span> ax.set_xscale(<span class="st">"log"</span>)<span class="op">;</span> ax.set_yscale(<span class="st">"log"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> np.corrcoef(np.log10(e[x].fillna(<span class="dv">0</span>) <span class="op">+</span> <span class="dv">1</span>), np.log10(e[y] <span class="op">+</span> <span class="dv">1</span>))[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(xl)<span class="op">;</span> ax.set_ylabel(yl)<span class="op">;</span> ax.set_title(<span class="ss">f"r = </span><span class="sc">{</span>r<span class="sc">:.3f}</span><span class="ss"> (log scale)"</span>)<span class="op">;</span> ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>d.to_csv(<span class="st">"lab4_four_quantifications.tsv"</span>, sep<span class="op">=</span><span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"saved lab4_four_quantifications.tsv — download it from the Files panel if you want to keep it"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Done.</strong> Answer Q1–Q7 in the handout with your recorded numbers; include the box plot (Ex 3) and one scatter (Ex 5).</p>
+<p><em>Extra (optional):</em> rerun Step 5 with <code>-u</code> added to the cufflinks command and look at TEF1 again.</p>
+
+
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+W10=
+</script>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Language switch: show Python, R, or both columns. The choice is remembered in this browser.
+(function () {
+  // Pages marked "both-languages" (Lab 1) always show Python and R, with no switch.
+  if (document.body.classList.contains("both-languages")) return;
+  const cols = document.querySelectorAll(".two-col > div");
+  if (!cols.length) return;
+  cols.forEach(d => {
+    const tag = d.querySelector(":scope > p > .lang-tag, :scope > .lang-tag, .lang-tag");
+    if (tag && tag.classList.contains("py")) d.classList.add("col-py");
+    if (tag && tag.classList.contains("r")) d.classList.add("col-r");
+  });
+  const bar = document.createElement("div");
+  bar.className = "lang-switch";
+  bar.innerHTML = '<span class="lang-switch-label">Show code in:</span>' +
+    '<button type="button" data-lang="py">Python</button>' +
+    '<button type="button" data-lang="r">R</button>' +
+    '<button type="button" data-lang="both">Both</button>';
+  const header = document.querySelector("#title-block-header") || document.querySelector("main h1");
+  (header ? header : document.querySelector("main")).insertAdjacentElement(header ? "afterend" : "afterbegin", bar);
+  function apply(lang) {
+    document.body.classList.remove("show-py", "show-r");
+    if (lang === "py") document.body.classList.add("show-py");
+    if (lang === "r") document.body.classList.add("show-r");
+    bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+    try { localStorage.setItem("data405-lang", lang); } catch (e) {}
+    window.dispatchEvent(new Event("resize"));   // let the code editors redraw at the new width
+  }
+  bar.addEventListener("click", e => { if (e.target.dataset.lang) apply(e.target.dataset.lang); });
+  let saved = "both";
+  try { saved = localStorage.getItem("data405-lang") || "both"; } catch (e) {}
+  apply(saved);
+})();
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../notebooks";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "..";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Genomic Data Science · DATA405/BIOL480 · Jinrui Xu · Howard University · Fall 2026</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Code runs in your browser (Pyodide + webR). Nothing is uploaded.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

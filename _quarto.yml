@@ -32,6 +32,8 @@ website:
         text: "Lab 2"
       - href: lab3.qmd
         text: "Lab 3"
+      - href: lab4.qmd
+        text: "Lab 4"
       - href: setup.qmd
         text: Setup
   page-footer:
