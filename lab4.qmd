@@ -17,6 +17,8 @@ resources:
 | **A** | Install the tools, download reads + reference, run STAR → RSEM, Cufflinks, Salmon | Colab notebook (Run all) | ≈ 20 min, all waiting: read A1 meanwhile |
 | **B** | Join the four results with the duplicate-gene table; look at TEF1/TEF2; test the paper's conclusion | same notebook (Python), or this page (Python or R) | ≈ 40 min |
 
+**The paper.** [Qian, Liao, Chang & Zhang 2010, *Trends in Genetics* 26: 425–430 (PDF)](downloads/Qian_2010_TiG_duplicate_genes.pdf) · [Supplementary Methods (PDF)](downloads/Qian_2010_TiG_supplementary_methods.pdf) — read the first two pages and the Supplementary Methods paragraph on how the yeast expression levels were obtained.
+
 **Data.** The reads are the real yeast RNA-seq reads Qian et al. used (Nagalakshmi et al. 2008, *Science*; run SRR002051, Illumina 2008, 33 bp, single-end), subsampled to 2 million. Reference: *S. cerevisiae* R64 genome, gene annotation and transcripts (Ensembl Fungi 63). Duplicate genes: Ensembl paralogues with the protein identity of the closest paralog.
 
 ![Why multi-mapping reads matter for duplicate genes.](images/lab4_multimap.png){width=90%}

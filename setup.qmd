@@ -101,6 +101,7 @@ Multi-panel figures: `layout(matrix(c(1, 2), nrow = 1), widths = c(3, 5))`, then
 **Lab 4**
 
 - [Lab 4 handout (PDF)](downloads/DATA405_Lab4_Handout.pdf) · [Word version](downloads/DATA405_Lab4_Handout.docx)
+- The paper: [Qian et al. 2010 (PDF)](downloads/Qian_2010_TiG_duplicate_genes.pdf) · [Supplementary Methods](downloads/Qian_2010_TiG_supplementary_methods.pdf)
 - Galaxy inputs: [reads (2 M, 73 MB)](data/lab4/yeast_reads_2M.fastq.gz) · [genome](data/lab4/yeast_genome_R64.fa) · [genes GTF](data/lab4/yeast_genes_R64.gtf) · [transcripts](data/lab4/yeast_transcripts_R64.fa) · [paralog table](data/lab4/yeast_paralogs.tsv)
 - Notebook: [Lab4_RNAseq_Quantification.ipynb](notebooks/Lab4_RNAseq_Quantification.ipynb) (open it in Colab from the Lab 4 page)
 - Result tables used on the Lab 4 page: `data/lab4_results/`
